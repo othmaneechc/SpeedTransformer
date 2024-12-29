@@ -1,11 +1,12 @@
 # TrajectoryTransformer
 
-This repository contains the code used in the paper **"[Predicting Human Mobility Using Smartphone GPS Trajectories and Transformer Models](#)"**. The code includes steps for data preparation and running models to analyze and predict human mobility patterns.
+This repository contains the code used in the paper **"[Predicting Human Mobility Using Smartphone GPS Trajectories and Transformer Models](#)"**. 
 
 ## Table of Contents
 
 1. [Preparing the Data](#preparing-the-data)
    - [Geolife Dataset](#geolife-dataset)
+   - [MOBIS Dataset](#mobis-dataset)
 2. [Running the Models](#running-the-models)
 3. [Requirements](#requirements)
 
@@ -15,18 +16,26 @@ This repository contains the code used in the paper **"[Predicting Human Mobilit
 
 ### Geolife Dataset
 
-The first dataset used in this project is the Geolife dataset, which provides GPS trajectories collected from users. To preprocess this dataset and prepare it for training, follow these steps:
+The Geolife dataset provides GPS trajectories collected from users. To preprocess this dataset:
 
-#### 1. **Download the Dataset**
+1. **Download the Dataset**
 
-   - Download the Geolife GPS trajectory dataset from [Microsoft Research](https://www.microsoft.com/en-us/research/publication/geolife-gps-trajectory-dataset-user-guide/).
-   - Unzip the dataset to a folder on your machine.
+   - Obtain the Geolife GPS trajectory dataset from [Microsoft Research](https://www.microsoft.com/en-us/research/publication/geolife-gps-trajectory-dataset-user-guide/).
+   - Unzip the dataset to a directory on your machine.
 
-#### 2. **Run the Preprocessing Script**
+2. **Run the Preprocessing Script**
 
-   Use the provided `geolife.py` script to preprocess the Geolife data. This script extracts relevant information, processes trajectories, and prepares the dataset for training.
-
-   **Command**:
+   Use the `data/geolife.py` script under to process the data. This script utilizes multiprocessing for efficient processing and typically completes in under 20 minutes.
 
    ```bash
    python geolife.py --data-folder "/path/to/data" --output-file "/path/to/output.csv" --temp-folder "/path/to/temp_folder"
+   ```
+   
+   Replace "/path/to/data", "/path/to/output.csv", and "/path/to/temp_folder" with your dataset path, desired output file, and a temporary folder for intermediate files. 
+
+### MOBIS Dataset
+
+## Running the Models
+Details on running models will be added soon.
+
+## Requirements
