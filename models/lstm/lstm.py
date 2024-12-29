@@ -1,13 +1,45 @@
 # lstm.py
 
 import os
+import sys
+import argparse
+import logging
+
 import torch
 import torch.nn as nn
 import joblib
-import argparse
+
 from data_utils import DataHandler
 from models import LSTMTripClassifier
 from trainer import Trainer
+
+
+def setup_logger(log_file='lstm.log'):
+    """
+    Set up a logger that writes logs to a file and to the console.
+    """
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # Avoid duplicating handlers if they already exist
+    if logger.hasHandlers():
+        return logger
+
+    fh = logging.FileHandler(log_file)
+    fh.setLevel(logging.INFO)
+
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    fh.setFormatter(formatter)
+    ch.setFormatter(formatter)
+
+    logger.addHandler(fh)
+    logger.addHandler(ch)
+
+    return logger
+
 
 def main(
     data_path,
@@ -16,7 +48,7 @@ def main(
     traj_id_column='traj_id',
     batch_size=128,
     num_workers=4,
-    learning_rate=0.001,
+    learning_rate=0.0005,
     weight_decay=1e-4,
     hidden_size=256,
     num_layers=2,
@@ -24,13 +56,18 @@ def main(
     num_epochs=50,
     patience=7,
     max_grad_norm=5.0,
-    checkpoint_dir='last_model',
-    scaler_path='last_model/scaler.joblib',
-    label_encoder_path='last_model/label_encoder.joblib',
-    test_size=0.1,
-    val_size=0.2
+    checkpoint_dir='.',
+    scaler_path='scaler.joblib',
+    label_encoder_path='label_encoder.joblib',
+    test_size=0.15,
+    val_size=0.15
 ):
+    # Set up logger
+    logger = setup_logger('lstm.log')
+    logger.info("Starting LSTM training process...")
+
     # ------------------ Data Loading & Preprocessing ------------------ #
+    logger.info("Loading and processing data with DataHandler...")
     data_handler = DataHandler(
         data_path=data_path,
         feature_columns=feature_columns,
@@ -44,13 +81,17 @@ def main(
 
     data_handler.load_and_process_data()
     data_handler.save_preprocessors(scaler_path, label_encoder_path)
+    logger.info(f"Scaler saved to {scaler_path}")
+    logger.info(f"Label encoder saved to {label_encoder_path}")
+
     dataloaders = data_handler.get_dataloaders(batch_size=batch_size, num_workers=num_workers)
+    logger.info("Dataloaders created for train, val, and test sets.")
 
     # ------------------ Model Setup ------------------ #
     input_size = len(feature_columns)
     num_classes = len(data_handler.label_encoder.classes_)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
+    logger.info(f"Using device: {device}")
 
     model = LSTMTripClassifier(
         input_size=input_size,
@@ -59,10 +100,12 @@ def main(
         num_classes=num_classes,
         dropout=dropout
     ).to(device)
+    logger.info("LSTM model initialized.")
 
     # ------------------ Loss & Optimizer ------------------ #
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    logger.info("Criterion (CrossEntropyLoss) and Adam optimizer initialized.")
 
     # ------------------ Training ------------------ #
     trainer = Trainer(
@@ -73,30 +116,34 @@ def main(
         checkpoint_dir=checkpoint_dir,
         patience=patience,
         max_grad_norm=max_grad_norm,
+        logger=logger  # <-- pass the logger to Trainer
     )
+    logger.info(f"Begin model training for up to {num_epochs} epochs...")
     trainer.train(dataloaders['train'], dataloaders['val'], num_epochs=num_epochs)
+    logger.info("Training completed.")
 
     # ------------------ Test Evaluation ------------------ #
+    logger.info("Evaluating on test set...")
     trainer.evaluate(dataloaders['test'], data_handler.label_encoder)
+    logger.info("Evaluation completed. LSTM script finished successfully.")
 
 
 if __name__ == "__main__":
-    # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Train and evaluate an LSTM model for trip classification.")
 
-    # Required arguments
+    # Required
     parser.add_argument("--data_path", type=str, required=True, help="Path to the dataset file.")
 
-    # Optional arguments
+    # Optional
     parser.add_argument("--checkpoint_dir", type=str, default=".", help="Directory to save model checkpoints.")
     parser.add_argument("--scaler_path", type=str, default='scaler.joblib', help="Path to save the scaler.")
     parser.add_argument("--label_encoder_path", type=str, default='label_encoder.joblib', help="Path to save the label encoder.")
     parser.add_argument("--feature_columns", nargs="+", default=["speed"], help="Feature columns to use.")
     parser.add_argument("--target_column", type=str, default="label", help="Target column.")
     parser.add_argument("--traj_id_column", type=str, default="traj_id", help="Trajectory ID column.")
-    parser.add_argument("--batch_size", type=int, default=128, help="Batch size for training.")
+    parser.add_argument("--batch_size", type=int, default=256, help="Batch size for training.")
     parser.add_argument("--num_workers", type=int, default=4, help="Number of workers for data loading.")
-    parser.add_argument("--learning_rate", type=float, default=0.001, help="Learning rate.")
+    parser.add_argument("--learning_rate", type=float, default=1e-3, help="Learning rate.")
     parser.add_argument("--weight_decay", type=float, default=1e-4, help="Weight decay.")
     parser.add_argument("--hidden_size", type=int, default=256, help="Hidden size of the LSTM.")
     parser.add_argument("--num_layers", type=int, default=2, help="Number of layers in the LSTM.")
@@ -109,7 +156,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # Call the main function with parsed arguments
     main(
         data_path=args.data_path,
         feature_columns=args.feature_columns,

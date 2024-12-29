@@ -1,6 +1,7 @@
 # fine_tune.py
 
 import os
+import argparse
 import torch
 import torch.nn as nn
 import joblib
@@ -18,7 +19,8 @@ class FineTuner:
             model (nn.Module): The pre-trained PyTorch model.
             fine_tune_layers (list, optional): List of layer name substrings to fine-tune.
                                                 If None, all layers are fine-tuned.
-            freeze_layers (bool, optional): Whether to freeze layers not in fine_tune_layers. Defaults to True.
+            freeze_layers (bool, optional): Whether to freeze layers not in fine_tune_layers.
+                                            Defaults to True.
         """
         self.model = model
         self.fine_tune_layers = fine_tune_layers
@@ -54,52 +56,48 @@ def main(
     feature_columns,
     target_column,
     traj_id_column='traj_id',
-    fine_tune_layers=None,  # List of layer name substrings to fine-tune
+    fine_tune_layers=None,
     freeze_layers=True,
     batch_size=128,
     num_workers=4,
-    learning_rate=1e-4,  # Often lower for fine-tuning
+    learning_rate=1e-4,
     weight_decay=1e-5,
     num_epochs=20,
     patience=5,
     max_grad_norm=5.0,
     checkpoint_dir='fine_tuned_checkpoints',
-    test_size=0.15,  # Adjusted to ensure proper splits
-    val_size=0.10,   # Adjusted to ensure proper splits
+    test_size=0.15,
+    val_size=0.10,
 ):
     """
-    Main function to fine-tune the LSTMTripClassifier model.
+    Fine-tunes an LSTMTripClassifier using a pre-trained model.
 
     Args:
         pre_trained_model_path (str): Path to the pre-trained model checkpoint.
         fine_tune_data_path (str): Path to the CSV data file for fine-tuning.
-        scaler_path (str): Path to the saved scaler (e.g., 'scaler.joblib').
-        label_encoder_path (str): Path to the saved label encoder (e.g., 'label_encoder.joblib').
+        scaler_path (str): Path to the saved scaler joblib file.
+        label_encoder_path (str): Path to the saved label encoder joblib file.
         feature_columns (list): List of feature column names.
         target_column (str): Name of the target column.
-        traj_id_column (str, optional): Name of the trajectory ID column. Defaults to 'traj_id'.
-        fine_tune_layers (list, optional): List of layer name substrings to fine-tune.
-                                           If None, fine-tune all layers.
-        freeze_layers (bool, optional): Whether to freeze layers not in fine_tune_layers. Defaults to True.
-        batch_size (int, optional): Batch size for fine-tuning. Defaults to 128.
-        num_workers (int, optional): Number of workers for DataLoader. Defaults to 4.
-        learning_rate (float, optional): Learning rate for optimizer. Defaults to 1e-4.
-        weight_decay (float, optional): Weight decay (L2 penalty) for optimizer. Defaults to 1e-5.
-        num_epochs (int, optional): Maximum number of epochs for fine-tuning. Defaults to 20.
-        patience (int, optional): Number of epochs to wait for improvement before stopping. Defaults to 5.
-        max_grad_norm (float, optional): Maximum gradient norm for clipping. Defaults to 5.0.
-        checkpoint_dir (str, optional): Directory to save fine-tuned model checkpoints. Defaults to 'fine_tuned_checkpoints'.
-        test_size (float, optional): Proportion of the dataset to include in the test split. Defaults to 0.15.
-        val_size (float, optional): Proportion of the dataset to include in the validation split. Defaults to 0.10.
+        traj_id_column (str): Name of the trajectory ID column.
+        fine_tune_layers (list): Substrings in layer names to fine-tune. If None, tune all.
+        freeze_layers (bool): Whether to freeze layers not listed in fine_tune_layers.
+        batch_size (int): Batch size for fine-tuning.
+        num_workers (int): Number of workers for DataLoader.
+        learning_rate (float): Learning rate for optimizer.
+        weight_decay (float): Weight decay (L2 penalty).
+        num_epochs (int): Max number of epochs for fine-tuning.
+        patience (int): Early-stopping patience.
+        max_grad_norm (float): Gradient clipping norm.
+        checkpoint_dir (str): Directory to save fine-tuned model checkpoints.
+        test_size (float): Fraction of dataset for testing.
+        val_size (float): Fraction of dataset for validation.
     """
-
-    # ------------------ Load Preprocessing Objects ------------------ #
     print("Loading scaler and label encoder...")
     scaler = joblib.load(scaler_path)
     label_encoder = joblib.load(label_encoder_path)
     print("Scaler and Label Encoder loaded successfully.")
 
-    # ------------------ Initialize DataHandler ------------------ #
     print("Initializing DataHandler for fine-tuning data...")
     data_handler = DataHandler(
         data_path=fine_tune_data_path,
@@ -109,42 +107,32 @@ def main(
         test_size=test_size,
         val_size=val_size,
         random_state=42,
-        chunksize=10**6,  # Adjust based on memory constraints
+        chunksize=10**6,
     )
-    data_handler.scaler = scaler  # Use pre-loaded scaler
-    data_handler.label_encoder = label_encoder  # Use pre-loaded label encoder
+    data_handler.scaler = scaler
+    data_handler.label_encoder = label_encoder
 
-    # ------------------ Load and Process Data ------------------ #
     print("Loading and processing fine-tuning data...")
     data_handler.load_and_process_data()
 
-    # ------------------ Create DataLoaders ------------------ #
-    print("Creating DataLoaders for fine-tuning...")
+    print("Creating DataLoaders...")
     dataloaders = data_handler.get_dataloaders(batch_size=batch_size, num_workers=num_workers)
 
-    # ------------------ Initialize Model ------------------ #
     input_size = len(feature_columns)
     num_classes = len(label_encoder.classes_)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
 
-    # It's crucial that the model architecture matches the pre-trained model
-    # Ensure that hidden_size, num_layers, etc., are consistent
-    # If unsure, consider loading the model without re-initializing
-    # Here, we assume the architecture is known and consistent
-
-    # Load the model architecture
+    # Must match original model's architecture
     model = LSTMTripClassifier(
         input_size=input_size,
-        hidden_size=256,      # Must match pre-trained model's hidden_size
-        num_layers=2,         # Must match pre-trained model's num_layers
+        hidden_size=256,  # Must match pre-trained
+        num_layers=2,     # Must match pre-trained
         num_classes=num_classes,
-        dropout=0.3           # Must match pre-trained model's dropout
-    )
-    model = model.to(device)
+        dropout=0.3       # Must match pre-trained
+    ).to(device)
 
-    # ------------------ Load Pre-trained Model Checkpoint ------------------ #
-    print(f"Loading pre-trained model checkpoint from '{pre_trained_model_path}'...")
+    print(f"Loading pre-trained model from '{pre_trained_model_path}'...")
     try:
         model.load_state_dict(torch.load(pre_trained_model_path, map_location=device))
         print("Pre-trained model loaded successfully.")
@@ -152,14 +140,10 @@ def main(
         print(f"Error loading pre-trained model: {e}")
         return
 
-    # ------------------ Initialize FineTuner ------------------ #
     print("Initializing FineTuner...")
     fine_tuner = FineTuner(model, fine_tune_layers=fine_tune_layers, freeze_layers=freeze_layers)
 
-    # ------------------ Define Loss and Optimizer ------------------ #
     criterion = nn.CrossEntropyLoss()
-
-    # Only parameters that require gradients are passed to the optimizer
     optimizer = torch.optim.Adam(
         filter(lambda p: p.requires_grad, fine_tuner.model.parameters()),
         lr=learning_rate,
@@ -167,7 +151,6 @@ def main(
     )
     print("Optimizer initialized.")
 
-    # ------------------ Initialize Trainer ------------------ #
     trainer = Trainer(
         model=model,
         criterion=criterion,
@@ -178,85 +161,76 @@ def main(
         max_grad_norm=max_grad_norm,
     )
 
-    # ------------------ Start Fine-Tuning ------------------ #
-    print("Starting fine-tuning process...")
+    print("Starting fine-tuning...")
     trainer.train(dataloaders['train'], dataloaders['val'], num_epochs=num_epochs)
 
-    # ------------------ Evaluate Fine-Tuned Model ------------------ #
-    print("\nEvaluating Fine-Tuned Model on Test Set:")
+    print("\nEvaluating on Test Set...")
     trainer.evaluate(dataloaders['test'], label_encoder)
 
 # ------------------ Execution Block ------------------ #
 if __name__ == "__main__":
-    # ------------------ Define Parameters Here ------------------ #
-    # Specify the paths to your files
-    pre_trained_model_path = '/data/A-SUBMISSION/experiments/training/mobis_lstm/best_model.pth'  # Path to your pre-trained model
-    fine_tune_data_path = '/data/A-SUBMISSION/data/processed_geolife_updated4.csv'
-    scaler_path = '/data/A-SUBMISSION/experiments/training/mobis_lstm/scaler.joblib'  # Path to your saved scaler
-    label_encoder_path = '/data/A-SUBMISSION/experiments/training/mobis_lstm/label_encoder.joblib'  # Path to your saved label encoder
+    parser = argparse.ArgumentParser(description="Fine-tune an LSTM model.")
 
-    # Define your feature columns and target column
-    feature_columns = [
-        # 'lat', 'long', 'hour', 'day_of_week', 'time_since_start',
-        # 'delta_lat', 'delta_long', 'distance', 'bearing',
-        # 'time_diff', 
-        'speed', 
-        # 'acceleration', 'cumulative_distance',
-        # 'speed_roll_mean', 'speed_roll_std', 'acceleration_roll_mean',
-        # 'acceleration_roll_std', 'bearing_change', 'remaining_distance',
-    ]
-    target_column = 'label'
-    traj_id_column = 'traj_id'
+    parser.add_argument('--pre_trained_model_path', type=str, required=True,
+                        help='Path to the pre-trained LSTM model checkpoint (e.g. best_model.pth).')
+    parser.add_argument('--fine_tune_data_path', type=str, required=True,
+                        help='Path to the CSV data file for fine-tuning.')
+    parser.add_argument('--scaler_path', type=str, required=True,
+                        help='Path to the saved scaler (e.g., scaler.joblib).')
+    parser.add_argument('--label_encoder_path', type=str, required=True,
+                        help='Path to the saved label encoder (e.g., label_encoder.joblib).')
+    parser.add_argument('--feature_columns', nargs='+', default=['speed'],
+                        help='List of feature columns in the dataset.')
+    parser.add_argument('--target_column', type=str, default='label',
+                        help='Name of the target column.')
+    parser.add_argument('--traj_id_column', type=str, default='traj_id',
+                        help='Name of the trajectory ID column.')
+    parser.add_argument('--fine_tune_layers', nargs='+', default=None,
+                        help='List of layer-name substrings to fine-tune. If None, tune all.')
+    parser.add_argument('--freeze_layers', action='store_true', default=False,
+                        help='Freeze layers not in fine_tune_layers. Default False means all are trainable.')
 
-    # Define which layers to fine-tune (optional)
-    # If None, all layers will be fine-tuned
-    # To fine-tune specific layers, provide a list of substrings in layer names
-    # For example, to fine-tune only the fully connected layer:
-    # fine_tune_layers = ['fc']
-    fine_tune_layers = None  # Fine-tune all layers
+    parser.add_argument('--batch_size', type=int, default=128,
+                        help='Batch size for DataLoader.')
+    parser.add_argument('--num_workers', type=int, default=4,
+                        help='Number of workers for DataLoader.')
+    parser.add_argument('--learning_rate', type=float, default=1e-4,
+                        help='Learning rate for optimizer.')
+    parser.add_argument('--weight_decay', type=float, default=1e-5,
+                        help='Weight decay (L2 regularization).')
+    parser.add_argument('--num_epochs', type=int, default=20,
+                        help='Number of fine-tuning epochs.')
+    parser.add_argument('--patience', type=int, default=5,
+                        help='Early stopping patience.')
+    parser.add_argument('--max_grad_norm', type=float, default=5.0,
+                        help='Gradient clipping norm.')
+    parser.add_argument('--checkpoint_dir', type=str, default='fine_tuned_checkpoints',
+                        help='Directory to save fine-tuned model checkpoints.')
+    parser.add_argument('--test_size', type=float, default=0.15,
+                        help='Proportion of the data to use for test.')
+    parser.add_argument('--val_size', type=float, default=0.10,
+                        help='Proportion of the data to use for validation.')
 
-    # Define model parameters (should match the pre-trained model's parameters)
-    # It's crucial that these match the pre-trained model to ensure compatibility
-    hidden_size = 256
-    num_layers = 2
-    dropout = 0.3
+    args = parser.parse_args()
 
-    # Define DataLoader parameters
-    batch_size = 128
-    num_workers = 12  # Adjust based on your system's capabilities
-
-    # Define optimizer and training parameters
-    learning_rate = 1e-4  # Often lower for fine-tuning
-    weight_decay = 1e-5
-    num_epochs = 20
-    patience = 5
-    max_grad_norm = 5.0
-    checkpoint_dir = 'fine_tuned_checkpoints'
-
-    # Define data split ratios
-    test_size = 0.75  # 15% for testing
-    val_size = 0.2   # 10% for validation
-    # This leaves 75% for training
-
-    # ------------------ Call the Main Function ------------------ #
     main(
-        pre_trained_model_path=pre_trained_model_path,
-        fine_tune_data_path=fine_tune_data_path,
-        scaler_path=scaler_path,
-        label_encoder_path=label_encoder_path,
-        feature_columns=feature_columns,
-        target_column=target_column,
-        traj_id_column=traj_id_column,
-        fine_tune_layers=fine_tune_layers,
-        freeze_layers=True,  # Set to True to freeze layers not in fine_tune_layers
-        batch_size=batch_size,
-        num_workers=num_workers,
-        learning_rate=learning_rate,
-        weight_decay=weight_decay,
-        num_epochs=num_epochs,
-        patience=patience,
-        max_grad_norm=max_grad_norm,
-        checkpoint_dir=checkpoint_dir,
-        test_size=test_size,
-        val_size=val_size,
+        pre_trained_model_path=args.pre_trained_model_path,
+        fine_tune_data_path=args.fine_tune_data_path,
+        scaler_path=args.scaler_path,
+        label_encoder_path=args.label_encoder_path,
+        feature_columns=args.feature_columns,
+        target_column=args.target_column,
+        traj_id_column=args.traj_id_column,
+        fine_tune_layers=args.fine_tune_layers,
+        freeze_layers=args.freeze_layers,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
+        learning_rate=args.learning_rate,
+        weight_decay=args.weight_decay,
+        num_epochs=args.num_epochs,
+        patience=args.patience,
+        max_grad_norm=args.max_grad_norm,
+        checkpoint_dir=args.checkpoint_dir,
+        test_size=args.test_size,
+        val_size=args.val_size,
     )

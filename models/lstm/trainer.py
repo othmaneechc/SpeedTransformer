@@ -1,13 +1,15 @@
 # trainer.py
 
+import os
+import logging
 import torch
 import torch.nn as nn
-import os
 from tqdm import tqdm
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
+
 
 class Trainer:
     def __init__(
@@ -18,7 +20,8 @@ class Trainer:
         device,
         checkpoint_dir='model_checkpoints',
         patience=7,
-        max_grad_norm=5.0
+        max_grad_norm=5.0,
+        logger=None  # <-- We add a logger argument
     ):
         self.model = model
         self.criterion = criterion
@@ -27,6 +30,9 @@ class Trainer:
         self.checkpoint_dir = checkpoint_dir
         self.patience = patience
         self.max_grad_norm = max_grad_norm
+
+        # We'll use the logger passed in or fall back to a default logger
+        self.logger = logger or logging.getLogger(__name__)
 
         self.best_val_accuracy = 0.0
         self.trigger_times = 0
@@ -44,7 +50,7 @@ class Trainer:
             sequences = sequences.to(self.device)
             labels = labels.to(self.device)
             lengths = lengths.to(self.device)
-            masks = masks.to(self.device)     # shape (batch_size, 200)
+            masks = masks.to(self.device)  # shape (batch_size, window_size)
 
             # Forward
             outputs, _ = self.model(sequences, lengths, mask=masks)
@@ -93,29 +99,32 @@ class Trainer:
         return avg_loss, accuracy
 
     def train(self, train_loader, val_loader, num_epochs):
+        """
+        Full training loop, including early stopping based on best validation accuracy.
+        """
         for epoch in range(num_epochs):
-            print(f"\nEpoch {epoch+1}/{num_epochs}")
+            self.logger.info(f"Epoch {epoch+1}/{num_epochs}")
 
             # Train
             train_loss, train_acc = self.train_epoch(train_loader)
-            print(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
+            self.logger.info(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
 
             # Validate
             val_loss, val_acc = self.validate_epoch(val_loader)
-            print(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
+            self.logger.info(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
-            # Early stopping logic
+            # Early stopping logic based on validation accuracy
             if val_acc > self.best_val_accuracy:
                 self.best_val_accuracy = val_acc
                 self.trigger_times = 0
                 checkpoint_path = os.path.join(self.checkpoint_dir, 'best_model.pth')
                 torch.save(self.model.state_dict(), checkpoint_path)
-                print(f"Best model saved with validation accuracy: {self.best_val_accuracy:.2f}%")
+                self.logger.info(f"Best model saved with validation accuracy: {self.best_val_accuracy:.2f}%")
             else:
                 self.trigger_times += 1
-                print(f"No improvement for {self.trigger_times} epoch(s).")
+                self.logger.info(f"No improvement for {self.trigger_times} epoch(s).")
                 if self.trigger_times >= self.patience:
-                    print("Early stopping triggered!")
+                    self.logger.info("Early stopping triggered!")
                     break
 
     def evaluate(self, dataloader, label_encoder):
@@ -137,11 +146,11 @@ class Trainer:
                 all_labels.extend(labels.cpu().numpy())
 
         test_accuracy = 100.0 * np.sum(np.array(all_preds) == np.array(all_labels)) / len(all_labels)
-        print(f"\nTest Accuracy: {test_accuracy:.2f}%")
+        self.logger.info(f"Test Accuracy: {test_accuracy:.2f}%")
 
         # Detailed classification report
-        print("\nClassification Report:")
-        print(classification_report(all_labels, all_preds, target_names=label_encoder.classes_))
+        report = classification_report(all_labels, all_preds, target_names=label_encoder.classes_)
+        self.logger.info("Classification Report:\n" + report)
 
         # Confusion matrix
         conf_mat = confusion_matrix(all_labels, all_preds)
