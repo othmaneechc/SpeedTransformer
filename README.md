@@ -77,8 +77,8 @@ Use `models/lstm/finetune.py` to load a pre-trained LSTM model, optionally freez
 
 ```bash
 python finetune.py \
-  --pre_trained_model_path /path/to/best_model.pth \
-  --fine_tune_data_path /path/to/new_data.csv \
+  --pretrained_model_path /path/to/best_model.pth \
+  --data_path /path/to/new_data.csv \
   --scaler_path /path/to/scaler.joblib \
   --label_encoder_path /path/to/label_encoder.joblib \
   --batch_size 64 \
