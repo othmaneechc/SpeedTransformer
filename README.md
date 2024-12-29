@@ -73,10 +73,10 @@ This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib
 
 **Fine-tuning**
 
-Use `models/lstm/fine_tune.py` to load a pre-trained LSTM model, optionally freeze or unfreeze specific layers, and continue training on new data. Now it accepts command-line arguments, for example:
+Use `models/lstm/finetune.py` to load a pre-trained LSTM model, optionally freeze or unfreeze specific layers, and continue training on new data. Now it accepts command-line arguments, for example:
 
 ```bash
-python fine_tune.py \
+python finetune.py \
   --pre_trained_model_path /path/to/best_model.pth \
   --fine_tune_data_path /path/to/new_data.csv \
   --scaler_path /path/to/scaler.joblib \
@@ -100,10 +100,10 @@ python train.py --data_path /path/to/data.csv --feature_columns speed --target_c
 ```
 
 **Fine-Tuning**
-Use `models/transformer/fine_tune.py` to load a pre-trained Transformer, overwrite the newly fitted label encoder with your old one, and continue training on new data:
+Use `models/transformer/fine_une.py` to load a pre-trained Transformer, overwrite the newly fitted label encoder with your old one, and continue training on new data:
 
 ```bash
-python fine_tune.py
+python finetune.py
 --data_path /path/to/fine_tune_data.csv
 --pretrained_model_path best_model.pth
 --label_encoder_path label_encoder.joblib

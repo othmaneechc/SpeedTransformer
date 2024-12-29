@@ -60,9 +60,9 @@ def main():
                         help='Name of the target column.')
     parser.add_argument('--traj_id_column', type=str, default='traj_id',
                         help='Name of the trajectory ID column.')
-    parser.add_argument('--test_size', type=float, default=0.20,
+    parser.add_argument('--test_size', type=float, default=0.7,
                         help='Proportion of data for testing.')
-    parser.add_argument('--val_size', type=float, default=0.20,
+    parser.add_argument('--val_size', type=float, default=0.2,
                         help='Proportion of data for validation.')
     parser.add_argument('--random_state', type=int, default=42,
                         help='Random seed.')

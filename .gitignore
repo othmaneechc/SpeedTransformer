@@ -1,3 +1,7 @@
+mobis_geolife/
+fine_tune_checkpoints/
+training_metrics/
+*.sh
 geolife/
 mobis/
 *.ipynb
