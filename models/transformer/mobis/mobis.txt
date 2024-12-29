@@ -1,0 +1,204 @@
+(/data/oe23/torchgpu) oe23@research-dkuchanglab-01:/data/A-SUBMISSION/transformer$ python train.py
+Extracting unique trajectory IDs...
+Reading traj_ids: 145it [02:59,  1.24s/it]
+Total unique traj_ids found: 1530962
+Splitting traj_ids into train, validation, and test sets...
+Train traj_ids: 1071673, Val traj_ids: 229644, Test traj_ids: 229645
+Fitting label encoder on target column...
+Reading labels for encoding: 145it [01:50,  1.31it/s]
+Classes found: ['bike' 'bus' 'car' 'train' 'walk']
+Fitting scaler on training features...
+Reading training features for scaling: 145it [02:32,  1.05s/it]
+Scaler fitting completed.
+Creating trip sequences with sliding windows from CSV in chunks...
+Processing chunks: 145it [14:48,  6.13s/it]
+Sequences created - Train: 1845601, Val: 395230, Test: 397578
+Total sequences skipped due to zero length: 0
+train.py:363: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler() if torch.cuda.is_available() else None
+/data/oe23/torchgpu/lib/python3.8/site-packages/torch/nn/modules/transformer.py:307: UserWarning: enable_nested_tensor is True, but self.use_nested_tensor i
+s False because encoder_layer.self_attn.batch_first was not True(use batch_first for better inference performance)
+  warnings.warn(f"enable_nested_tensor is True, but self.use_nested_tensor is False because {why_not_sparsity_fast_path}")
+Epoch 1/50 [Train]:   0%|                                                                                                       | 0/3605 [00:00<?, ?it/s]
+train.py:421: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+Epoch 1/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:24<00:00, 11.12it/s]
+Epoch 1, Train Loss: 0.2302, Train Acc: 0.9192
+Evaluating:   0%|                                                                                                                   | 0/772 [00:00<?, ?it/s]
+train.py:493: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.21it/s]
+Epoch 1, Val Loss: 0.1931, Val Acc: 0.9304
+Best model saved with Val Loss: 0.1931
+Epoch 2/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:16<00:00, 11.39it/s]
+Epoch 2, Train Loss: 0.1948, Train Acc: 0.9303
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.23it/s]
+Epoch 2, Val Loss: 0.1853, Val Acc: 0.9338
+Best model saved with Val Loss: 0.1853
+Epoch 3/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.47it/s]
+Epoch 3, Train Loss: 0.1872, Train Acc: 0.9330
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 42.52it/s]
+Epoch 3, Val Loss: 0.1795, Val Acc: 0.9355
+Best model saved with Val Loss: 0.1795
+Epoch 4/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.45it/s]
+Epoch 4, Train Loss: 0.1830, Train Acc: 0.9345
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.75it/s]
+Epoch 4, Val Loss: 0.1834, Val Acc: 0.9337
+No improvement for 1 epoch(s)
+Epoch 5/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 5, Train Loss: 0.1802, Train Acc: 0.9353
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.35it/s]
+Epoch 5, Val Loss: 0.1783, Val Acc: 0.9364
+Best model saved with Val Loss: 0.1783
+Epoch 6/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.43it/s]
+Epoch 6, Train Loss: 0.1780, Train Acc: 0.9361
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.24it/s]
+Epoch 6, Val Loss: 0.1738, Val Acc: 0.9368
+Best model saved with Val Loss: 0.1738
+Epoch 7/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.43it/s]
+Epoch 7, Train Loss: 0.1762, Train Acc: 0.9367
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.09it/s]
+Epoch 7, Val Loss: 0.1749, Val Acc: 0.9372
+No improvement for 1 epoch(s)
+Epoch 8/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.47it/s]
+Epoch 8, Train Loss: 0.1748, Train Acc: 0.9371
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.44it/s]
+Epoch 8, Val Loss: 0.1733, Val Acc: 0.9371
+Best model saved with Val Loss: 0.1733
+Epoch 9/50 [Train]: 100%|████████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.45it/s]
+Epoch 9, Train Loss: 0.1734, Train Acc: 0.9375
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.42it/s]
+Epoch 9, Val Loss: 0.1754, Val Acc: 0.9365
+No improvement for 1 epoch(s)
+Epoch 10/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.44it/s]
+Epoch 10, Train Loss: 0.1724, Train Acc: 0.9378
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 40.65it/s]
+Epoch 10, Val Loss: 0.1700, Val Acc: 0.9377
+Best model saved with Val Loss: 0.1700
+Epoch 11/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.43it/s]
+Epoch 11, Train Loss: 0.1712, Train Acc: 0.9383
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 42.23it/s]
+Epoch 11, Val Loss: 0.1721, Val Acc: 0.9378
+No improvement for 1 epoch(s)
+Epoch 12/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.44it/s]
+Epoch 12, Train Loss: 0.1703, Train Acc: 0.9385
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.22it/s]
+Epoch 12, Val Loss: 0.1685, Val Acc: 0.9385
+Best model saved with Val Loss: 0.1685
+Epoch 13/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:13<00:00, 11.49it/s]
+Epoch 13, Train Loss: 0.1694, Train Acc: 0.9388
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.67it/s]
+Epoch 13, Val Loss: 0.1698, Val Acc: 0.9380
+No improvement for 1 epoch(s)
+Epoch 14/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 14, Train Loss: 0.1685, Train Acc: 0.9391
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.01it/s]
+Epoch 14, Val Loss: 0.1694, Val Acc: 0.9385
+No improvement for 2 epoch(s)
+Epoch 15/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 15, Train Loss: 0.1678, Train Acc: 0.9393
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.26it/s]
+Epoch 15, Val Loss: 0.1690, Val Acc: 0.9387
+No improvement for 3 epoch(s)
+Epoch 16/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.45it/s]
+Epoch 16, Train Loss: 0.1672, Train Acc: 0.9395
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 40.66it/s]
+Epoch 16, Val Loss: 0.1684, Val Acc: 0.9384
+Best model saved with Val Loss: 0.1684
+Epoch 17/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.44it/s]
+Epoch 17, Train Loss: 0.1662, Train Acc: 0.9398
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.99it/s]
+Epoch 17, Val Loss: 0.1670, Val Acc: 0.9392
+Best model saved with Val Loss: 0.1670
+Epoch 18/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 18, Train Loss: 0.1657, Train Acc: 0.9400
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 42.53it/s]
+Epoch 18, Val Loss: 0.1674, Val Acc: 0.9391
+No improvement for 1 epoch(s)
+Epoch 19/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.47it/s]
+Epoch 19, Train Loss: 0.1651, Train Acc: 0.9402
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.41it/s]
+Epoch 19, Val Loss: 0.1668, Val Acc: 0.9394
+Best model saved with Val Loss: 0.1668
+Epoch 20/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:13<00:00, 11.49it/s]
+Epoch 20, Train Loss: 0.1646, Train Acc: 0.9404
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.25it/s]
+Epoch 20, Val Loss: 0.1666, Val Acc: 0.9393
+Best model saved with Val Loss: 0.1666
+Epoch 21/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 21, Train Loss: 0.1639, Train Acc: 0.9405
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.18it/s]
+Epoch 21, Val Loss: 0.1660, Val Acc: 0.9396
+Best model saved with Val Loss: 0.1660
+Epoch 22/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.44it/s]
+Epoch 22, Train Loss: 0.1632, Train Acc: 0.9408
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 42.99it/s]
+Epoch 22, Val Loss: 0.1694, Val Acc: 0.9393
+No improvement for 1 epoch(s)
+Epoch 23/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.44it/s]
+Epoch 23, Train Loss: 0.1628, Train Acc: 0.9408
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.79it/s]
+Epoch 23, Val Loss: 0.1659, Val Acc: 0.9400
+Best model saved with Val Loss: 0.1659
+Epoch 24/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.42it/s]
+Epoch 24, Train Loss: 0.1623, Train Acc: 0.9411
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 42.80it/s]
+Epoch 24, Val Loss: 0.1663, Val Acc: 0.9400
+No improvement for 1 epoch(s)
+Epoch 25/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.44it/s]
+Epoch 25, Train Loss: 0.1617, Train Acc: 0.9413
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.61it/s]
+Epoch 25, Val Loss: 0.1652, Val Acc: 0.9397
+Best model saved with Val Loss: 0.1652
+Epoch 26/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.45it/s]
+Epoch 26, Train Loss: 0.1611, Train Acc: 0.9415
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 41.42it/s]
+Epoch 26, Val Loss: 0.1661, Val Acc: 0.9399
+No improvement for 1 epoch(s)
+Epoch 27/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.46it/s]
+Epoch 27, Train Loss: 0.1607, Train Acc: 0.9418
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.81it/s]
+Epoch 27, Val Loss: 0.1654, Val Acc: 0.9397
+No improvement for 2 epoch(s)
+Epoch 28/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:14<00:00, 11.47it/s]
+Epoch 28, Train Loss: 0.1601, Train Acc: 0.9419
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.27it/s]
+Epoch 28, Val Loss: 0.1657, Val Acc: 0.9398
+No improvement for 3 epoch(s)
+Epoch 29/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.43it/s]
+Epoch 29, Train Loss: 0.1596, Train Acc: 0.9421
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:18<00:00, 42.82it/s]
+Epoch 29, Val Loss: 0.1654, Val Acc: 0.9401
+No improvement for 4 epoch(s)
+Epoch 30/50 [Train]: 100%|███████████████████████████████████████████████████████████████████████████████████████████| 3605/3605 [05:15<00:00, 11.43it/s]
+Epoch 30, Train Loss: 0.1591, Train Acc: 0.9423
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 772/772 [00:17<00:00, 43.32it/s]
+Epoch 30, Val Loss: 0.1672, Val Acc: 0.9385
+No improvement for 5 epoch(s)
+Early stopping triggered.
+train.py:576: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicit
+ly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/
+SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functio
+ns that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted b
+y the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control
+ of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.model.load_state_dict(torch.load(path, map_location=self.device))
+Evaluating: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████| 777/777 [00:18<00:00, 42.87it/s]
+Test Loss: 0.1674, Test Acc: 0.9399
+train.py:547: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+              precision    recall  f1-score   support
+
+        bike       0.93      0.75      0.83     11386
+         bus       0.93      0.86      0.90     12816
+         car       0.93      0.98      0.95    215295
+       train       0.73      0.39      0.51     23695
+        walk       0.98      1.00      0.99    134386
+
+    accuracy                           0.94    397578
+   macro avg       0.90      0.80      0.84    397578
+weighted avg       0.93      0.94      0.93    397578
+
+(/data/oe23/torchgpu) oe23@research-dkuchanglab-01:/data/A-SUBMISSION/transformer$ tmux capture-pane -S -500; tmux save-buffer mobis_lstm.txt; tmux delete-buffer
+r
+
