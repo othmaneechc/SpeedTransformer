@@ -66,7 +66,7 @@ Both have scripts to handle training and fine-tuning and (for Transformer) a ded
 Use `models/lstm/lstm.py` to train an LSTM on your dataset. For example:
 
 ```bash
-python lstm.py --data_path geolife_processed.csv
+python lstm.py --data_path ./data/geolife_processed.csv
 ```
 
 This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for future use.
@@ -96,7 +96,7 @@ It then tests the fine-tuned model on a new test set and saves the updated check
 Use `models/transformer/train.py` to train a Transformer-based classifier. It saves the best model (best_model.pth), the fitted label encoder (label_encoder.joblib), and tests automatically at the end. For instance:
 
 ```bash
-python train.py --data_path geolife_processed.csv
+python train.py --data_path ./data/geolife_processed.csv
 ```
 
 **Fine-Tuning**
