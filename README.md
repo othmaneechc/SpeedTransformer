@@ -34,7 +34,7 @@ The Geolife dataset provides GPS trajectories collected from users. To preproces
    Use the `data/geolife.py` script to process the data. This script utilizes multiprocessing for efficient processing and typically completes in under 20 minutes:
 
    ```bash
-   python geolife.py --data-folder "/path/to/data" --output-file "/path/to/output.csv" --temp-folder "/path/to/temp_folder"
+   python process_geolife.py --data-folder "Geolife Trajectories 1.3/Data" --output-file "geolife.csv"
    ```
    
    Replace "/path/to/data", "/path/to/output.csv", and "/path/to/temp_folder" with your dataset path, desired output file, and a temporary folder for intermediate files. 
@@ -44,7 +44,7 @@ The Geolife dataset provides GPS trajectories collected from users. To preproces
 After preprocessing, run `extract_speed_geolife.py` to compute additional features like speed and distance:
 
 ```bash
-python extract_speed_geolife.py /path/to/output.csv --output_file /path/to/final_
+python extract_speed_geolife.py geolife.csv --output_file geolife_processed.csv
 ``` 
 
 ### MOBIS Dataset
@@ -66,7 +66,7 @@ Both have scripts to handle training and fine-tuning and (for Transformer) a ded
 Use `models/lstm/lstm.py` to train an LSTM on your dataset. For example:
 
 ```bash
-python lstm.py --data_path /path/to/data.csv --feature_columns speed --target_column label
+python lstm.py --data_path geolife_processed.csv
 ```
 
 This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for future use.
@@ -96,7 +96,7 @@ It then tests the fine-tuned model on a new test set and saves the updated check
 Use `models/transformer/train.py` to train a Transformer-based classifier. It saves the best model (best_model.pth), the fitted label encoder (label_encoder.joblib), and tests automatically at the end. For instance:
 
 ```bash
-python train.py --data_path /path/to/data.csv --feature_columns speed --target_column
+python train.py --data_path geolife_processed.csv
 ```
 
 **Fine-Tuning**
@@ -111,16 +111,6 @@ python finetune.py
 ```
 
 It will save a fine-tuned model and evaluate on the new test set.
-
-**Testing**  
-Use `models/transformer/test.py` for a dedicated test script, pointing to your saved model and label encoder:
-
-```bash
-python test.py
---data_path /path/to/test_data.csv
---model_path best_model.pth
---label_encoder_path label_encoder.joblib
-```
 
 ---
 
