@@ -26,7 +26,8 @@ class TrajectoryTransformer(nn.Module):
             nhead=nhead,
             dim_feedforward=512,
             activation='relu',
-            dropout=dropout
+            dropout=dropout,
+            batch_first=True  # Added this parameter
         )
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
 
@@ -49,33 +50,28 @@ class TrajectoryTransformer(nn.Module):
         pos_emb = self.position_embedding(position_ids)
         x = x + pos_emb
 
-        # (3) Prepare for transformer encoder
-        x = x.transpose(0, 1)  # => [window_size, batch_size, d_model]
-
-        # (4) Pass through the Transformer
+        # (3) Pass through the Transformer
+        # No need to transpose if batch_first=True
         output = self.transformer_encoder(x, src_key_padding_mask=src_key_padding_mask)
-        output = output.transpose(0, 1)  # => [batch_size, window_size, d_model]
 
-        # (5) Attention-based pooling
+        # (4) Attention-based pooling
         attention_scores = self.attention_weights_layer(output).squeeze(-1)  # => [batch_size, window_size]
         if src_key_padding_mask is not None:
             # Where mask == True (PAD), set to -inf
-            mask = src_key_padding_mask.bool()
-            attention_scores[mask] = float('-inf')
+            attention_scores = attention_scores.masked_fill(src_key_padding_mask, float('-inf'))
 
         attention_weights = torch.softmax(attention_scores, dim=-1)
         pooled = torch.bmm(attention_weights.unsqueeze(1), output).squeeze(1)  # => [batch_size, d_model]
 
-        # (6) Classify
+        # (5) Classify
         logits = self.classifier(pooled)  # => [batch_size, num_classes]
         return logits
-
 
 class TrajectoryModel:
     """
     Encapsulates the model, loss, optimizer, device, plus methods for train/evaluate/test/predict.
     """
-    def __init__(self, feature_columns, label_encoder, device=None):
+    def __init__(self, feature_columns, label_encoder, device=None, use_amp=False):
         self.feature_columns = feature_columns
         self.label_encoder = label_encoder
         self.num_classes = len(label_encoder.classes_)
@@ -84,8 +80,11 @@ class TrajectoryModel:
         self.model = None
         self.criterion = None
         self.optimizer = None
-        self.scaler = torch.cuda.amp.GradScaler() if torch.cuda.is_available() else None
-
+        self.use_amp = use_amp
+        if self.use_amp and torch.cuda.is_available():
+            self.scaler = torch.cuda.amp.GradScaler()
+        else:
+            self.scaler = None
     def prepare_model(
         self,
         window_size=100,
@@ -94,7 +93,7 @@ class TrajectoryModel:
         num_layers=4,
         dropout=0.1,
         lr=1e-4,
-        weight_decay=1e-4
+        weight_decay=1e-4,
     ):
         feature_size = len(self.feature_columns)
         self.model = TrajectoryTransformer(
@@ -107,8 +106,21 @@ class TrajectoryModel:
             dropout=dropout
         ).to(self.device)
 
+        # **Ensure Deterministic Weight Initialization**
+        self._init_weights()
+
         self.criterion = nn.CrossEntropyLoss()
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=lr, weight_decay=weight_decay)
+
+    def _init_weights(self):
+        """
+        Initialize weights to ensure deterministic behavior.
+        """
+        for name, param in self.model.named_parameters():
+            if 'weight' in name and param.dim() > 1:
+                nn.init.xavier_uniform_(param)
+            elif 'bias' in name:
+                nn.init.constant_(param, 0)
 
     def train_one_epoch(self, train_loader, gradient_clip=1.0):
         self.model.train()
@@ -125,17 +137,19 @@ class TrajectoryModel:
 
             self.optimizer.zero_grad()
 
-            with torch.cuda.amp.autocast(enabled=self.scaler is not None):
-                outputs = self.model(sequences, position_ids, src_key_padding_mask=masks)
-                loss = self.criterion(outputs, labels)
+            if self.use_amp and self.scaler is not None:
+                with torch.cuda.amp.autocast():
+                    outputs = self.model(sequences, position_ids, src_key_padding_mask=masks)
+                    loss = self.criterion(outputs, labels)
 
-            if self.scaler:
                 self.scaler.scale(loss).backward()
                 self.scaler.unscale_(self.optimizer)
                 nn.utils.clip_grad_norm_(self.model.parameters(), gradient_clip)
                 self.scaler.step(self.optimizer)
                 self.scaler.update()
             else:
+                outputs = self.model(sequences, position_ids, src_key_padding_mask=masks)
+                loss = self.criterion(outputs, labels)
                 loss.backward()
                 nn.utils.clip_grad_norm_(self.model.parameters(), gradient_clip)
                 self.optimizer.step()
@@ -148,6 +162,7 @@ class TrajectoryModel:
         avg_loss = running_loss / total_samples
         accuracy = total_correct / total_samples
         return avg_loss, accuracy
+
 
     def evaluate(self, data_loader):
         self.model.eval()

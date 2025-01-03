@@ -3,6 +3,8 @@
 import argparse
 import sys
 import logging
+import random
+import numpy as np
 
 import torch
 from torch.utils.data import DataLoader
@@ -10,7 +12,7 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
-from tqdm import tqdm  # optional if you want a training progress bar
+from tqdm import tqdm
 
 from data_utils import DataProcessor, TripDataset
 from model_utils import TrajectoryModel
@@ -47,7 +49,42 @@ def setup_logger(log_file='train.log'):
     return logger
 
 
+def set_seed(seed):
+    """
+    Set the seed for all relevant libraries to ensure reproducibility.
+    """
+    import os
+    import torch
+    import random
+    import numpy as np
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    # For CPU
+    torch.use_deterministic_algorithms(True)
+
+    # For CUDA (optional, can make some operations slower)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # Environment variables (must be set before any CUDA operations)
+    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
+    os.environ['PYTHONHASHSEED'] = str(seed)
+
+
 def main():
+
+    import os
+
+    # Set PYTHONHASHSEED for hash-based operations
+    os.environ['PYTHONHASHSEED'] = '0'
+
+    # Set CUBLAS_WORKSPACE_CONFIG for deterministic CUDA operations
+    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
+
     logger = setup_logger('train.log')
     
     parser = argparse.ArgumentParser(description="Train a Trajectory Transformer model.")
@@ -59,7 +96,7 @@ def main():
     parser.add_argument('--traj_id_column', type=str, default='traj_id', help='Name of the trajectory ID column.')
     parser.add_argument('--test_size', type=float, default=0.15, help='Proportion of data for testing.')
     parser.add_argument('--val_size', type=float, default=0.15, help='Proportion of data for validation.')
-    parser.add_argument('--random_state', type=int, default=42, help='Random seed.')
+    parser.add_argument('--random_state', type=int, default=316, help='Random seed.')
     parser.add_argument('--chunksize', type=int, default=10**6, help='Chunksize for reading CSV in chunks.')
     parser.add_argument('--window_size', type=int, default=200, help='Sliding window size.')
     parser.add_argument('--stride', type=int, default=50, help='Stride for the sliding window.')
@@ -68,7 +105,7 @@ def main():
     parser.add_argument('--batch_size', type=int, default=512, help='Batch size for DataLoader.')
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers for DataLoader.')
     parser.add_argument('--num_epochs', type=int, default=50, help='Maximum number of training epochs.')
-    parser.add_argument('--patience', type=int, default=10, help='Early stopping patience.')
+    parser.add_argument('--patience', type=int, default=7, help='Early stopping patience.')
     
     # Model hyperparameters
     parser.add_argument('--d_model', type=int, default=128, help='Transformer embedding dimension.')
@@ -87,6 +124,10 @@ def main():
     parser.add_argument('--save_scaler_path', type=str, default='scaler.joblib', help='Where to save the fitted scaler.')
 
     args = parser.parse_args()
+
+    # **Set Seeds for Reproducibility**
+    logger.info(f"Setting random seed to {args.random_state}")
+    set_seed(args.random_state)
 
     # 1) Data Processing
     logger.info("Initializing DataProcessor...")
@@ -114,10 +155,33 @@ def main():
     val_dataset   = TripDataset(processor.val_sequences,   processor.val_labels,   processor.val_masks)
     test_dataset  = TripDataset(processor.test_sequences,  processor.test_labels,  processor.test_masks)
 
+    # Set up a generator with the fixed seed for DataLoader
+    g = torch.Generator()
+    g.manual_seed(args.random_state)
+    
     # Build DataLoaders
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
-    val_loader   = DataLoader(val_dataset,   batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
-    test_loader  = DataLoader(test_dataset,  batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    train_loader = DataLoader(
+        train_dataset, 
+        batch_size=args.batch_size, 
+        shuffle=True, 
+        num_workers=args.num_workers,
+        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id),
+        generator=g
+    )
+    val_loader = DataLoader(
+        val_dataset,   
+        batch_size=args.batch_size, 
+        shuffle=False, 
+        num_workers=args.num_workers,
+        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id)
+    )
+    test_loader = DataLoader(
+        test_dataset,  
+        batch_size=args.batch_size, 
+        shuffle=False, 
+        num_workers=args.num_workers,
+        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id)
+    )
 
     logger.info("Datasets and DataLoaders ready.")
 
@@ -125,7 +189,8 @@ def main():
     logger.info("Initializing TrajectoryModel...")
     model = TrajectoryModel(
         feature_columns=args.feature_columns,
-        label_encoder=processor.label_encoder
+        label_encoder=processor.label_encoder,
+        use_amp=False
     )
     model.prepare_model(
         window_size=args.window_size,
@@ -134,7 +199,7 @@ def main():
         num_layers=args.num_layers,
         dropout=args.dropout,
         lr=args.learning_rate,
-        weight_decay=args.weight_decay
+        weight_decay=args.weight_decay,
     )
     logger.info("Model initialization completed.")
 

@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.data import Dataset, DataLoader
-
+import random 
 
 class TripDataset(Dataset):
     """
@@ -102,7 +102,7 @@ class DataProcessor:
     def split_traj_ids(self):
         """Split unique traj_ids into train/val/test based on self.test_size and self.val_size."""
         print("Splitting traj_ids into train, validation, and test sets...")
-        traj_ids = list(self.unique_traj_ids)
+        traj_ids = sorted(list(self.unique_traj_ids))  # Ensure consistent ordering
 
         train_ids, temp_ids = train_test_split(
             traj_ids,
