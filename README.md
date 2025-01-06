@@ -15,7 +15,6 @@ This repository contains the code used in the paper **"[Predicting Human Mobilit
 
 ---
 
-
 ## Requirements
 
 ## Preparing the Data
@@ -36,9 +35,6 @@ The Geolife dataset provides GPS trajectories collected from users. To preproces
    ```bash
    python process_geolife.py --data-folder "Geolife Trajectories 1.3/Data" --output-file "geolife.csv"
    ```
-   
-   Replace "/path/to/data", "/path/to/output.csv", and "/path/to/temp_folder" with your dataset path, desired output file, and a temporary folder for intermediate files. 
-
 3. **Post-Processing** 
 
 After preprocessing, run `extract_speed_geolife.py` to compute additional features like speed and distance:
@@ -49,7 +45,7 @@ python extract_speed_geolife.py geolife.csv --output_file geolife_processed.csv
 
 ### MOBIS Dataset
 
-(Details to be added.)
+_Details to be added_
 
 ## Running the Models
 This repository provides two primary model architectures:
@@ -63,17 +59,16 @@ Both have scripts to handle training and fine-tuning and (for Transformer) a ded
 
 **Training**
 
-Use `models/lstm/lstm.py` to train an LSTM on your dataset. For example:
+Use `models/lstm/lstm.py` to train an LSTM on your processed dataset. For example:
 
 ```bash
 python lstm.py --data_path ./data/geolife_processed.csv
 ```
-
-This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for future use.
+This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for fine-tuning and/or inference purposes.
 
 **Fine-tuning**
 
-Use `models/lstm/finetune.py` to load a pre-trained LSTM model, optionally freeze or unfreeze specific layers, and continue training on new data. Now it accepts command-line arguments, for example:
+Use `models/lstm/finetune.py` to load a pre-trained LSTM model, optionally you can freeze or unfreeze specific layers, and continue training on new data. For example:
 
 ```bash
 python finetune.py \
@@ -87,7 +82,6 @@ python finetune.py \
 ```
 
 It then tests the fine-tuned model on a new test set and saves the updated checkpoint.
-
 
 ### Transformer Model
 
@@ -115,3 +109,9 @@ It will save a fine-tuned model and evaluate on the new test set.
 ---
 
 ## Replicating results
+
+trasnformer geolife - 316
+transformer mobis - 1
+
+lstm geolife - 1
+lstm mobis - 316

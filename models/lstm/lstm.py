@@ -1,18 +1,22 @@
 # lstm.py
 
 import os
+
+# Set the CUBLAS_WORKSPACE_CONFIG environment variable before importing PyTorch
+os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'  # or ':16:8'
+
 import sys
 import argparse
 import logging
-
 import torch
 import torch.nn as nn
 import joblib
+import random
+import numpy as np
 
 from data_utils import DataHandler
 from models import LSTMTripClassifier
 from trainer import Trainer
-
 
 def setup_logger(log_file='lstm.log'):
     """
@@ -40,13 +44,28 @@ def setup_logger(log_file='lstm.log'):
 
     return logger
 
+def set_seed(seed):
+    """
+    Set seed for reproducibility.
+    """
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+    # For deterministic behavior
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+    # Enforce deterministic algorithms
+    torch.use_deterministic_algorithms(True)
 
 def main(
     data_path,
     feature_columns,
     target_column,
     traj_id_column='traj_id',
-    batch_size=128,
+    batch_size=1024,
     num_workers=4,
     learning_rate=0.0005,
     weight_decay=1e-4,
@@ -60,8 +79,13 @@ def main(
     scaler_path='scaler.joblib',
     label_encoder_path='label_encoder.joblib',
     test_size=0.15,
-    val_size=0.15
+    val_size=0.15,
+    seed=42,  # Added seed parameter
+    use_amp=False  # Added mixed precision flag
 ):
+    # Set seed for reproducibility
+    set_seed(seed)
+
     # Set up logger
     logger = setup_logger('lstm.log')
     logger.info("Starting LSTM training process...")
@@ -75,8 +99,9 @@ def main(
         traj_id_column=traj_id_column,
         test_size=test_size,
         val_size=val_size,
-        random_state=42,
+        random_state=seed,  # Use seed as random_state for reproducibility
         chunksize=10**6,
+        seed=seed  # Pass seed to DataHandler
     )
 
     data_handler.load_and_process_data()
@@ -116,7 +141,8 @@ def main(
         checkpoint_dir=checkpoint_dir,
         patience=patience,
         max_grad_norm=max_grad_norm,
-        logger=logger  # <-- pass the logger to Trainer
+        logger=logger,  # <-- pass the logger to Trainer
+        use_amp=use_amp  # <-- Enable or disable mixed precision
     )
     logger.info(f"Begin model training for up to {num_epochs} epochs...")
     trainer.train(dataloaders['train'], dataloaders['val'], num_epochs=num_epochs)
@@ -126,7 +152,6 @@ def main(
     logger.info("Evaluating on test set...")
     trainer.evaluate(dataloaders['test'], data_handler.label_encoder)
     logger.info("Evaluation completed. LSTM script finished successfully.")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train and evaluate an LSTM model for trip classification.")
@@ -151,8 +176,10 @@ if __name__ == "__main__":
     parser.add_argument("--num_epochs", type=int, default=50, help="Number of training epochs.")
     parser.add_argument("--patience", type=int, default=7, help="Early stopping patience.")
     parser.add_argument("--max_grad_norm", type=float, default=5.0, help="Max gradient norm for clipping.")
-    parser.add_argument("--test_size", type=float, default=0.1, help="Test set size as a fraction.")
-    parser.add_argument("--val_size", type=float, default=0.2, help="Validation set size as a fraction.")
+    parser.add_argument("--test_size", type=float, default=0.15, help="Test set size as a fraction.")
+    parser.add_argument("--val_size", type=float, default=0.15, help="Validation set size as a fraction.")
+    parser.add_argument("--random_state", type=int, default=42, help="Random seed for reproducibility.")
+    parser.add_argument("--use_amp", action='store_true', help="Enable mixed precision training.")
 
     args = parser.parse_args()
 
@@ -176,4 +203,6 @@ if __name__ == "__main__":
         label_encoder_path=args.label_encoder_path,
         test_size=args.test_size,
         val_size=args.val_size,
+        seed=args.random_state,
+        use_amp=args.use_amp  # <-- Pass the mixed precision flag
     )

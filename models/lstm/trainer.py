@@ -10,7 +10,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 class Trainer:
     def __init__(
         self,
@@ -21,7 +20,8 @@ class Trainer:
         checkpoint_dir='model_checkpoints',
         patience=7,
         max_grad_norm=5.0,
-        logger=None  # <-- We add a logger argument
+        logger=None,  # <-- We add a logger argument
+        use_amp=False  # <-- Flag to enable mixed precision
     ):
         self.model = model
         self.criterion = criterion
@@ -30,6 +30,7 @@ class Trainer:
         self.checkpoint_dir = checkpoint_dir
         self.patience = patience
         self.max_grad_norm = max_grad_norm
+        self.use_amp = use_amp
 
         # We'll use the logger passed in or fall back to a default logger
         self.logger = logger or logging.getLogger(__name__)
@@ -37,6 +38,12 @@ class Trainer:
         self.best_val_accuracy = 0.0
         self.trigger_times = 0
         os.makedirs(self.checkpoint_dir, exist_ok=True)
+
+        if self.use_amp:
+            self.scaler = torch.cuda.amp.GradScaler()
+            self.logger.info("Mixed precision (AMP) is enabled.")
+        else:
+            self.scaler = None
 
     def train_epoch(self, dataloader):
         self.model.train()
@@ -52,14 +59,28 @@ class Trainer:
             lengths = lengths.to(self.device)
             masks = masks.to(self.device)  # shape (batch_size, window_size)
 
-            # Forward
-            outputs, _ = self.model(sequences, lengths, mask=masks)
-            loss = self.criterion(outputs, labels)
+            optimizer = self.optimizer
 
-            self.optimizer.zero_grad()
-            loss.backward()
-            nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
-            self.optimizer.step()
+            if self.use_amp:
+                with torch.cuda.amp.autocast():
+                    outputs, _ = self.model(sequences, lengths, mask=masks)
+                    loss = self.criterion(outputs, labels)
+            else:
+                outputs, _ = self.model(sequences, lengths, mask=masks)
+                loss = self.criterion(outputs, labels)
+
+            # Backpropagation
+            optimizer.zero_grad()
+            if self.use_amp:
+                self.scaler.scale(loss).backward()
+                self.scaler.unscale_(optimizer)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
+                self.scaler.step(optimizer)
+                self.scaler.update()
+            else:
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
+                optimizer.step()
 
             # Stats
             cumulative_loss += loss.item() * batch_size
@@ -86,8 +107,13 @@ class Trainer:
                 lengths = lengths.to(self.device)
                 masks = masks.to(self.device)
 
-                outputs, _ = self.model(sequences, lengths, mask=masks)
-                loss = self.criterion(outputs, labels)
+                if self.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs, _ = self.model(sequences, lengths, mask=masks)
+                        loss = self.criterion(outputs, labels)
+                else:
+                    outputs, _ = self.model(sequences, lengths, mask=masks)
+                    loss = self.criterion(outputs, labels)
 
                 cumulative_loss += loss.item() * batch_size
                 total_samples += batch_size
@@ -139,7 +165,12 @@ class Trainer:
                 lengths = lengths.to(self.device)
                 masks = masks.to(self.device)
 
-                outputs, _ = self.model(sequences, lengths, mask=masks)
+                if self.use_amp:
+                    with torch.cuda.amp.autocast():
+                        outputs, _ = self.model(sequences, lengths, mask=masks)
+                else:
+                    outputs, _ = self.model(sequences, lengths, mask=masks)
+
                 predicted = outputs.argmax(dim=1)
 
                 all_preds.extend(predicted.cpu().numpy())

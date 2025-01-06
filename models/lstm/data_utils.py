@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 import joblib
 from tqdm import tqdm
+import random
 
 # ------------------ TripDataset Class ------------------ #
 class TripDataset(Dataset):
@@ -73,7 +74,8 @@ class DataHandler:
         test_size=0.15,
         val_size=0.15,
         random_state=42,
-        chunksize=10**6
+        chunksize=10**6,
+        seed=42  # Added seed parameter
     ):
         self.data_path = data_path
         self.feature_columns = feature_columns
@@ -83,6 +85,7 @@ class DataHandler:
         self.val_size = val_size
         self.random_state = random_state
         self.chunksize = chunksize
+        self.seed = seed  # Store seed
 
         self.scaler = StandardScaler()
         self.label_encoder = LabelEncoder()
@@ -155,14 +158,14 @@ class DataHandler:
             labels.update(chunk[self.target_column].unique())
 
         self.unique_traj_ids = traj_ids
-        self.label_encoder.fit(list(labels))
+        self.label_encoder.fit(sorted(list(labels)))  # Sort labels for consistency
 
         print(f"Total unique traj_ids found: {len(self.unique_traj_ids)}")
         print(f"Classes found: {self.label_encoder.classes_}")
 
     def split_traj_ids(self):
         print("Splitting traj_ids into train, val, and test sets...")
-        traj_ids = list(self.unique_traj_ids)
+        traj_ids = sorted(list(self.unique_traj_ids))  # Sort for consistency
         train_ids, temp_ids = train_test_split(
             traj_ids,
             test_size=(self.val_size + self.test_size),
@@ -206,11 +209,14 @@ class DataHandler:
                 if data_chunk.empty:
                     continue
 
+                # Sort by traj_id and some consistent ordering to ensure deterministic groupby
+                data_chunk = data_chunk.sort_values(by=self.traj_id_column)
+
                 data_chunk['label_encoded'] = self.label_encoder.transform(data_chunk[self.target_column])
                 data_chunk[self.feature_columns] = self.scaler.transform(data_chunk[self.feature_columns])
 
-                # group by trajectory
-                grouped = data_chunk.groupby(self.traj_id_column)
+                # group by trajectory with sorted groups
+                grouped = data_chunk.groupby(self.traj_id_column, sort=True)
                 for _, group in grouped:
                     arr = group[self.feature_columns].values  # shape: (seq_len, num_features)
                     label = group['label_encoded'].iloc[0]
@@ -255,6 +261,16 @@ class DataHandler:
     def get_dataloaders(self, batch_size, num_workers):
         print("Creating DataLoaders...")
 
+        # Define a generator with a fixed seed
+        g = torch.Generator()
+        g.manual_seed(self.seed)
+
+        def worker_init_fn(worker_id):
+            # Each worker has a different seed based on the initial seed and worker id
+            worker_seed = self.seed + worker_id
+            np.random.seed(worker_seed)
+            random.seed(worker_seed)
+
         # Build dataset objects
         train_dataset = TripDataset(
             self.train_sequences,
@@ -281,21 +297,28 @@ class DataHandler:
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers,
-            collate_fn=TripDataset.collate_fn
+            collate_fn=TripDataset.collate_fn,
+            generator=g,  # Ensures deterministic shuffling
+            worker_init_fn=worker_init_fn,  # Ensures workers have deterministic behavior
+            pin_memory=True
         )
         val_loader = DataLoader(
             val_dataset,
             batch_size=batch_size,
             shuffle=False,
             num_workers=num_workers,
-            collate_fn=TripDataset.collate_fn
+            collate_fn=TripDataset.collate_fn,
+            worker_init_fn=worker_init_fn,
+            pin_memory=True
         )
         test_loader = DataLoader(
             test_dataset,
             batch_size=batch_size,
             shuffle=False,
             num_workers=num_workers,
-            collate_fn=TripDataset.collate_fn
+            collate_fn=TripDataset.collate_fn,
+            worker_init_fn=worker_init_fn,
+            pin_memory=True
         )
 
         print("DataLoaders created.")

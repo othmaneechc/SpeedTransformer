@@ -102,7 +102,7 @@ def main():
     parser.add_argument('--stride', type=int, default=50, help='Stride for the sliding window.')
     
     # Training
-    parser.add_argument('--batch_size', type=int, default=512, help='Batch size for DataLoader.')
+    parser.add_argument('--batch_size', type=int, default=1024, help='Batch size for DataLoader.')
     parser.add_argument('--num_workers', type=int, default=4, help='Number of workers for DataLoader.')
     parser.add_argument('--num_epochs', type=int, default=50, help='Maximum number of training epochs.')
     parser.add_argument('--patience', type=int, default=7, help='Early stopping patience.')
