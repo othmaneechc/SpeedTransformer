@@ -74,7 +74,7 @@ This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib
 
 **Fine-tuning**
 
-Use the `finetune.sh` script to fine-tune the LSTM model with a default random state of `42`
+Use the `finetune.sh` script to fine-tune the pre-trained LSTM model with a default random state of `42`
 
 ```bash
 # lstm/finetune.sh

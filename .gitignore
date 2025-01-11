@@ -1,4 +1,4 @@
-
+*.joblib
 fine_tune_checkpoints/
 data/
 __pycache__/
