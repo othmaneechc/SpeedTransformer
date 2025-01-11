@@ -90,7 +90,7 @@ def main():
                         help='Batch size for DataLoader.')
     parser.add_argument('--num_workers', type=int, default=4,
                         help='Number of workers for DataLoader.')
-    parser.add_argument('--num_epochs', type=int, default=10,
+    parser.add_argument('--num_epochs', type=int, default=20,
                         help='Max number of fine-tuning epochs.')
     parser.add_argument('--patience', type=int, default=5,
                         help='Early stopping patience.')

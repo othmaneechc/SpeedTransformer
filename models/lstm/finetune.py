@@ -80,7 +80,7 @@ def main():
                         help="Learning rate for fine-tuning.")
     parser.add_argument("--weight_decay", type=float, default=1e-4,
                         help="Weight decay for fine-tuning.")
-    parser.add_argument("--num_epochs", type=int, default=50,
+    parser.add_argument("--num_epochs", type=int, default=20,
                         help="Number of fine-tuning epochs.")
     parser.add_argument("--patience", type=int, default=5,
                         help="Early stopping patience.")
