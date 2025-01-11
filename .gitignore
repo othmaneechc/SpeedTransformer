@@ -1,16 +1,4 @@
-mobis_geolife/
-fine_tune_checkpoints/
-training_metrics/
-*.sh
-geolife/
-mobis/
-*.ipynb
-data/
-*.txt
-__pycache__/
-*.log
-*.csv
-*.pth
-*.joblib
-*.png
 
+fine_tune_checkpoints/
+data/
+__pycache__/
