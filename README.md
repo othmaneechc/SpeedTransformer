@@ -132,4 +132,4 @@ Transformer MOBIS: `1`
 
 Fine-Tuning Tasks: `42`
 
-The provided `.sh` scripts ensure the same random seeds are used to replicate the reported accuracy and performance metrics.
+The provided `.sh` scripts ensure the same random seeds are used to replicate the reported accuracy and performance metrics. Make sure to use the right checkpoints!
