@@ -1,5 +1,3 @@
-# models.py
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -24,7 +22,7 @@ class Attention(nn.Module):
 
         # If mask is provided, set padded positions to -1e9
         if mask is not None:
-            attention_scores = attention_scores.masked_fill(mask == 0, -1e9)
+            attention_scores = attention_scores.masked_fill(mask == 0, float('-1e9'))
 
         attention_weights = F.softmax(attention_scores, dim=1)  # (batch_size, seq_len)
         attention_weights = attention_weights.unsqueeze(-1)     # (batch_size, seq_len, 1)
@@ -70,20 +68,15 @@ class LSTMTripClassifier(nn.Module):
             attention_weights: (batch_size, 200)
         """
 
-        # OPTIONAL: early exit if some batch has all zero lengths
+        # If all sequences are zero-length (extreme corner case)
         if lengths.max() == 0:
-            # e.g., return zero predictions
             batch_size = x.size(0)
             device = x.device
             out = torch.zeros((batch_size, self.fc.out_features), device=device)
             attn_w = torch.zeros((batch_size, x.size(1)), device=device)
             return out, attn_w
 
-        # We can still use pack_padded_sequence if you want to ignore padded frames in the LSTM.
-        # But here, since we fixed length=200 for all, you can skip it if you prefer:
-        #   (some people prefer pack_padded_sequence for efficiency)
-        # Let's do pack/unpack anyway:
-
+        # Use pack_padded_sequence for ignoring padded frames in the LSTM
         packed_input = nn.utils.rnn.pack_padded_sequence(
             x, lengths.cpu(), batch_first=True, enforce_sorted=False
         )
@@ -91,7 +84,7 @@ class LSTMTripClassifier(nn.Module):
         lstm_outputs, _ = nn.utils.rnn.pad_packed_sequence(
             packed_output, batch_first=True, total_length=x.size(1)
         )
-        # lstm_outputs now: (batch_size, 200, hidden_size * 2)
+        # lstm_outputs: (batch_size, 200, hidden_size * 2)
 
         # Apply attention
         context_vector, attention_weights = self.attention(lstm_outputs, mask=mask)

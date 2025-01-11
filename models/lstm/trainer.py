@@ -1,5 +1,3 @@
-# trainer.py
-
 import os
 import logging
 import torch
@@ -20,8 +18,8 @@ class Trainer:
         checkpoint_dir='model_checkpoints',
         patience=7,
         max_grad_norm=5.0,
-        logger=None,  # <-- We add a logger argument
-        use_amp=False  # <-- Flag to enable mixed precision
+        logger=None,  # We'll use the logger argument
+        use_amp=False
     ):
         self.model = model
         self.criterion = criterion
@@ -32,7 +30,6 @@ class Trainer:
         self.max_grad_norm = max_grad_norm
         self.use_amp = use_amp
 
-        # We'll use the logger passed in or fall back to a default logger
         self.logger = logger or logging.getLogger(__name__)
 
         self.best_val_accuracy = 0.0
@@ -57,7 +54,7 @@ class Trainer:
             sequences = sequences.to(self.device)
             labels = labels.to(self.device)
             lengths = lengths.to(self.device)
-            masks = masks.to(self.device)  # shape (batch_size, window_size)
+            masks = masks.to(self.device)
 
             optimizer = self.optimizer
 
@@ -69,7 +66,6 @@ class Trainer:
                 outputs, _ = self.model(sequences, lengths, mask=masks)
                 loss = self.criterion(outputs, labels)
 
-            # Backpropagation
             optimizer.zero_grad()
             if self.use_amp:
                 self.scaler.scale(loss).backward()
@@ -82,9 +78,9 @@ class Trainer:
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.max_grad_norm)
                 optimizer.step()
 
-            # Stats
             cumulative_loss += loss.item() * batch_size
             total_samples += batch_size
+
             predicted = outputs.argmax(dim=1)
             correct += (predicted == labels).sum().item()
 
@@ -117,6 +113,7 @@ class Trainer:
 
                 cumulative_loss += loss.item() * batch_size
                 total_samples += batch_size
+
                 predicted = outputs.argmax(dim=1)
                 correct += (predicted == labels).sum().item()
 
@@ -131,15 +128,13 @@ class Trainer:
         for epoch in range(num_epochs):
             self.logger.info(f"Epoch {epoch+1}/{num_epochs}")
 
-            # Train
             train_loss, train_acc = self.train_epoch(train_loader)
             self.logger.info(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.2f}%")
 
-            # Validate
             val_loss, val_acc = self.validate_epoch(val_loader)
             self.logger.info(f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.2f}%")
 
-            # Early stopping logic based on validation accuracy
+            # Early stopping logic
             if val_acc > self.best_val_accuracy:
                 self.best_val_accuracy = val_acc
                 self.trigger_times = 0
@@ -172,14 +167,13 @@ class Trainer:
                     outputs, _ = self.model(sequences, lengths, mask=masks)
 
                 predicted = outputs.argmax(dim=1)
-
                 all_preds.extend(predicted.cpu().numpy())
                 all_labels.extend(labels.cpu().numpy())
 
         test_accuracy = 100.0 * np.sum(np.array(all_preds) == np.array(all_labels)) / len(all_labels)
         self.logger.info(f"Test Accuracy: {test_accuracy:.2f}%")
 
-        # Detailed classification report
+        # Classification report
         report = classification_report(all_labels, all_preds, target_names=label_encoder.classes_)
         self.logger.info("Classification Report:\n" + report)
 

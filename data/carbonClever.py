@@ -185,7 +185,7 @@ def main():
 
     # Group by trip ID
     grouped = df.groupby('_id')
-
+    print(grouped.head())
     # Prepare arguments for each group
     groups = []
     for group_id, group_df in grouped:

@@ -1,5 +1,3 @@
-# data_utils.py
-
 import pandas as pd
 import numpy as np
 import torch
@@ -42,19 +40,11 @@ class TripDataset(Dataset):
     def collate_fn(batch):
         """
         batch is a list of tuples (sequence, label, length, mask).
-
-        We can stack or pad them. Since each 'sequence' is already (200, num_features),
-        we technically do not need pad_sequence if all are guaranteed length=200.
-
-        But let's keep it for safety if you prefer.
         """
         sequences, labels, lengths, masks = zip(*batch)
 
         # If you're guaranteeing everything is 200, you can do this:
         padded_sequences = torch.stack(sequences, dim=0)  # (batch_size, 200, num_features)
-
-        # Or if you want to ensure correct padding, you could do:
-        # padded_sequences = pad_sequence(sequences, batch_first=True, padding_value=0.0)
 
         labels = torch.stack(labels)
         lengths = torch.tensor(lengths, dtype=torch.long)
@@ -75,7 +65,7 @@ class DataHandler:
         val_size=0.15,
         random_state=42,
         chunksize=10**6,
-        seed=42  # Added seed parameter
+        seed=42  # For DataLoader and potential extra uses
     ):
         self.data_path = data_path
         self.feature_columns = feature_columns
@@ -115,14 +105,12 @@ class DataHandler:
         overlapping by `overlap` samples. Yields a list of (sub_array, actual_len, mask).
         """
         subsequences = []
-        stride = chunk_size - overlap  # e.g., 200 - 50 = 150
+        stride = chunk_size - overlap
         seq_len = len(arr)
 
         for start in range(0, seq_len, stride):
             end = start + chunk_size
             sub_arr = arr[start:end]
-
-            # actual_len is how many valid frames in this window
             actual_len = len(sub_arr)
 
             # If sub_arr is shorter than chunk_size, zero-pad
@@ -135,7 +123,6 @@ class DataHandler:
                     constant_values=0
                 )
 
-            # Build mask: 1 for real frames, 0 for padded
             mask = np.zeros((chunk_size,), dtype=np.float32)
             mask[:actual_len] = 1.0
 
@@ -209,7 +196,7 @@ class DataHandler:
                 if data_chunk.empty:
                     continue
 
-                # Sort by traj_id and some consistent ordering to ensure deterministic groupby
+                # Sort by traj_id (and possibly by index if needed) for consistent grouping
                 data_chunk = data_chunk.sort_values(by=self.traj_id_column)
 
                 data_chunk['label_encoded'] = self.label_encoder.transform(data_chunk[self.target_column])
@@ -261,15 +248,17 @@ class DataHandler:
     def get_dataloaders(self, batch_size, num_workers):
         print("Creating DataLoaders...")
 
-        # Define a generator with a fixed seed
+        # Define a generator with a fixed seed for shuffling
         g = torch.Generator()
         g.manual_seed(self.seed)
 
         def worker_init_fn(worker_id):
-            # Each worker has a different seed based on the initial seed and worker id
+            # Each worker gets a deterministically different seed
             worker_seed = self.seed + worker_id
             np.random.seed(worker_seed)
             random.seed(worker_seed)
+            # For extra caution if using torch random in workers:
+            torch.manual_seed(worker_seed)
 
         # Build dataset objects
         train_dataset = TripDataset(
@@ -295,11 +284,11 @@ class DataHandler:
         train_loader = DataLoader(
             train_dataset,
             batch_size=batch_size,
-            shuffle=True,
+            shuffle=True,            # Shuffling with the generator below
             num_workers=num_workers,
             collate_fn=TripDataset.collate_fn,
-            generator=g,  # Ensures deterministic shuffling
-            worker_init_fn=worker_init_fn,  # Ensures workers have deterministic behavior
+            generator=g,             # Ensures deterministic shuffling
+            worker_init_fn=worker_init_fn,
             pin_memory=True
         )
         val_loader = DataLoader(

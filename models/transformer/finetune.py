@@ -1,4 +1,4 @@
-# fine_tune.py
+# finetune.py
 
 import argparse
 import sys
@@ -10,12 +10,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
 from tqdm import tqdm  # optional
+import random
+import numpy as np
 
 from data_utils import DataProcessor, TripDataset
 from model_utils import TrajectoryModel
 
 
-def setup_logger(log_file='fine_tune.log'):
+def set_global_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # For multi-GPU if needed
+
+    # For deterministic behavior (potentially slower performance)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
+def setup_logger(log_file='finetune.log'):
     """
     Set up a logger to write logs to a file and to the console.
     """
@@ -48,7 +61,7 @@ def setup_logger(log_file='fine_tune.log'):
 
 def main():
     # Initialize logger
-    logger = setup_logger('fine_tune.log')
+    logger = setup_logger('finetune.log')
 
     parser = argparse.ArgumentParser(description="Fine-tune a pre-trained Trajectory Transformer model.")
 
@@ -73,7 +86,7 @@ def main():
     parser.add_argument('--stride', type=int, default=50,
                         help='Stride for the sliding window.')
 
-    parser.add_argument('--batch_size', type=int, default=32,
+    parser.add_argument('--batch_size', type=int, default=1024,
                         help='Batch size for DataLoader.')
     parser.add_argument('--num_workers', type=int, default=4,
                         help='Number of workers for DataLoader.')
@@ -91,7 +104,7 @@ def main():
     parser.add_argument('--dropout', type=float, default=0.2,
                         help='Dropout rate in the transformer.')
     
-    parser.add_argument('--learning_rate', type=float, default=3e-5,
+    parser.add_argument('--learning_rate', type=float, default=1e-3,
                         help='Learning rate for fine-tuning.')
     parser.add_argument('--weight_decay', type=float, default=1e-4,
                         help='Weight decay for fine-tuning.')
@@ -100,12 +113,13 @@ def main():
 
     parser.add_argument('--pretrained_model_path', type=str, required=True,
                         help='Path to the saved pretrained model to fine-tune.')
-    parser.add_argument('--save_model_path', type=str, default='fine_tuned_model.pth',
+    parser.add_argument('--save_model_path', type=str, default='finetuned_model.pth',
                         help='Where to save the fine-tuned model weights.')
     parser.add_argument('--label_encoder_path', type=str, default='label_encoder.joblib',
                         help='Path to the saved label encoder from previous training.')
 
     args = parser.parse_args()
+    set_global_seed(args.random_state)
 
     # -----------------------------
     # 1) Data Processing
@@ -150,11 +164,35 @@ def main():
     val_dataset   = TripDataset(processor.val_sequences,   processor.val_labels,   processor.val_masks)
     test_dataset  = TripDataset(processor.test_sequences,  processor.test_labels,  processor.test_masks)
 
-    # Build DataLoaders
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,  num_workers=args.num_workers)
-    val_loader   = DataLoader(val_dataset,   batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
-    test_loader  = DataLoader(test_dataset,  batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
+    def worker_init_fn(worker_id):
+        # Each worker gets a unique seed based on the global seed + worker ID
+        seed = args.random_state + worker_id
+        np.random.seed(seed)
+        random.seed(seed)
 
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=args.num_workers,
+        worker_init_fn=worker_init_fn
+    )
+
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        worker_init_fn=worker_init_fn
+    )
+
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=args.num_workers,
+        worker_init_fn=worker_init_fn
+    )
     logger.info("DataLoaders for train, val, and test are ready.")
 
     # -----------------------------
@@ -180,11 +218,16 @@ def main():
     model.load_model(args.pretrained_model_path)
     logger.info("Pretrained model loaded successfully.")
 
-    # (Optional) Freeze certain layers if desired
+    # # (Optional) Freeze certain layers if desired
+    # for name, param in model.model.named_parameters():
+    #     if "transformer_encoder.layers.0" in name or "transformer_encoder.layers.1" in name:
+    #         param.requires_grad = False
+    # logger.info("Optional: Frozen first two layers of the transformer encoder.")
+
+    # Unfreeze all layers
     for name, param in model.model.named_parameters():
-        if "transformer_encoder.layers.0" in name or "transformer_encoder.layers.1" in name:
-            param.requires_grad = False
-    logger.info("Optional: Frozen first two layers of the transformer encoder.")
+        param.requires_grad = True
+    logger.info("Unfrozen all layers of the transformer encoder.")
 
     # Re-initialize optimizer to only update unfrozen params
     model.optimizer = torch.optim.AdamW(
@@ -245,8 +288,8 @@ def main():
     plt.ylabel('True Label')
     plt.xlabel('Predicted Label')
     plt.title('Confusion Matrix (Fine-Tuned Model)')
-    plt.savefig('confusion_matrix_fine_tune.png')
-    logger.info("Confusion matrix saved as 'confusion_matrix_fine_tune.png'.")
+    plt.savefig('confusion_matrix_finetune.png')
+    logger.info("Confusion matrix saved as 'confusion_matrix_finetune.png'.")
 
     logger.info("Fine-tuning script completed successfully.")
 
