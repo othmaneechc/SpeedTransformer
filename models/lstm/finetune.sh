@@ -1,3 +1,5 @@
+# lstm/finetune.sh
+
 python finetune.py \
   --pretrained_model_path /data/A-TrajectoryTransformer/models/lstm/mobis/best_model.pth \
   --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv \

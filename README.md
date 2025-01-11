@@ -45,7 +45,7 @@ python extract_speed_geolife.py geolife.csv --output_file geolife_processed.csv
 
 ### MOBIS Dataset
 
-_Details to be added_
+_The MOBIS dataset can be processed using a similar method. More detailed instructions will be added soon._
 
 ## Running the Models
 This repository provides two primary model architectures:
@@ -53,65 +53,83 @@ This repository provides two primary model architectures:
 - LSTM-based trip classification (`models/lstm/`).
 - Transformer-based trip classification (`models/transformer/`).
 
-Both have scripts to handle training and fine-tuning and (for Transformer) a dedicated test script.
+Each architecture includes dedicated scripts for training and fine-tuning. Predefined shell scripts (`train.sh` and `finetune.sh`) are available for streamlined execution with the exact random states used for the reported results.
 
 ### LSTM Model
 
 **Training**
 
-Use `models/lstm/lstm.py` to train an LSTM on your processed dataset. For example:
+Use the `train.sh` script for quick training with the proper random states.
 
 ```bash
-python lstm.py --data_path ./data/geolife_processed.csv
+# lstm/train.sh
+# MOBIS
+python lstm.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 316
+
+# Geolife
+python lstm.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 1
 ```
+
 This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for fine-tuning and/or inference purposes.
 
 **Fine-tuning**
 
-Use `models/lstm/finetune.py` to load a pre-trained LSTM model, optionally you can freeze or unfreeze specific layers, and continue training on new data. For example:
+Use the `finetune.sh` script to fine-tune the LSTM model with a default random state of `42`
 
 ```bash
+# lstm/finetune.sh
 python finetune.py \
-  --pretrained_model_path /path/to/best_model.pth \
-  --data_path /path/to/new_data.csv \
-  --scaler_path /path/to/scaler.joblib \
-  --label_encoder_path /path/to/label_encoder.joblib \
-  --batch_size 64 \
-  --num_epochs 15 \
-  --patience 5
+  --pretrained_model_path /data/A-TrajectoryTransformer/models/lstm/mobis/best_model.pth \
+  --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv \
+  --scaler_path /data/A-TrajectoryTransformer/models/lstm/mobis/scaler.joblib \
+  --label_encoder_path /data/A-TrajectoryTransformer/models/lstm/mobis/label_encoder.joblib \
+  --test_size 0.79 \
+  --val_size 0.2 \
+  --random_state 42
 ```
-
-It then tests the fine-tuned model on a new test set and saves the updated checkpoint.
 
 ### Transformer Model
 
 **Training**
 
-Use `models/transformer/train.py` to train a Transformer-based classifier. It saves the best model (best_model.pth), the fitted label encoder (label_encoder.joblib), and tests automatically at the end. For instance:
+Use the `train.sh` script to train a Transformer model with the specified random states:
 
 ```bash
-python train.py --data_path ./data/geolife_processed.csv
+# transformer/train.sh
+# MOBIS
+python train.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 316
+
+# Geolife
+python train.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 1
 ```
 
 **Fine-Tuning**
-Use `models/transformer/fine_une.py` to load a pre-trained Transformer, overwrite the newly fitted label encoder with your old one, and continue training on new data:
 
 ```bash
-python finetune.py
---data_path /path/to/fine_tune_data.csv
---pretrained_model_path best_model.pth
---label_encoder_path label_encoder.joblib
---num_epochs 10
+# transformer/finetune.sh
+python finetune.py \
+  --pretrained_model_path /data/A-TrajectoryTransformer/models/transformer/mobis/best_model.pth \
+  --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv \
+  --label_encoder_path /data/A-TrajectoryTransformer/models/transformer/mobis/label_encoder.joblib \
+  --test_size 0.79 \
+  --val_size 0.2 \
+  --random_state 42
 ```
-
-It will save a fine-tuned model and evaluate on the new test set.
 
 ---
 
-## Replicating results
+### Replicating Results
 
-trasnformer geolife - 316
-transformer mobis - 1
+To reproduce the results from the paper, the following random states were used:
 
-lstm geolife - 1
-lstm mobis - 316
+LSTM Geolife: `1`
+
+LSTM MOBIS: `316`
+
+Transformer Geolife: `316`
+
+Transformer MOBIS: `1`
+
+Fine-Tuning Tasks: `42`
+
+The provided `.sh` scripts ensure the same random seeds are used to replicate the reported accuracy and performance metrics.
