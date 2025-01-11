@@ -1,0 +1,1 @@
+python train.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 42

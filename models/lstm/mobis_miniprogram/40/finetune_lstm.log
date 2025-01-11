@@ -1,0 +1,94 @@
+2025-01-11 01:08:53,192 - INFO - Initializing DataHandler for fine-tuning...
+2025-01-11 01:08:53,193 - INFO - Loading and processing the data...
+2025-01-11 01:08:53,982 - INFO - Data loaded and processed successfully.
+2025-01-11 01:08:53,982 - INFO - Loading scaler from /data/A-TrajectoryTransformer/models/lstm/mobis/scaler.joblib...
+2025-01-11 01:08:53,985 - INFO - Scaler overwritten with saved scaler.
+2025-01-11 01:08:53,985 - INFO - Loading label encoder from /data/A-TrajectoryTransformer/models/lstm/mobis/label_encoder.joblib...
+2025-01-11 01:08:53,987 - INFO - Label encoder overwritten with saved encoder.
+2025-01-11 01:08:53,988 - INFO - Re-building datasets using the loaded scaler/encoder...
+2025-01-11 01:08:54,588 - INFO - Sequences re-created successfully.
+2025-01-11 01:08:54,589 - INFO - DataLoaders for train, val, and test are ready.
+2025-01-11 01:08:54,590 - INFO - Initializing LSTM model for fine-tuning...
+2025-01-11 01:08:54,609 - INFO - Using device: cuda
+2025-01-11 01:08:54,876 - INFO - Loading pretrained model from /data/A-TrajectoryTransformer/models/lstm/mobis/best_model.pth...
+2025-01-11 01:08:54,888 - INFO - Pretrained model weights loaded successfully.
+2025-01-11 01:08:57,816 - INFO - Optimizer re-initialized for fine-tuning.
+2025-01-11 01:08:57,818 - INFO - Starting fine-tuning for up to 50 epochs...
+2025-01-11 01:08:57,819 - INFO - Epoch 1/50
+2025-01-11 01:08:58,622 - INFO - Train Loss: 0.9486, Train Acc: 78.76%
+2025-01-11 01:08:58,737 - INFO - Val Loss: 1.1338, Val Acc: 71.89%
+2025-01-11 01:08:58,794 - INFO - Best model saved with validation accuracy: 71.89%
+2025-01-11 01:08:58,794 - INFO - Epoch 2/50
+2025-01-11 01:08:59,187 - INFO - Train Loss: 0.8779, Train Acc: 79.83%
+2025-01-11 01:08:59,357 - INFO - Val Loss: 1.0960, Val Acc: 72.97%
+2025-01-11 01:08:59,460 - INFO - Best model saved with validation accuracy: 72.97%
+2025-01-11 01:08:59,460 - INFO - Epoch 3/50
+2025-01-11 01:08:59,847 - INFO - Train Loss: 0.8557, Train Acc: 79.40%
+2025-01-11 01:09:00,128 - INFO - Val Loss: 1.0590, Val Acc: 73.51%
+2025-01-11 01:09:00,228 - INFO - Best model saved with validation accuracy: 73.51%
+2025-01-11 01:09:00,228 - INFO - Epoch 4/50
+2025-01-11 01:09:00,699 - INFO - Train Loss: 0.8244, Train Acc: 81.33%
+2025-01-11 01:09:00,876 - INFO - Val Loss: 1.0269, Val Acc: 74.59%
+2025-01-11 01:09:01,008 - INFO - Best model saved with validation accuracy: 74.59%
+2025-01-11 01:09:01,008 - INFO - Epoch 5/50
+2025-01-11 01:09:01,361 - INFO - Train Loss: 0.7825, Train Acc: 81.33%
+2025-01-11 01:09:01,496 - INFO - Val Loss: 0.9978, Val Acc: 75.68%
+2025-01-11 01:09:01,598 - INFO - Best model saved with validation accuracy: 75.68%
+2025-01-11 01:09:01,598 - INFO - Epoch 6/50
+2025-01-11 01:09:01,984 - INFO - Train Loss: 0.7949, Train Acc: 81.55%
+2025-01-11 01:09:02,217 - INFO - Val Loss: 0.9718, Val Acc: 76.22%
+2025-01-11 01:09:02,302 - INFO - Best model saved with validation accuracy: 76.22%
+2025-01-11 01:09:02,302 - INFO - Epoch 7/50
+2025-01-11 01:09:02,794 - INFO - Train Loss: 0.7870, Train Acc: 83.69%
+2025-01-11 01:09:02,962 - INFO - Val Loss: 0.9479, Val Acc: 76.76%
+2025-01-11 01:09:03,041 - INFO - Best model saved with validation accuracy: 76.76%
+2025-01-11 01:09:03,041 - INFO - Epoch 8/50
+2025-01-11 01:09:03,410 - INFO - Train Loss: 0.7359, Train Acc: 84.76%
+2025-01-11 01:09:03,542 - INFO - Val Loss: 0.9266, Val Acc: 76.76%
+2025-01-11 01:09:03,543 - INFO - No improvement for 1 epoch(s).
+2025-01-11 01:09:03,544 - INFO - Epoch 9/50
+2025-01-11 01:09:03,980 - INFO - Train Loss: 0.7333, Train Acc: 84.33%
+2025-01-11 01:09:04,109 - INFO - Val Loss: 0.9079, Val Acc: 78.92%
+2025-01-11 01:09:04,166 - INFO - Best model saved with validation accuracy: 78.92%
+2025-01-11 01:09:04,166 - INFO - Epoch 10/50
+2025-01-11 01:09:04,760 - INFO - Train Loss: 0.7442, Train Acc: 84.33%
+2025-01-11 01:09:04,891 - INFO - Val Loss: 0.8894, Val Acc: 79.46%
+2025-01-11 01:09:04,951 - INFO - Best model saved with validation accuracy: 79.46%
+2025-01-11 01:09:04,951 - INFO - Epoch 11/50
+2025-01-11 01:09:05,585 - INFO - Train Loss: 0.6913, Train Acc: 85.41%
+2025-01-11 01:09:05,728 - INFO - Val Loss: 0.8714, Val Acc: 78.92%
+2025-01-11 01:09:05,729 - INFO - No improvement for 1 epoch(s).
+2025-01-11 01:09:05,729 - INFO - Epoch 12/50
+2025-01-11 01:09:06,142 - INFO - Train Loss: 0.7177, Train Acc: 85.19%
+2025-01-11 01:09:06,302 - INFO - Val Loss: 0.8548, Val Acc: 78.92%
+2025-01-11 01:09:06,302 - INFO - No improvement for 2 epoch(s).
+2025-01-11 01:09:06,303 - INFO - Epoch 13/50
+2025-01-11 01:09:06,651 - INFO - Train Loss: 0.6868, Train Acc: 84.76%
+2025-01-11 01:09:06,807 - INFO - Val Loss: 0.8398, Val Acc: 78.38%
+2025-01-11 01:09:06,807 - INFO - No improvement for 3 epoch(s).
+2025-01-11 01:09:06,808 - INFO - Epoch 14/50
+2025-01-11 01:09:07,152 - INFO - Train Loss: 0.6715, Train Acc: 86.05%
+2025-01-11 01:09:07,291 - INFO - Val Loss: 0.8252, Val Acc: 78.38%
+2025-01-11 01:09:07,292 - INFO - No improvement for 4 epoch(s).
+2025-01-11 01:09:07,293 - INFO - Epoch 15/50
+2025-01-11 01:09:07,643 - INFO - Train Loss: 0.6471, Train Acc: 85.19%
+2025-01-11 01:09:07,750 - INFO - Val Loss: 0.8115, Val Acc: 78.38%
+2025-01-11 01:09:07,750 - INFO - No improvement for 5 epoch(s).
+2025-01-11 01:09:07,752 - INFO - Early stopping triggered!
+2025-01-11 01:09:07,752 - INFO - Fine-tuning completed.
+2025-01-11 01:09:07,752 - INFO - Evaluating the fine-tuned model on the test set...
+2025-01-11 01:09:07,877 - INFO - Test Accuracy: 81.08%
+2025-01-11 01:09:07,883 - INFO - Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.18      0.39      0.25        18
+         bus       0.95      0.69      0.80       154
+         car       0.84      0.93      0.88       174
+       train       0.85      0.79      0.81        14
+        walk       0.83      0.86      0.84       121
+
+    accuracy                           0.81       481
+   macro avg       0.73      0.73      0.72       481
+weighted avg       0.85      0.81      0.82       481
+
+2025-01-11 01:09:07,991 - INFO - Evaluation completed. Fine-tuning script finished successfully.

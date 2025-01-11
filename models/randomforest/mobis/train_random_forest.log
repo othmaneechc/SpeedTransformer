@@ -1,0 +1,44 @@
+2024-12-29 20:09:05,373 - INFO - Starting Random Forest training pipeline.
+2024-12-29 20:09:05,373 - INFO - Initializing DataProcessor...
+2024-12-29 20:27:26,672 - INFO - Scaler saved to scaler.joblib
+2024-12-29 20:27:26,673 - INFO - Label encoder saved to label_encoder.joblib
+2024-12-29 20:27:28,588 - INFO - Training samples: 1845601, Validation samples: 395230, Test samples: 397578
+2024-12-29 20:27:28,588 - INFO - Initializing Random Forest classifier...
+2024-12-29 20:27:28,588 - INFO - Random Forest parameters: {'bootstrap': True, 'ccp_alpha': 0.0, 'class_weight': 'balanced', 'criterion': 'gini', 'max_depth': None, 'max_features': 'sqrt', 'max_leaf_nodes': None, 'max_samples': None, 'min_impurity_decrease': 0.0, 'min_samples_leaf': 1, 'min_samples_split': 2, 'min_weight_fraction_leaf': 0.0, 'n_estimators': 100, 'n_jobs': -1, 'oob_score': False, 'random_state': 42, 'verbose': 0, 'warm_start': False}
+2024-12-29 20:27:28,590 - INFO - Starting model training...
+2024-12-29 20:41:23,928 - INFO - Model training completed.
+2024-12-29 20:41:23,931 - INFO - Evaluating model on validation set...
+2024-12-29 20:41:26,358 - INFO - Validation Accuracy: 0.9168
+2024-12-29 20:41:26,726 - INFO - Validation Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.81      0.43      0.56     10646
+         bus       0.86      0.81      0.84     13187
+         car       0.90      0.99      0.94    214107
+       train       0.65      0.13      0.22     23958
+        walk       0.97      0.99      0.98    133332
+
+    accuracy                           0.92    395230
+   macro avg       0.84      0.67      0.71    395230
+weighted avg       0.90      0.92      0.90    395230
+
+2024-12-29 20:41:26,727 - INFO - Evaluating model on test set...
+2024-12-29 20:41:28,938 - INFO - Test Accuracy: 0.9171
+2024-12-29 20:41:29,301 - INFO - Test Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.84      0.44      0.58     11386
+         bus       0.85      0.81      0.83     12816
+         car       0.90      0.99      0.94    215295
+       train       0.64      0.13      0.21     23695
+        walk       0.96      0.99      0.98    134386
+
+    accuracy                           0.92    397578
+   macro avg       0.84      0.67      0.71    397578
+weighted avg       0.90      0.92      0.90    397578
+
+2024-12-29 20:41:29,301 - INFO - Generating confusion matrix...
+2024-12-29 20:41:29,817 - INFO - Confusion matrix saved as 'confusion_matrix_random_forest.png'.
+2024-12-29 20:41:29,817 - INFO - Saving the trained Random Forest model to random_forest_model.joblib...
+2024-12-29 20:41:33,362 - INFO - Model saved successfully.
+2024-12-29 20:41:33,362 - INFO - Random Forest training pipeline completed successfully.
