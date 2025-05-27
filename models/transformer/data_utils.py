@@ -187,7 +187,7 @@ class DataProcessor:
             train_chunk = chunk[chunk[self.traj_id_column].isin(self.train_ids)].copy()
             val_chunk   = chunk[chunk[self.traj_id_column].isin(self.val_ids)].copy()
             test_chunk  = chunk[chunk[self.traj_id_column].isin(self.test_ids)].copy()
-
+            
             for split, df in zip(['train', 'val', 'test'], [train_chunk, val_chunk, test_chunk]):
                 if df.empty:
                     continue

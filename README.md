@@ -1,6 +1,6 @@
 # TrajectoryTransformer
 
-This repository contains the code used in the paper **"[Predicting Human Mobility Using Smartphone GPS Trajectories and Transformer Models](#)"**. 
+This repository contains the code used in the paper **"[Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models](#)"**. 
 
 ## Table of Contents
 

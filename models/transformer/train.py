@@ -256,6 +256,11 @@ def main():
     plt.savefig('confusion_matrix.png')
     # plt.show()
 
+    from sklearn.metrics import accuracy_score, recall_score
+    exact_accuracy = accuracy_score(all_labels, all_preds)
+    exact_recall = recall_score(all_labels, all_preds, average='macro')
+    logger.info(f"Exact Test Accuracy: {exact_accuracy:.4f}, Exact Test Recall: {exact_recall:.4f}")
+
     logger.info("Training script completed successfully.")
 
 

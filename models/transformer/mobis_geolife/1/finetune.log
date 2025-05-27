@@ -1,68 +1,70 @@
-2025-01-11 04:50:27,827 - INFO - Initializing DataProcessor for fine-tuning...
-2025-01-11 04:50:38,901 - INFO - Data loaded and processed successfully.
-2025-01-11 04:50:38,902 - INFO - Loading label encoder from /data/A-TrajectoryTransformer/models/transformer/mobis/label_encoder.joblib...
-2025-01-11 04:50:38,905 - INFO - Label encoder loaded and assigned to DataProcessor.
-2025-01-11 04:50:38,905 - INFO - Clearing old sequences and re-creating them using loaded encoder...
-2025-01-11 04:50:46,076 - INFO - Sequences re-created successfully.
-2025-01-11 04:50:46,077 - INFO - DataLoaders for train, val, and test are ready.
-2025-01-11 04:50:46,078 - INFO - Initializing model for fine-tuning...
-2025-01-11 04:50:49,434 - INFO - Loading pretrained model from: /data/A-TrajectoryTransformer/models/transformer/mobis/best_model.pth
-2025-01-11 04:50:49,448 - INFO - Pretrained model loaded successfully.
-2025-01-11 04:50:49,448 - INFO - Unfrozen all layers of the transformer encoder.
-2025-01-11 04:50:49,448 - INFO - Optimizer re-initialized to only update unfrozen parameters.
-2025-01-11 04:50:49,449 - INFO - Starting the fine-tuning process...
-2025-01-11 04:50:52,065 - INFO - [Epoch 1/20] Train Loss: 3.8025, Train Acc: 0.3871, Val Loss: 1.5607, Val Acc: 0.5187
-2025-01-11 04:50:52,158 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:50:55,199 - INFO - [Epoch 2/20] Train Loss: 1.1641, Train Acc: 0.5784, Val Loss: 1.2670, Val Acc: 0.6641
-2025-01-11 04:50:55,241 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:50:58,902 - INFO - [Epoch 3/20] Train Loss: 0.6900, Train Acc: 0.7464, Val Loss: 0.8008, Val Acc: 0.7529
-2025-01-11 04:50:58,932 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:02,545 - INFO - [Epoch 4/20] Train Loss: 0.4490, Train Acc: 0.8476, Val Loss: 0.6404, Val Acc: 0.7993
-2025-01-11 04:51:02,593 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:06,235 - INFO - [Epoch 5/20] Train Loss: 0.3525, Train Acc: 0.8721, Val Loss: 0.6526, Val Acc: 0.8107
-2025-01-11 04:51:06,266 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:11,085 - INFO - [Epoch 6/20] Train Loss: 0.3388, Train Acc: 0.8810, Val Loss: 0.6524, Val Acc: 0.8157
-2025-01-11 04:51:11,151 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:14,863 - INFO - [Epoch 7/20] Train Loss: 0.3681, Train Acc: 0.8732, Val Loss: 0.5387, Val Acc: 0.8439
-2025-01-11 04:51:14,895 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:18,498 - INFO - [Epoch 8/20] Train Loss: 0.2399, Train Acc: 0.9110, Val Loss: 0.4980, Val Acc: 0.8573
-2025-01-11 04:51:18,589 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:22,429 - INFO - [Epoch 9/20] Train Loss: 0.2075, Train Acc: 0.9244, Val Loss: 0.5013, Val Acc: 0.8594
-2025-01-11 04:51:22,501 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:26,596 - INFO - [Epoch 10/20] Train Loss: 0.2033, Train Acc: 0.9299, Val Loss: 0.5167, Val Acc: 0.8615
-2025-01-11 04:51:26,660 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:28,951 - INFO - [Epoch 11/20] Train Loss: 0.1708, Train Acc: 0.9410, Val Loss: 0.5527, Val Acc: 0.8594
-2025-01-11 04:51:28,951 - INFO -   -> No improvement (1/5)
-2025-01-11 04:51:31,253 - INFO - [Epoch 12/20] Train Loss: 0.1525, Train Acc: 0.9388, Val Loss: 0.5419, Val Acc: 0.8610
-2025-01-11 04:51:31,254 - INFO -   -> No improvement (2/5)
-2025-01-11 04:51:33,569 - INFO - [Epoch 13/20] Train Loss: 0.1487, Train Acc: 0.9466, Val Loss: 0.5474, Val Acc: 0.8636
-2025-01-11 04:51:33,619 - INFO -   -> Best fine-tuned model saved.
-2025-01-11 04:51:35,949 - INFO - [Epoch 14/20] Train Loss: 0.1278, Train Acc: 0.9488, Val Loss: 0.6085, Val Acc: 0.8606
-2025-01-11 04:51:35,949 - INFO -   -> No improvement (1/5)
-2025-01-11 04:51:38,295 - INFO - [Epoch 15/20] Train Loss: 0.1249, Train Acc: 0.9488, Val Loss: 0.6248, Val Acc: 0.8601
-2025-01-11 04:51:38,296 - INFO -   -> No improvement (2/5)
-2025-01-11 04:51:40,628 - INFO - [Epoch 16/20] Train Loss: 0.1031, Train Acc: 0.9600, Val Loss: 0.7008, Val Acc: 0.8409
-2025-01-11 04:51:40,629 - INFO -   -> No improvement (3/5)
-2025-01-11 04:51:42,923 - INFO - [Epoch 17/20] Train Loss: 0.1241, Train Acc: 0.9444, Val Loss: 0.7070, Val Acc: 0.8314
-2025-01-11 04:51:42,923 - INFO -   -> No improvement (4/5)
-2025-01-11 04:51:45,264 - INFO - [Epoch 18/20] Train Loss: 0.1864, Train Acc: 0.9166, Val Loss: 0.6587, Val Acc: 0.8400
-2025-01-11 04:51:45,265 - INFO -   -> No improvement (5/5)
-2025-01-11 04:51:45,265 - INFO - Early stopping triggered.
-2025-01-11 04:51:45,265 - INFO - 
+2025-02-03 07:16:10,585 - INFO - Initializing DataProcessor for fine-tuning...
+2025-02-03 07:16:21,800 - INFO - Data loaded and processed successfully.
+2025-02-03 07:16:21,801 - INFO - Loading label encoder from /data/A-TrajectoryTransformer/models/transformer/mobis/label_encoder.joblib...
+2025-02-03 07:16:21,803 - INFO - Label encoder loaded and assigned to DataProcessor.
+2025-02-03 07:16:21,803 - INFO - Clearing old sequences and re-creating them using loaded encoder...
+2025-02-03 07:16:28,835 - INFO - Sequences re-created successfully.
+2025-02-03 07:16:28,837 - INFO - DataLoaders for train, val, and test are ready.
+2025-02-03 07:16:28,838 - INFO - Initializing model for fine-tuning...
+2025-02-03 07:16:32,647 - INFO - Loading pretrained model from: /data/A-TrajectoryTransformer/models/transformer/mobis/best_model.pth
+2025-02-03 07:16:32,726 - INFO - Pretrained model loaded successfully.
+2025-02-03 07:16:32,727 - INFO - Unfrozen all layers of the transformer encoder.
+2025-02-03 07:16:32,728 - INFO - Optimizer re-initialized to only update unfrozen parameters.
+2025-02-03 07:16:32,728 - INFO - Starting the fine-tuning process...
+2025-02-03 07:16:35,285 - INFO - [Epoch 1/20] Train Loss: 3.7034, Train Acc: 0.3809, Val Loss: 1.4200, Val Acc: 0.5546
+2025-02-03 07:16:35,315 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:38,664 - INFO - [Epoch 2/20] Train Loss: 1.0571, Train Acc: 0.6223, Val Loss: 1.1497, Val Acc: 0.6986
+2025-02-03 07:16:38,732 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:41,987 - INFO - [Epoch 3/20] Train Loss: 0.5960, Train Acc: 0.7908, Val Loss: 0.8563, Val Acc: 0.7498
+2025-02-03 07:16:42,035 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:45,299 - INFO - [Epoch 4/20] Train Loss: 0.4418, Train Acc: 0.8530, Val Loss: 0.6497, Val Acc: 0.8000
+2025-02-03 07:16:45,336 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:48,654 - INFO - [Epoch 5/20] Train Loss: 0.3424, Train Acc: 0.8777, Val Loss: 0.6424, Val Acc: 0.8071
+2025-02-03 07:16:48,695 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:51,994 - INFO - [Epoch 6/20] Train Loss: 0.2913, Train Acc: 0.8948, Val Loss: 0.6574, Val Acc: 0.8053
+2025-02-03 07:16:51,995 - INFO -   -> No improvement (1/5)
+2025-02-03 07:16:55,390 - INFO - [Epoch 7/20] Train Loss: 0.3000, Train Acc: 0.9034, Val Loss: 0.5685, Val Acc: 0.8293
+2025-02-03 07:16:55,417 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:16:58,849 - INFO - [Epoch 8/20] Train Loss: 0.2197, Train Acc: 0.9356, Val Loss: 0.5357, Val Acc: 0.8495
+2025-02-03 07:16:58,899 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:17:02,266 - INFO - [Epoch 9/20] Train Loss: 0.1959, Train Acc: 0.9388, Val Loss: 0.5393, Val Acc: 0.8575
+2025-02-03 07:17:02,317 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:17:06,185 - INFO - [Epoch 10/20] Train Loss: 0.1733, Train Acc: 0.9367, Val Loss: 0.5753, Val Acc: 0.8463
+2025-02-03 07:17:06,185 - INFO -   -> No improvement (1/5)
+2025-02-03 07:17:08,452 - INFO - [Epoch 11/20] Train Loss: 0.1578, Train Acc: 0.9378, Val Loss: 0.6006, Val Acc: 0.8504
+2025-02-03 07:17:08,453 - INFO -   -> No improvement (2/5)
+2025-02-03 07:17:10,713 - INFO - [Epoch 12/20] Train Loss: 0.1394, Train Acc: 0.9560, Val Loss: 0.5959, Val Acc: 0.8535
+2025-02-03 07:17:10,714 - INFO -   -> No improvement (3/5)
+2025-02-03 07:17:12,990 - INFO - [Epoch 13/20] Train Loss: 0.1411, Train Acc: 0.9582, Val Loss: 0.5982, Val Acc: 0.8572
+2025-02-03 07:17:12,991 - INFO -   -> No improvement (4/5)
+2025-02-03 07:17:15,255 - INFO - [Epoch 14/20] Train Loss: 0.1386, Train Acc: 0.9506, Val Loss: 0.6111, Val Acc: 0.8609
+2025-02-03 07:17:15,292 - INFO -   -> Best fine-tuned model saved.
+2025-02-03 07:17:17,548 - INFO - [Epoch 15/20] Train Loss: 0.1083, Train Acc: 0.9549, Val Loss: 0.6871, Val Acc: 0.8469
+2025-02-03 07:17:17,548 - INFO -   -> No improvement (1/5)
+2025-02-03 07:17:19,797 - INFO - [Epoch 16/20] Train Loss: 0.1118, Train Acc: 0.9539, Val Loss: 0.6942, Val Acc: 0.8446
+2025-02-03 07:17:19,797 - INFO -   -> No improvement (2/5)
+2025-02-03 07:17:22,021 - INFO - [Epoch 17/20] Train Loss: 0.0855, Train Acc: 0.9646, Val Loss: 0.6765, Val Acc: 0.8475
+2025-02-03 07:17:22,021 - INFO -   -> No improvement (3/5)
+2025-02-03 07:17:24,272 - INFO - [Epoch 18/20] Train Loss: 0.0928, Train Acc: 0.9624, Val Loss: 0.7290, Val Acc: 0.8384
+2025-02-03 07:17:24,273 - INFO -   -> No improvement (4/5)
+2025-02-03 07:17:26,468 - INFO - [Epoch 19/20] Train Loss: 0.0823, Train Acc: 0.9689, Val Loss: 0.7467, Val Acc: 0.8395
+2025-02-03 07:17:26,468 - INFO -   -> No improvement (5/5)
+2025-02-03 07:17:26,470 - INFO - Early stopping triggered.
+2025-02-03 07:17:26,470 - INFO - 
 Loading best fine-tuned model from finetuned_model.pth for final evaluation...
-2025-01-11 04:51:50,950 - INFO - Test Loss: 0.6433, Test Accuracy: 0.8466
-2025-01-11 04:51:56,724 - INFO - Classification Report:
+2025-02-03 07:17:32,265 - INFO - Test Loss: 0.6649, Test Accuracy: 0.8536
+2025-02-03 07:17:38,154 - INFO - Classification Report:
               precision    recall  f1-score   support
 
-        bike       0.93      0.77      0.84      9168
-         bus       0.89      0.87      0.88     13865
-         car       0.65      0.78      0.71      8257
-       train       0.76      0.74      0.75     10011
-        walk       0.95      0.99      0.97     14462
+        bike       0.94      0.75      0.84      9227
+         bus       0.87      0.88      0.88     13772
+         car       0.68      0.75      0.71      8144
+       train       0.78      0.80      0.79     10957
+        walk       0.96      0.99      0.97     14650
 
-    accuracy                           0.85     55763
-   macro avg       0.84      0.83      0.83     55763
-weighted avg       0.85      0.85      0.85     55763
+    accuracy                           0.85     56750
+   macro avg       0.84      0.83      0.84     56750
+weighted avg       0.86      0.85      0.85     56750
 
-2025-01-11 04:51:57,064 - INFO - Confusion matrix saved as 'confusion_matrix_finetune.png'.
-2025-01-11 04:51:57,064 - INFO - Fine-tuning script completed successfully.
+2025-02-03 07:17:38,513 - INFO - Confusion matrix saved as 'confusion_matrix_finetune.png'.
+2025-02-03 07:17:38,513 - INFO - Fine-tuning script completed successfully.

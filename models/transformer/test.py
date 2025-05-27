@@ -46,7 +46,7 @@ def main():
                         help='Number of attention heads.')
     parser.add_argument('--num_layers', type=int, default=4,
                         help='Number of transformer encoder layers.')
-    parser.add_argument('--dropout', type=float, default=0.2,
+    parser.add_argument('--dropout', type=float, default=0.1,
                         help='Dropout rate in the transformer.')
 
     parser.add_argument('--model_path', type=str, required=True,
