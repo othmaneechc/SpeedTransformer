@@ -45,8 +45,7 @@ python extract_speed_geolife.py geolife.csv --output_file geolife_processed.csv
 
 ### MOBIS Dataset
 
-_The MOBIS dataset can be processed using a similar method. More detailed instructions will be added soon._
-The MOBIS Processed data can be found here: https://zenodo.org/records/15530797
+_The MOBIS dataset can be processed using a similar method. The processed MOBIS data can be found here: https://zenodo.org/records/15530797_
 
 ## Running the Models
 This repository provides two primary model architectures:
