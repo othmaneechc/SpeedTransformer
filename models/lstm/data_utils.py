@@ -209,7 +209,7 @@ class DataHandler:
                     label = group['label_encoded'].iloc[0]
 
                     # Split into sub-sequences
-                    subseqs = self.split_into_subsequences(arr, chunk_size=200, overlap=50)
+                    subseqs = self.split_into_subsequences(arr, chunk_size=200, overlap=150)
 
                     for (sub_arr, actual_len, mask) in subseqs:
                         if split == 'train':
