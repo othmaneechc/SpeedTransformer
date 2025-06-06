@@ -1,4 +1,4 @@
-# TrajectoryTransformer
+# SpeedTransformer
 
 This repository contains the code used in the paper **"[Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models](#)"**. 
 
@@ -45,7 +45,7 @@ python extract_speed_geolife.py geolife.csv --output_file geolife_processed.csv
 
 ### MOBIS Dataset
 
-_The MOBIS dataset can be processed using a similar method. More detailed instructions will be added soon._
+_The MOBIS dataset can be processed using a similar method. The processed MOBIS data can be found here: https://zenodo.org/records/15530797_
 
 ## Running the Models
 This repository provides two primary model architectures:
@@ -64,10 +64,10 @@ Use the `train.sh` script for quick training with the proper random states.
 ```bash
 # lstm/train.sh
 # MOBIS
-python lstm.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 316
+python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
 
 # Geolife
-python lstm.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 1
+python lstm.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
 ```
 
 This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for fine-tuning and/or inference purposes.
@@ -79,10 +79,10 @@ Use the `finetune.sh` script to fine-tune the pre-trained LSTM model with a defa
 ```bash
 # lstm/finetune.sh
 python finetune.py \
-  --pretrained_model_path /data/A-TrajectoryTransformer/models/lstm/mobis/best_model.pth \
-  --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv \
-  --scaler_path /data/A-TrajectoryTransformer/models/lstm/mobis/scaler.joblib \
-  --label_encoder_path /data/A-TrajectoryTransformer/models/lstm/mobis/label_encoder.joblib \
+  --pretrained_model_path /data/SpeedTransformer/models/lstm/mobis/best_model.pth \
+  --data_path /data/SpeedTransformer/data/geolife_processed.csv \
+  --scaler_path /data/SpeedTransformer/models/lstm/mobis/scaler.joblib \
+  --label_encoder_path /data/SpeedTransformer/models/lstm/mobis/label_encoder.joblib \
   --test_size 0.79 \
   --val_size 0.2 \
   --random_state 42
@@ -97,10 +97,10 @@ Use the `train.sh` script to train a Transformer model with the specified random
 ```bash
 # transformer/train.sh
 # MOBIS
-python train.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 316
+python train.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
 
 # Geolife
-python train.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 1
+python train.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
 ```
 
 **Fine-Tuning**
@@ -108,9 +108,9 @@ python train.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed
 ```bash
 # transformer/finetune.sh
 python finetune.py \
-  --pretrained_model_path /data/A-TrajectoryTransformer/models/transformer/mobis/best_model.pth \
-  --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv \
-  --label_encoder_path /data/A-TrajectoryTransformer/models/transformer/mobis/label_encoder.joblib \
+  --pretrained_model_path /data/SpeedTransformer/models/transformer/mobis/best_model.pth \
+  --data_path /data/SpeedTransformer/data/geolife_processed.csv \
+  --label_encoder_path /data/SpeedTransformer/models/transformer/mobis/label_encoder.joblib \
   --test_size 0.79 \
   --val_size 0.2 \
   --random_state 42
