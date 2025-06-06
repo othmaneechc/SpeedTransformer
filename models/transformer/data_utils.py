@@ -50,7 +50,7 @@ class DataProcessor:
         val_size=0.15,
         random_state=42,
         chunksize=10**6,
-        window_size=100,
+        window_size=200,
         stride=50
     ):
         self.data_path = data_path

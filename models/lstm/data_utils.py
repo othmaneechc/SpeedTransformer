@@ -99,7 +99,7 @@ class DataHandler:
         self.unique_traj_ids = set()
 
     # -------------- Helper function for splitting sub-sequences -------------- #
-    def split_into_subsequences(self, arr, chunk_size=200, overlap=50):
+    def split_into_subsequences(self, arr, chunk_size=200, overlap=150):
         """
         Splits `arr` (shape [seq_len, num_features]) into windows of length `chunk_size`,
         overlapping by `overlap` samples. Yields a list of (sub_array, actual_len, mask).

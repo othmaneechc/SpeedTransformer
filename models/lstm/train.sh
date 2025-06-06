@@ -16,9 +16,9 @@
 # python lstm.py --data_path /data/A-TrajectoryTransformer/data/mobis_processed.csv --random_state 316 --test_size 0.4875 --val_size 0.4875
 
 ### Geolife ###
-# python lstm.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 316 --test_size 0.15 --val_size 0.15
+python lstm.py --data_path /data/A-TrajectoryTransformer/data/geolife_processed.csv --random_state 316 --test_size 0.15 --val_size 0.15
 
 # 80%, 70%, 60%, 50%, 40%, 30%, 20%, 15%, 10%, 5%, 2.5%
 # 8000, 7000, 6000, 5000, 4000, 3000, 2000, 1500, 1000, 500, 250
 
-python lstm.py --data_path /data/A-TrajectoryTransformer/data/miniprogram_merged.csv --random_state 316 --test_size 0.15 --val_size 0.15
+# python lstm.py --data_path /data/A-TrajectoryTransformer/data/miniprogram_merged.csv --random_state 316 --test_size 0.15 --val_size 0.15
