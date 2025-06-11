@@ -64,7 +64,7 @@ Use the `train.sh` script for quick training with the proper random states.
 ```bash
 # lstm/train.sh
 # MOBIS
-python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
+python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 1
 
 # Geolife
 python lstm.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1

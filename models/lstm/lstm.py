@@ -87,7 +87,7 @@ def main(
     set_seed(seed)
 
     # Set up logger
-    logger = setup_logger('lstm.log')
+    logger = setup_logger(f'{checkpoint_dir}/lstm.log')
     logger.info("Starting LSTM training process...")
 
     # ------------------ Data Loading & Preprocessing ------------------ #

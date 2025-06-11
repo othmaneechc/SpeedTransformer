@@ -99,36 +99,27 @@ class DataHandler:
         self.unique_traj_ids = set()
 
     # -------------- Helper function for splitting sub-sequences -------------- #
-    def split_into_subsequences(self, arr, chunk_size=200, overlap=150):
-        """
-        Splits `arr` (shape [seq_len, num_features]) into windows of length `chunk_size`,
-        overlapping by `overlap` samples. Yields a list of (sub_array, actual_len, mask).
-        """
+    def split_into_subsequences(self, arr, chunk_size=200, stride=150):
         subsequences = []
-        stride = chunk_size - overlap
         seq_len = len(arr)
-
         for start in range(0, seq_len, stride):
             end = start + chunk_size
             sub_arr = arr[start:end]
             actual_len = len(sub_arr)
-
-            # If sub_arr is shorter than chunk_size, zero-pad
             if actual_len < chunk_size:
                 pad_size = chunk_size - actual_len
                 sub_arr = np.pad(
                     sub_arr,
-                    ((0, pad_size), (0, 0)),  # pad only the time dimension
-                    mode='constant',
-                    constant_values=0
+                    ((0, pad_size), (0, 0)),
+                    mode='constant', constant_values=0
                 )
-
             mask = np.zeros((chunk_size,), dtype=np.float32)
             mask[:actual_len] = 1.0
-
             subsequences.append((sub_arr, actual_len, mask))
-
+            if end >= seq_len:
+                break
         return subsequences
+
 
     # -------------- Everything else -------------- #
     def gather_ids_and_labels(self):
@@ -183,7 +174,7 @@ class DataHandler:
         print("Scaler fitting completed.")
 
     def create_sequences(self):
-        print("Creating trip sequences (fixed length=200, overlap=50) from CSV in chunks...")
+        print("Creating trip sequences (fixed length=200, stride=150) from CSV in chunks...")
 
         for chunk in tqdm(pd.read_csv(self.data_path, chunksize=self.chunksize),
                           desc="Processing & transforming chunks"):
@@ -209,7 +200,7 @@ class DataHandler:
                     label = group['label_encoded'].iloc[0]
 
                     # Split into sub-sequences
-                    subseqs = self.split_into_subsequences(arr, chunk_size=200, overlap=150)
+                    subseqs = self.split_into_subsequences(arr, chunk_size=200, stride=150)
 
                     for (sub_arr, actual_len, mask) in subseqs:
                         if split == 'train':
@@ -228,10 +219,10 @@ class DataHandler:
                             self.test_lengths.append(actual_len)
                             self.test_masks.append(mask)
 
-        print(f"Finished creating sub-sequences -> "
-              f"Train: {len(self.train_sequences)}, "
-              f"Val: {len(self.val_sequences)}, "
-              f"Test: {len(self.test_sequences)}")
+        # print(f"Finished creating sub-sequences -> "
+        #       f"Train: {len(self.train_sequences)}, "
+        #       f"Val: {len(self.val_sequences)}, "
+        #       f"Test: {len(self.test_sequences)}")
 
     def load_and_process_data(self):
         self.gather_ids_and_labels()

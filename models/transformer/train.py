@@ -84,12 +84,11 @@ def main():
 
     # Set CUBLAS_WORKSPACE_CONFIG for deterministic CUDA operations
     os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
-
-    logger = setup_logger('train.log')
     
     parser = argparse.ArgumentParser(description="Train a Trajectory Transformer model.")
     
     # Data
+    parser.add_argument("--checkpoint_dir", type=str, default=".", help="Directory to save model checkpoints.")
     parser.add_argument('--data_path', type=str, required=True, help='Path to the CSV data file.')
     parser.add_argument('--feature_columns', nargs='+', default=['speed'], help='List of feature columns to use.')
     parser.add_argument('--target_column', type=str, default='label', help='Name of the target column.')
@@ -124,6 +123,8 @@ def main():
     parser.add_argument('--save_scaler_path', type=str, default='scaler.joblib', help='Where to save the fitted scaler.')
 
     args = parser.parse_args()
+
+    logger = setup_logger(f'{args.checkpoint_dir}/train.log')
 
     # **Set Seeds for Reproducibility**
     logger.info(f"Setting random seed to {args.random_state}")

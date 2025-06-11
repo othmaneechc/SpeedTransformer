@@ -1,72 +1,73 @@
-2025-01-05 09:37:19,392 - INFO - Setting random seed to 1
-2025-01-05 09:37:19,401 - INFO - Initializing DataProcessor...
-2025-01-05 09:38:51,454 - INFO - Setting random seed to 1
-2025-01-05 09:38:51,462 - INFO - Initializing DataProcessor...
-2025-01-05 10:00:16,274 - INFO - Scaler saved to scaler.joblib
-2025-01-05 10:00:16,274 - INFO - Label encoder saved to label_encoder.joblib
-2025-01-05 10:00:16,275 - INFO - Datasets and DataLoaders ready.
-2025-01-05 10:00:16,275 - INFO - Initializing TrajectoryModel...
-2025-01-05 10:00:20,601 - INFO - Model initialization completed.
-2025-01-05 10:00:20,601 - INFO - Starting training loop...
-2025-01-05 10:19:14,607 - INFO - [Epoch 1/50] Train Loss: 0.2546, Train Acc: 0.9104, Val Loss: 0.2028, Val Acc: 0.9268
-2025-01-05 10:19:14,642 - INFO -   -> Best model saved
-2025-01-05 10:44:35,577 - INFO - [Epoch 2/50] Train Loss: 0.2086, Train Acc: 0.9242, Val Loss: 0.1865, Val Acc: 0.9308
-2025-01-05 10:44:35,609 - INFO -   -> Best model saved
-2025-01-05 11:09:56,290 - INFO - [Epoch 3/50] Train Loss: 0.2000, Train Acc: 0.9269, Val Loss: 0.1948, Val Acc: 0.9283
-2025-01-05 11:09:56,292 - INFO -   -> No improvement (1/7)
-2025-01-05 11:35:16,617 - INFO - [Epoch 4/50] Train Loss: 0.1942, Train Acc: 0.9293, Val Loss: 0.1864, Val Acc: 0.9322
-2025-01-05 11:35:16,671 - INFO -   -> Best model saved
-2025-01-05 12:00:37,721 - INFO - [Epoch 5/50] Train Loss: 0.1879, Train Acc: 0.9319, Val Loss: 0.1706, Val Acc: 0.9395
-2025-01-05 12:00:37,763 - INFO -   -> Best model saved
-2025-01-05 12:25:59,092 - INFO - [Epoch 6/50] Train Loss: 0.1798, Train Acc: 0.9353, Val Loss: 0.1808, Val Acc: 0.9356
-2025-01-05 12:25:59,094 - INFO -   -> No improvement (1/7)
-2025-01-05 12:51:20,344 - INFO - [Epoch 7/50] Train Loss: 0.1768, Train Acc: 0.9364, Val Loss: 0.1878, Val Acc: 0.9323
-2025-01-05 12:51:20,345 - INFO -   -> No improvement (2/7)
-2025-01-05 13:16:40,573 - INFO - [Epoch 8/50] Train Loss: 0.1748, Train Acc: 0.9371, Val Loss: 0.1677, Val Acc: 0.9395
-2025-01-05 13:16:40,606 - INFO -   -> Best model saved
-2025-01-05 13:42:01,500 - INFO - [Epoch 9/50] Train Loss: 0.1739, Train Acc: 0.9375, Val Loss: 0.1666, Val Acc: 0.9395
-2025-01-05 13:42:01,548 - INFO -   -> Best model saved
-2025-01-05 14:07:23,121 - INFO - [Epoch 10/50] Train Loss: 0.1727, Train Acc: 0.9379, Val Loss: 0.1795, Val Acc: 0.9347
-2025-01-05 14:07:23,123 - INFO -   -> No improvement (1/7)
-2025-01-05 14:32:43,437 - INFO - [Epoch 11/50] Train Loss: 0.1715, Train Acc: 0.9383, Val Loss: 0.1773, Val Acc: 0.9356
-2025-01-05 14:32:43,439 - INFO -   -> No improvement (2/7)
-2025-01-05 14:58:03,510 - INFO - [Epoch 12/50] Train Loss: 0.1707, Train Acc: 0.9387, Val Loss: 0.1779, Val Acc: 0.9375
-2025-01-05 14:58:03,512 - INFO -   -> No improvement (3/7)
-2025-01-05 15:23:22,424 - INFO - [Epoch 13/50] Train Loss: 0.1693, Train Acc: 0.9390, Val Loss: 0.1723, Val Acc: 0.9373
-2025-01-05 15:23:22,426 - INFO -   -> No improvement (4/7)
-2025-01-05 15:48:41,607 - INFO - [Epoch 14/50] Train Loss: 0.1689, Train Acc: 0.9393, Val Loss: 0.1654, Val Acc: 0.9399
-2025-01-05 15:48:41,641 - INFO -   -> Best model saved
-2025-01-05 16:14:02,227 - INFO - [Epoch 15/50] Train Loss: 0.1683, Train Acc: 0.9393, Val Loss: 0.1725, Val Acc: 0.9384
-2025-01-05 16:14:02,229 - INFO -   -> No improvement (1/7)
-2025-01-05 16:39:20,783 - INFO - [Epoch 16/50] Train Loss: 0.1679, Train Acc: 0.9395, Val Loss: 0.1710, Val Acc: 0.9368
-2025-01-05 16:39:20,785 - INFO -   -> No improvement (2/7)
-2025-01-05 17:04:41,061 - INFO - [Epoch 17/50] Train Loss: 0.1674, Train Acc: 0.9396, Val Loss: 0.1662, Val Acc: 0.9394
-2025-01-05 17:04:41,062 - INFO -   -> No improvement (3/7)
-2025-01-05 17:30:00,512 - INFO - [Epoch 18/50] Train Loss: 0.1667, Train Acc: 0.9400, Val Loss: 0.1712, Val Acc: 0.9374
-2025-01-05 17:30:00,514 - INFO -   -> No improvement (4/7)
-2025-01-05 17:50:03,021 - INFO - [Epoch 19/50] Train Loss: 0.1658, Train Acc: 0.9402, Val Loss: 0.1853, Val Acc: 0.9336
-2025-01-05 17:50:03,023 - INFO -   -> No improvement (5/7)
-2025-01-05 18:03:13,161 - INFO - [Epoch 20/50] Train Loss: 0.1655, Train Acc: 0.9402, Val Loss: 0.1625, Val Acc: 0.9401
-2025-01-05 18:03:13,208 - INFO -   -> Best model saved
-2025-01-05 18:16:21,862 - INFO - [Epoch 21/50] Train Loss: 0.1655, Train Acc: 0.9401, Val Loss: 0.1667, Val Acc: 0.9392
-2025-01-05 18:16:21,864 - INFO -   -> No improvement (1/7)
-2025-01-05 18:29:29,687 - INFO - [Epoch 22/50] Train Loss: 0.1646, Train Acc: 0.9406, Val Loss: 0.1794, Val Acc: 0.9358
-2025-01-05 18:29:29,688 - INFO -   -> No improvement (2/7)
-2025-01-05 18:42:37,957 - INFO - [Epoch 23/50] Train Loss: 0.1643, Train Acc: 0.9406, Val Loss: 0.1767, Val Acc: 0.9355
-2025-01-05 18:42:37,958 - INFO -   -> No improvement (3/7)
-2025-01-05 18:55:45,197 - INFO - [Epoch 24/50] Train Loss: 0.1643, Train Acc: 0.9407, Val Loss: 0.1660, Val Acc: 0.9395
-2025-01-05 18:55:45,199 - INFO -   -> No improvement (4/7)
-2025-01-05 19:08:53,240 - INFO - [Epoch 25/50] Train Loss: 0.1633, Train Acc: 0.9410, Val Loss: 0.1819, Val Acc: 0.9355
-2025-01-05 19:08:53,241 - INFO -   -> No improvement (5/7)
-2025-01-05 19:22:00,756 - INFO - [Epoch 26/50] Train Loss: 0.1635, Train Acc: 0.9410, Val Loss: 0.1775, Val Acc: 0.9359
-2025-01-05 19:22:00,758 - INFO -   -> No improvement (6/7)
-2025-01-05 19:35:08,833 - INFO - [Epoch 27/50] Train Loss: 0.1628, Train Acc: 0.9412, Val Loss: 0.1693, Val Acc: 0.9399
-2025-01-05 19:35:08,835 - INFO -   -> No improvement (7/7)
-2025-01-05 19:35:08,835 - INFO - Early stopping triggered.
-2025-01-05 19:35:08,835 - INFO - 
+2025-06-07 10:59:21,667 - INFO - Saving confusion matrix as confusion_matrix.png...
+2025-06-07 10:59:22,394 - INFO - Exact Test Accuracy: 0.9373, Exact Test Recall: 0.7876
+2025-06-07 10:59:22,394 - INFO - Training script completed successfully.
+2025-06-07 11:46:05,911 - INFO - Setting random seed to 1
+2025-06-07 11:46:05,923 - INFO - Initializing DataProcessor...
+2025-06-07 12:07:53,135 - INFO - Scaler saved to scaler.joblib
+2025-06-07 12:07:53,136 - INFO - Label encoder saved to label_encoder.joblib
+2025-06-07 12:07:53,136 - INFO - Datasets and DataLoaders ready.
+2025-06-07 12:07:53,137 - INFO - Initializing TrajectoryModel...
+2025-06-07 12:07:58,572 - INFO - Model initialization completed.
+2025-06-07 12:07:58,572 - INFO - Starting training loop...
+2025-06-07 12:33:57,226 - INFO - [Epoch 1/50] Train Loss: 0.2546, Train Acc: 0.9104, Val Loss: 0.2028, Val Acc: 0.9268
+2025-06-07 12:33:57,353 - INFO -   -> Best model saved
+2025-06-07 12:59:53,199 - INFO - [Epoch 2/50] Train Loss: 0.2086, Train Acc: 0.9242, Val Loss: 0.1865, Val Acc: 0.9308
+2025-06-07 12:59:53,235 - INFO -   -> Best model saved
+2025-06-07 13:25:48,938 - INFO - [Epoch 3/50] Train Loss: 0.2000, Train Acc: 0.9269, Val Loss: 0.1948, Val Acc: 0.9283
+2025-06-07 13:25:48,939 - INFO -   -> No improvement (1/7)
+2025-06-07 13:51:43,261 - INFO - [Epoch 4/50] Train Loss: 0.1942, Train Acc: 0.9293, Val Loss: 0.1864, Val Acc: 0.9322
+2025-06-07 13:51:43,328 - INFO -   -> Best model saved
+2025-06-07 14:17:37,567 - INFO - [Epoch 5/50] Train Loss: 0.1879, Train Acc: 0.9319, Val Loss: 0.1706, Val Acc: 0.9395
+2025-06-07 14:17:37,596 - INFO -   -> Best model saved
+2025-06-07 14:43:31,855 - INFO - [Epoch 6/50] Train Loss: 0.1798, Train Acc: 0.9353, Val Loss: 0.1808, Val Acc: 0.9356
+2025-06-07 14:43:31,857 - INFO -   -> No improvement (1/7)
+2025-06-07 15:09:25,903 - INFO - [Epoch 7/50] Train Loss: 0.1768, Train Acc: 0.9364, Val Loss: 0.1878, Val Acc: 0.9323
+2025-06-07 15:09:25,905 - INFO -   -> No improvement (2/7)
+2025-06-07 15:35:19,181 - INFO - [Epoch 8/50] Train Loss: 0.1748, Train Acc: 0.9371, Val Loss: 0.1677, Val Acc: 0.9395
+2025-06-07 15:35:19,217 - INFO -   -> Best model saved
+2025-06-07 16:01:12,320 - INFO - [Epoch 9/50] Train Loss: 0.1739, Train Acc: 0.9375, Val Loss: 0.1666, Val Acc: 0.9395
+2025-06-07 16:01:12,352 - INFO -   -> Best model saved
+2025-06-07 16:27:07,816 - INFO - [Epoch 10/50] Train Loss: 0.1727, Train Acc: 0.9379, Val Loss: 0.1795, Val Acc: 0.9347
+2025-06-07 16:27:07,817 - INFO -   -> No improvement (1/7)
+2025-06-07 16:53:03,041 - INFO - [Epoch 11/50] Train Loss: 0.1715, Train Acc: 0.9383, Val Loss: 0.1773, Val Acc: 0.9356
+2025-06-07 16:53:03,042 - INFO -   -> No improvement (2/7)
+2025-06-07 17:18:57,953 - INFO - [Epoch 12/50] Train Loss: 0.1707, Train Acc: 0.9387, Val Loss: 0.1779, Val Acc: 0.9375
+2025-06-07 17:18:57,954 - INFO -   -> No improvement (3/7)
+2025-06-07 17:44:53,082 - INFO - [Epoch 13/50] Train Loss: 0.1693, Train Acc: 0.9390, Val Loss: 0.1723, Val Acc: 0.9373
+2025-06-07 17:44:53,083 - INFO -   -> No improvement (4/7)
+2025-06-07 18:10:47,939 - INFO - [Epoch 14/50] Train Loss: 0.1689, Train Acc: 0.9393, Val Loss: 0.1654, Val Acc: 0.9399
+2025-06-07 18:10:48,042 - INFO -   -> Best model saved
+2025-06-07 18:36:41,980 - INFO - [Epoch 15/50] Train Loss: 0.1683, Train Acc: 0.9393, Val Loss: 0.1725, Val Acc: 0.9384
+2025-06-07 18:36:41,981 - INFO -   -> No improvement (1/7)
+2025-06-07 19:02:36,292 - INFO - [Epoch 16/50] Train Loss: 0.1679, Train Acc: 0.9395, Val Loss: 0.1710, Val Acc: 0.9368
+2025-06-07 19:02:36,295 - INFO -   -> No improvement (2/7)
+2025-06-07 19:28:30,639 - INFO - [Epoch 17/50] Train Loss: 0.1674, Train Acc: 0.9396, Val Loss: 0.1662, Val Acc: 0.9394
+2025-06-07 19:28:30,641 - INFO -   -> No improvement (3/7)
+2025-06-07 19:54:24,970 - INFO - [Epoch 18/50] Train Loss: 0.1667, Train Acc: 0.9400, Val Loss: 0.1712, Val Acc: 0.9374
+2025-06-07 19:54:24,972 - INFO -   -> No improvement (4/7)
+2025-06-07 20:20:19,776 - INFO - [Epoch 19/50] Train Loss: 0.1658, Train Acc: 0.9402, Val Loss: 0.1853, Val Acc: 0.9336
+2025-06-07 20:20:19,778 - INFO -   -> No improvement (5/7)
+2025-06-07 20:46:13,017 - INFO - [Epoch 20/50] Train Loss: 0.1655, Train Acc: 0.9402, Val Loss: 0.1625, Val Acc: 0.9401
+2025-06-07 20:46:13,049 - INFO -   -> Best model saved
+2025-06-07 21:12:06,972 - INFO - [Epoch 21/50] Train Loss: 0.1655, Train Acc: 0.9401, Val Loss: 0.1667, Val Acc: 0.9392
+2025-06-07 21:12:06,973 - INFO -   -> No improvement (1/7)
+2025-06-07 21:34:37,243 - INFO - [Epoch 22/50] Train Loss: 0.1646, Train Acc: 0.9406, Val Loss: 0.1794, Val Acc: 0.9358
+2025-06-07 21:34:37,245 - INFO -   -> No improvement (2/7)
+2025-06-07 21:47:56,932 - INFO - [Epoch 23/50] Train Loss: 0.1643, Train Acc: 0.9406, Val Loss: 0.1767, Val Acc: 0.9355
+2025-06-07 21:47:56,933 - INFO -   -> No improvement (3/7)
+2025-06-07 22:01:16,578 - INFO - [Epoch 24/50] Train Loss: 0.1643, Train Acc: 0.9407, Val Loss: 0.1660, Val Acc: 0.9395
+2025-06-07 22:01:16,579 - INFO -   -> No improvement (4/7)
+2025-06-07 22:14:35,587 - INFO - [Epoch 25/50] Train Loss: 0.1633, Train Acc: 0.9410, Val Loss: 0.1819, Val Acc: 0.9355
+2025-06-07 22:14:35,588 - INFO -   -> No improvement (5/7)
+2025-06-07 22:27:54,711 - INFO - [Epoch 26/50] Train Loss: 0.1635, Train Acc: 0.9410, Val Loss: 0.1775, Val Acc: 0.9359
+2025-06-07 22:27:54,712 - INFO -   -> No improvement (6/7)
+2025-06-07 22:41:13,504 - INFO - [Epoch 27/50] Train Loss: 0.1628, Train Acc: 0.9412, Val Loss: 0.1693, Val Acc: 0.9399
+2025-06-07 22:41:13,506 - INFO -   -> No improvement (7/7)
+2025-06-07 22:41:13,506 - INFO - Early stopping triggered.
+2025-06-07 22:41:13,506 - INFO - 
 Loading best model and evaluating on test set...
-2025-01-05 19:35:52,347 - INFO - Test Loss: 0.1629, Test Accuracy: 0.9398
-2025-01-05 19:36:35,661 - INFO - Classification Report:
+2025-06-07 22:41:57,991 - INFO - Test Loss: 0.1629, Test Accuracy: 0.9398
+2025-06-07 22:42:42,292 - INFO - Classification Report:
               precision    recall  f1-score   support
 
         bike       0.88      0.78      0.83     11798
@@ -79,5 +80,6 @@ Loading best model and evaluating on test set...
    macro avg       0.89      0.81      0.84    399339
 weighted avg       0.93      0.94      0.93    399339
 
-2025-01-05 19:36:35,781 - INFO - Saving confusion matrix as confusion_matrix.png...
-2025-01-05 19:36:36,452 - INFO - Training script completed successfully.
+2025-06-07 22:42:42,411 - INFO - Saving confusion matrix as confusion_matrix.png...
+2025-06-07 22:42:43,081 - INFO - Exact Test Accuracy: 0.9398, Exact Test Recall: 0.8100
+2025-06-07 22:42:43,081 - INFO - Training script completed successfully.
