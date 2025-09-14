@@ -1,0 +1,23 @@
+2025-09-13 23:45:21,002 - INFO - Initializing DataHandler for fine-tuning...
+2025-09-13 23:45:21,002 - INFO - Loading and processing the data...
+Gathering unique trajectory IDs and labels in one pass...
+Reading IDs & labels: 0it [00:00, ?it/s]Reading IDs & labels: 1it [00:00,  3.03it/s]Reading IDs & labels: 2it [00:00,  3.05it/s]Reading IDs & labels: 3it [00:00,  3.03it/s]Reading IDs & labels: 4it [00:01,  3.04it/s]Reading IDs & labels: 5it [00:01,  3.81it/s]Reading IDs & labels: 5it [00:01,  3.40it/s]
+Total unique traj_ids found: 9347
+Classes found: ['bike' 'bus' 'car' 'train' 'walk']
+Splitting traj_ids into train, val, and test sets...
+Train: 93, Val: 1869, Test: 7385
+Partial fitting scaler on training features...
+Reading training features for scaling: 0it [00:00, ?it/s]Reading training features for scaling: 1it [00:00,  3.02it/s]Reading training features for scaling: 2it [00:00,  3.04it/s]Reading training features for scaling: 3it [00:00,  3.06it/s]Reading training features for scaling: 4it [00:01,  3.08it/s]Reading training features for scaling: 5it [00:01,  3.83it/s]Reading training features for scaling: 5it [00:01,  3.44it/s]
+Scaler fitting completed.
+Creating trip sequences (fixed length=200, stride=150) from CSV in chunks...
+Processing & transforming chunks: 0it [00:00, ?it/s]Processing & transforming chunks: 1it [00:01,  1.87s/it]Processing & transforming chunks: 2it [00:03,  1.90s/it]Processing & transforming chunks: 3it [00:06,  2.07s/it]Processing & transforming chunks: 4it [00:08,  2.16s/it]Processing & transforming chunks: 5it [00:09,  1.72s/it]Processing & transforming chunks: 5it [00:09,  1.86s/it]2025-09-13 23:45:33,252 - INFO - Data loaded and processed successfully.
+2025-09-13 23:45:33,252 - INFO - Loading scaler from /data/A-SpeedTransformer/models/lstm/mobis/scaler.joblib...
+
+Traceback (most recent call last):
+  File "finetune.py", line 228, in <module>
+    main()
+  File "finetune.py", line 137, in main
+    saved_scaler = joblib.load(args.scaler_path)
+  File "/data/oe23/torchgpu/lib/python3.8/site-packages/joblib/numpy_pickle.py", line 650, in load
+    with open(filename, 'rb') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/data/A-SpeedTransformer/models/lstm/mobis/scaler.joblib'

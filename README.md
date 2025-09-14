@@ -66,28 +66,76 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 
 #### LSTM Scripts (`models/lstm/`)
 
-- **`train.sh`** - Basic LSTM model training for baseline comparisons on Geolife and MOBIS datasets
-- **`finetune.sh`** - LSTM transfer learning experiments from MOBIS to Geolife for baseline comparison
+- **`run_sweep.sh`** - Comprehensive hyperparameter sweep across learning rates, batch sizes, hidden dimensions, layer counts, and dropout rates
+- **`finetune.sh`** - Enhanced transfer learning from MOBIS to Geolife with comprehensive hyperparameter sweeps and smart dependency waiting
+- **`finetune_miniprogram.sh`** - Specialized fine-tuning for miniprogram (WeChat) mobility data with LSTM architecture and various data subset sizes (15%, 20%, 30%, 40%, 50%)
+
+**Note**: LSTM models use a fixed sequence length of 200 frames (hardcoded in the model architecture), so window size optimization is not applicable.
 
 ### Script Usage Guide
 
-1. **New Dataset Training**: Use `train.sh` for initial model training with standard configurations
-2. **Hyperparameter Optimization**: Use `run_sweep.sh` for automated parameter search across multiple dimensions
-3. **Sequence Length Tuning**: Use `ws_sweep.sh` to determine optimal window sizes for trajectory segmentation
-4. **Transfer Learning**: Use `finetune.sh` for cross-dataset adaptation or `finetune_miniprogram.sh` for WeChat data
-5. **Baseline Comparison**: Run LSTM scripts to establish traditional sequence model benchmarks
+1. **Hyperparameter Optimization**: Use `run_sweep.sh` for automated parameter search across multiple dimensions
+2. **Sequence Length Tuning**: Use `ws_sweep.sh` (transformer only) to determine optimal window sizes for trajectory segmentation
+3. **Transfer Learning**: Use `finetune.sh` for cross-dataset adaptation or `finetune_miniprogram.sh` for WeChat data
+4. **Baseline Comparison**: Run LSTM scripts to establish traditional sequence model benchmarks
 
 ---
 
 #### Experiment Types
 
-1. **Basic Training**: Use `train.sh` scripts with the specified random seeds
-2. **Hyperparameter Optimization**: Run `run_sweep.sh` for automated parameter search  
-3. **Window Size Analysis**: Execute `ws_sweep.sh` for sequence length optimization
-4. **Transfer Learning**: Use `finetune.sh` for cross-dataset experiments
-5. **Data Efficiency**: Run `finetune_miniprogram.sh` for subset size analysis
+**Transformer Models** (`models/transformer/`):
+1. **Basic Training**: Use `train.sh` scripts with specified random seeds
+2. **Hyperparameter Optimization**: Run `run_sweep.sh` for automated parameter search across attention heads, model dimensions, and learning rates
+3. **Window Size Analysis**: Execute `ws_sweep.sh` for sequence length optimization (20-500 windows)
+4. **Transfer Learning**: Use `finetune.sh` for MOBIS→Geolife cross-dataset experiments
+5. **Data Efficiency**: Run `finetune_miniprogram.sh` for miniprogram subset size analysis (15%-50% data)
 
-The provided shell scripts ensure the same random seeds and configurations are used to replicate the reported accuracy and performance metrics. All experiment logs and configurations are preserved in the `models/` directory structure.
+**LSTM Models** (`models/lstm/`):
+1. **Comprehensive Sweeps**: `run_sweep.sh` performs exhaustive hyperparameter search across hidden dimensions (64-256), layer counts (2-3), and learning rates (1e-3 to 2e-3)
+2. **Window Optimization**: `ws_sweep.sh` finds optimal sequence lengths for LSTM memory efficiency
+3. **Enhanced Transfer Learning**: `finetune.sh` includes learning rate and hidden dimension grid search for MOBIS→Geolife transfer
+4. **Advanced Miniprogram Experiments**: `finetune_miniprogram.sh` combines hyperparameter tuning with data subset analysis, plus automated summary generation
+
+#### Model Comparison Framework
+
+- **Transformer Scripts**: Focus on attention mechanisms, multi-head configurations, and model depth
+- **LSTM Scripts**: Emphasize memory cell optimization, hidden state dimensions, and recurrent layer stacking
+- **Shared Features**: Both model types use identical random seeds, data preprocessing, and evaluation metrics for fair comparison
+
+The provided shell scripts ensure reproducible experiments with consistent configurations. All experiment logs, model checkpoints, and performance metrics are preserved in organized subdirectories under `models/`.
+
+---
+
+#### Quick Start Guide
+
+**Run All Transformer Experiments:**
+```bash
+cd models/transformer
+tmux new-session -d -s transformer_experiments
+tmux send-keys "cd /data/A-SpeedTransformer/models/transformer" C-m
+tmux send-keys "./run_sweep.sh" C-m
+# Add more windows for parallel execution
+tmux new-window -t transformer_experiments
+tmux send-keys "cd /data/A-SpeedTransformer/models/transformer && ./ws_sweep.sh" C-m
+```
+
+**Run All LSTM Experiments:**
+```bash
+cd models/lstm  
+tmux new-session -d -s lstm_experiments
+tmux send-keys "cd /data/A-SpeedTransformer/models/lstm" C-m
+tmux send-keys "./run_sweep.sh" C-m
+# Parallel window execution
+tmux new-window -t lstm_experiments
+tmux send-keys "cd /data/A-SpeedTransformer/models/lstm && ./ws_sweep.sh" C-m
+```
+
+**Monitor Progress:**
+```bash
+tmux list-sessions
+tmux attach-session -t lstm_experiments
+tmux attach-session -t transformer_experiments
+```
 
 **Note**: Make sure to use the correct model checkpoints and data paths when running the scripts!
 
