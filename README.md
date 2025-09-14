@@ -59,7 +59,6 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 
 #### Transformer Scripts (`models/transformer/`)
 
-- **`train.sh`** - Basic training script for transformer models on individual datasets with specific random seeds
 - **`run_sweep.sh`** - Comprehensive hyperparameter sweep across learning rates, batch sizes, model dimensions, attention heads, and dropout rates
 - **`ws_sweep.sh`** - Window size optimization sweep to find optimal trajectory sequence lengths (tests 20, 50, 100, 200, 300, 400, 500)
 - **`finetune.sh`** - Transfer learning from MOBIS pretrained model to Geolife with multiple fine-tuning strategies (full, layer freezing, gradual unfreezing)
@@ -78,97 +77,6 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 4. **Transfer Learning**: Use `finetune.sh` for cross-dataset adaptation or `finetune_miniprogram.sh` for WeChat data
 5. **Baseline Comparison**: Run LSTM scripts to establish traditional sequence model benchmarks
 
-### LSTM Model
-
-**Training**
-
-Use the `train.sh` script for quick training with the proper random states:
-
-```bash
-# models/lstm/train.sh
-# MOBIS
-python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
-
-# Geolife  
-python lstm.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
-```
-
-This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib` for fine-tuning and/or inference purposes.
-
-**Fine-tuning**
-
-Use the `finetune.sh` script to fine-tune the pre-trained LSTM model:
-
-```bash
-# models/lstm/finetune.sh
-python finetune.py \
-  --pretrained_model_path /data/SpeedTransformer/models/lstm/mobis/best_model.pth \
-  --data_path /data/SpeedTransformer/data/geolife_processed.csv \
-  --scaler_path /data/SpeedTransformer/models/lstm/mobis/scaler.joblib \
-  --label_encoder_path /data/SpeedTransformer/models/lstm/mobis/label_encoder.joblib \
-  --test_size 0.79 \
-  --val_size 0.2 \
-  --random_state 42
-```
-
-### Transformer Model
-
-**Training**
-
-Use the `train.sh` script to train a Transformer model with the specified random states:
-
-```bash
-# models/transformer/train.sh
-# MOBIS
-python train.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
-
-# Geolife
-python train.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
-```
-
-**Hyperparameter Optimization**
-
-Use the `run_sweep.sh` script for comprehensive hyperparameter search:
-
-```bash
-# models/transformer/run_sweep.sh
-# Automated grid search across learning rates, batch sizes, model dimensions, etc.
-```
-
-**Window Size Optimization**
-
-Use the `ws_sweep.sh` script to find optimal trajectory sequence lengths:
-
-```bash
-# models/transformer/ws_sweep.sh  
-# Tests window sizes: 20, 50, 100, 200, 300, 400, 500
-```
-
-**Fine-Tuning**
-
-Use the `finetune.sh` script for transfer learning from MOBIS to Geolife:
-
-```bash
-# models/transformer/finetune.sh
-python finetune.py \
-  --pretrained_model_path /data/SpeedTransformer/models/transformer/mobis/best_model.pth \
-  --data_path /data/SpeedTransformer/data/geolife_processed.csv \
-  --label_encoder_path /data/SpeedTransformer/models/transformer/mobis/label_encoder.joblib \
-  --test_size 0.79 \
-  --val_size 0.2 \
-  --random_state 42
-```
-
-**Miniprogram Fine-Tuning**
-
-Use the `finetune_miniprogram.sh` script for WeChat mobility data experiments:
-
-```bash
-# models/transformer/finetune_miniprogram.sh
-# Tests different data subset sizes (15%, 20%, 30%, 40%, 50%)
-# Various freezing strategies (attention, feedforward, embeddings)
-```
-
 ---
 
 #### Experiment Types
@@ -182,3 +90,9 @@ Use the `finetune_miniprogram.sh` script for WeChat mobility data experiments:
 The provided shell scripts ensure the same random seeds and configurations are used to replicate the reported accuracy and performance metrics. All experiment logs and configurations are preserved in the `models/` directory structure.
 
 **Note**: Make sure to use the correct model checkpoints and data paths when running the scripts!
+
+## License & Contact
+
+This project is licensed under the MIT License. Feel free to open issues or pull requests on GitHub.
+For questions or contributions, please reach out to [Othmane Echchabi](mailto:othmane.echchabi@mail.mcgill.ca).
+
