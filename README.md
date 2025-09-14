@@ -53,20 +53,43 @@ This repository provides two primary model architectures:
 - LSTM-based trip classification (`models/lstm/`).
 - Transformer-based trip classification (`models/transformer/`).
 
-Each architecture includes dedicated scripts for training and fine-tuning. Predefined shell scripts (`train.sh` and `finetune.sh`) are available for streamlined execution with the exact random states used for the reported results.
+Each architecture includes dedicated scripts for training and fine-tuning. The following shell scripts are available:
+
+### Shell Scripts Overview
+
+#### Transformer Scripts (`models/transformer/`)
+
+- **`train.sh`** - Basic training script for transformer models on individual datasets with specific random seeds
+- **`run_sweep.sh`** - Comprehensive hyperparameter sweep across learning rates, batch sizes, model dimensions, attention heads, and dropout rates
+- **`ws_sweep.sh`** - Window size optimization sweep to find optimal trajectory sequence lengths (tests 20, 50, 100, 200, 300, 400, 500)
+- **`finetune.sh`** - Transfer learning from MOBIS pretrained model to Geolife with multiple fine-tuning strategies (full, layer freezing, gradual unfreezing)
+- **`finetune_miniprogram.sh`** - Specialized fine-tuning for miniprogram (WeChat) mobility data with various data subset sizes (15%, 20%, 30%, 40%, 50%)
+
+#### LSTM Scripts (`models/lstm/`)
+
+- **`train.sh`** - Basic LSTM model training for baseline comparisons on Geolife and MOBIS datasets
+- **`finetune.sh`** - LSTM transfer learning experiments from MOBIS to Geolife for baseline comparison
+
+### Script Usage Guide
+
+1. **New Dataset Training**: Use `train.sh` for initial model training with standard configurations
+2. **Hyperparameter Optimization**: Use `run_sweep.sh` for automated parameter search across multiple dimensions
+3. **Sequence Length Tuning**: Use `ws_sweep.sh` to determine optimal window sizes for trajectory segmentation
+4. **Transfer Learning**: Use `finetune.sh` for cross-dataset adaptation or `finetune_miniprogram.sh` for WeChat data
+5. **Baseline Comparison**: Run LSTM scripts to establish traditional sequence model benchmarks
 
 ### LSTM Model
 
 **Training**
 
-Use the `train.sh` script for quick training with the proper random states.
+Use the `train.sh` script for quick training with the proper random states:
 
 ```bash
-# lstm/train.sh
+# models/lstm/train.sh
 # MOBIS
-python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 1
+python lstm.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
 
-# Geolife
+# Geolife  
 python lstm.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
 ```
 
@@ -74,10 +97,10 @@ This saves the best model and also saves `scaler.joblib` / `label_encoder.joblib
 
 **Fine-tuning**
 
-Use the `finetune.sh` script to fine-tune the pre-trained LSTM model with a default random state of `42`
+Use the `finetune.sh` script to fine-tune the pre-trained LSTM model:
 
 ```bash
-# lstm/finetune.sh
+# models/lstm/finetune.sh
 python finetune.py \
   --pretrained_model_path /data/SpeedTransformer/models/lstm/mobis/best_model.pth \
   --data_path /data/SpeedTransformer/data/geolife_processed.csv \
@@ -95,7 +118,7 @@ python finetune.py \
 Use the `train.sh` script to train a Transformer model with the specified random states:
 
 ```bash
-# transformer/train.sh
+# models/transformer/train.sh
 # MOBIS
 python train.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --random_state 316
 
@@ -103,10 +126,30 @@ python train.py --data_path /data/SpeedTransformer/data/mobis_processed.csv --ra
 python train.py --data_path /data/SpeedTransformer/data/geolife_processed.csv --random_state 1
 ```
 
-**Fine-Tuning**
+**Hyperparameter Optimization**
+
+Use the `run_sweep.sh` script for comprehensive hyperparameter search:
 
 ```bash
-# transformer/finetune.sh
+# models/transformer/run_sweep.sh
+# Automated grid search across learning rates, batch sizes, model dimensions, etc.
+```
+
+**Window Size Optimization**
+
+Use the `ws_sweep.sh` script to find optimal trajectory sequence lengths:
+
+```bash
+# models/transformer/ws_sweep.sh  
+# Tests window sizes: 20, 50, 100, 200, 300, 400, 500
+```
+
+**Fine-Tuning**
+
+Use the `finetune.sh` script for transfer learning from MOBIS to Geolife:
+
+```bash
+# models/transformer/finetune.sh
 python finetune.py \
   --pretrained_model_path /data/SpeedTransformer/models/transformer/mobis/best_model.pth \
   --data_path /data/SpeedTransformer/data/geolife_processed.csv \
@@ -116,20 +159,26 @@ python finetune.py \
   --random_state 42
 ```
 
+**Miniprogram Fine-Tuning**
+
+Use the `finetune_miniprogram.sh` script for WeChat mobility data experiments:
+
+```bash
+# models/transformer/finetune_miniprogram.sh
+# Tests different data subset sizes (15%, 20%, 30%, 40%, 50%)
+# Various freezing strategies (attention, feedforward, embeddings)
+```
+
 ---
 
-### Replicating Results
+#### Experiment Types
 
-To reproduce the results from the paper, the following random states were used:
+1. **Basic Training**: Use `train.sh` scripts with the specified random seeds
+2. **Hyperparameter Optimization**: Run `run_sweep.sh` for automated parameter search  
+3. **Window Size Analysis**: Execute `ws_sweep.sh` for sequence length optimization
+4. **Transfer Learning**: Use `finetune.sh` for cross-dataset experiments
+5. **Data Efficiency**: Run `finetune_miniprogram.sh` for subset size analysis
 
-LSTM Geolife: `1`
+The provided shell scripts ensure the same random seeds and configurations are used to replicate the reported accuracy and performance metrics. All experiment logs and configurations are preserved in the `models/` directory structure.
 
-LSTM MOBIS: `316`
-
-Transformer Geolife: `316`
-
-Transformer MOBIS: `1`
-
-Fine-Tuning Tasks: `42`
-
-The provided `.sh` scripts ensure the same random seeds are used to replicate the reported accuracy and performance metrics. Make sure to use the right checkpoints!
+**Note**: Make sure to use the correct model checkpoints and data paths when running the scripts!
