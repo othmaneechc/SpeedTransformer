@@ -1,130 +1,156 @@
-# finetune.py
-
-import argparse
+#!/usr/bin/env python3
+import os
 import sys
+import argparse
 import logging
+import random
+import numpy as np
+
 import torch
+import torch.distributed as dist
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
+
 from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib
+matplotlib.use("Agg")  # headless save
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
-from tqdm import tqdm  # optional
-import random
-import numpy as np
 
 from data_utils import DataProcessor, TripDataset
 from model_utils import TrajectoryModel
 
 
-def set_global_seed(seed):
+# -------------------- DDP helpers --------------------
+def ddp_setup():
+    ws = int(os.environ.get("WORLD_SIZE", "1"))
+    if ws > 1:
+        dist.init_process_group(backend="nccl", init_method="env://")
+        torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
+
+def ddp_cleanup():
+    if dist.is_available() and dist.is_initialized():
+        dist.destroy_process_group()
+
+def is_primary() -> bool:
+    return int(os.environ.get("RANK", "0")) == 0
+
+def world_size() -> int:
+    return int(os.environ.get("WORLD_SIZE", "1"))
+
+@torch.no_grad()
+def reduce_mean_scalar(x: float, device: torch.device) -> float:
+    t = torch.tensor([x], device=device, dtype=torch.float64)
+    if world_size() > 1:
+        dist.all_reduce(t, op=dist.ReduceOp.SUM)
+        t /= world_size()
+    return float(t.item())
+
+def bcast_bool(flag: bool, device: torch.device) -> bool:
+    t = torch.tensor([1 if flag else 0], device=device, dtype=torch.int)
+    if world_size() > 1:
+        dist.broadcast(t, src=0)
+    return bool(int(t.item()))
+# -----------------------------------------------------
+
+
+def set_global_seed(seed: int):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)  # For multi-GPU if needed
-
-    # For deterministic behavior (potentially slower performance)
+    torch.cuda.manual_seed_all(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
+    torch.use_deterministic_algorithms(True)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
+
 def setup_logger(log_file='finetune.log'):
-    """
-    Set up a logger to write logs to a file and to the console.
-    """
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
-
-    # Avoid adding handlers multiple times if the logger already exists
     if logger.hasHandlers():
         return logger
-
-    # File handler
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.INFO)
-
-    # Console handler
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.INFO)
-
-    # Formatter
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-
-    # Add handlers
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-
+    fh = logging.FileHandler(log_file); fh.setLevel(logging.INFO)
+    ch = logging.StreamHandler(sys.stdout); ch.setLevel(logging.INFO)
+    fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    fh.setFormatter(fmt); ch.setFormatter(fmt)
+    logger.addHandler(fh); logger.addHandler(ch)
     return logger
 
 
 def main():
-    # Initialize logger
+    ddp_setup()
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    device = torch.device(f"cuda:{local_rank}" if torch.cuda.is_available() else "cpu")
+
     logger = setup_logger('finetune.log')
 
-    parser = argparse.ArgumentParser(description="Fine-tune a pre-trained Trajectory Transformer model.")
+    parser = argparse.ArgumentParser(description="Fine-tune a pre-trained Trajectory Transformer (DDP-aware).")
+    # Data & splits
+    parser.add_argument('--data_path', type=str, required=True)
+    parser.add_argument('--feature_columns', nargs='+', default=['speed'])
+    parser.add_argument('--target_column', type=str, default='label')
+    parser.add_argument('--traj_id_column', type=str, default='traj_id')
+    parser.add_argument('--test_size', type=float, default=0.7)
+    parser.add_argument('--val_size', type=float, default=0.2)
+    parser.add_argument('--random_state', type=int, default=42)
+    parser.add_argument('--chunksize', type=int, default=10**6)
+    parser.add_argument('--window_size', type=int, default=200)
+    parser.add_argument('--stride', type=int, default=50)
 
-    parser.add_argument('--data_path', type=str, required=True,
-                        help='Path to the CSV data file for fine-tuning.')
-    parser.add_argument('--feature_columns', nargs='+', default=['speed'],
-                        help='List of feature columns to use.')
-    parser.add_argument('--target_column', type=str, default='label',
-                        help='Name of the target column.')
-    parser.add_argument('--traj_id_column', type=str, default='traj_id',
-                        help='Name of the trajectory ID column.')
-    parser.add_argument('--test_size', type=float, default=0.7,
-                        help='Proportion of data for testing.')
-    parser.add_argument('--val_size', type=float, default=0.2,
-                        help='Proportion of data for validation.')
-    parser.add_argument('--random_state', type=int, default=42,
-                        help='Random seed.')
-    parser.add_argument('--chunksize', type=int, default=10**6,
-                        help='Chunksize for reading CSV in chunks.')
-    parser.add_argument('--window_size', type=int, default=200,
-                        help='Sliding window size.')
-    parser.add_argument('--stride', type=int, default=50,
-                        help='Stride for the sliding window.')
+    # Loaders
+    parser.add_argument('--batch_size', type=int, default=1024)  # per-GPU
+    parser.add_argument('--num_workers', type=int, default=4)
+    parser.add_argument('--num_epochs', type=int, default=20)
+    parser.add_argument('--patience', type=int, default=5)
 
-    parser.add_argument('--batch_size', type=int, default=1024,
-                        help='Batch size for DataLoader.')
-    parser.add_argument('--num_workers', type=int, default=4,
-                        help='Number of workers for DataLoader.')
-    parser.add_argument('--num_epochs', type=int, default=20,
-                        help='Max number of fine-tuning epochs.')
-    parser.add_argument('--patience', type=int, default=5,
-                        help='Early stopping patience.')
+    # Model Architecture
+    parser.add_argument('--d_model', type=int, default=128)
+    parser.add_argument('--nhead', type=int, default=8)
+    parser.add_argument('--num_layers', type=int, default=4)
+    parser.add_argument('--dropout', type=float, default=0.2)
+    parser.add_argument('--kv_heads', type=int, default=4, help='Number of key/value heads')
 
-    parser.add_argument('--d_model', type=int, default=128,
-                        help='Transformer embedding dimension.')
-    parser.add_argument('--nhead', type=int, default=8,
-                        help='Number of attention heads.')
-    parser.add_argument('--num_layers', type=int, default=4,
-                        help='Number of transformer encoder layers.')
-    parser.add_argument('--dropout', type=float, default=0.2,
-                        help='Dropout rate in the transformer.')
+    # Fine-tuning Control
+    parser.add_argument('--freeze_embeddings', action='store_true', 
+                      help='Freeze the embedding layer')
+    parser.add_argument('--freeze_layers', type=str, default='',
+                      help='Comma-separated list of transformer layer indices to freeze (e.g., "0,1,2")')
+    parser.add_argument('--freeze_attention', action='store_true',
+                      help='Freeze attention mechanisms in all layers')
+    parser.add_argument('--freeze_feedforward', action='store_true',
+                      help='Freeze feedforward networks in all layers')
+    parser.add_argument('--reinit_layers', type=str, default='',
+                      help='Comma-separated list of transformer layer indices to reinitialize')
     
-    parser.add_argument('--learning_rate', type=float, default=1e-3,
-                        help='Learning rate for fine-tuning.')
-    parser.add_argument('--weight_decay', type=float, default=1e-4,
-                        help='Weight decay for fine-tuning.')
-    parser.add_argument('--gradient_clip', type=float, default=0.5,
-                        help='Gradient clipping value.')
+    # Optimization
+    parser.add_argument('--learning_rate', type=float, default=1e-3)
+    parser.add_argument('--weight_decay', type=float, default=1e-4)
+    parser.add_argument('--gradient_clip', type=float, default=0.5)
+    parser.add_argument('--warmup_steps', type=int, default=0,
+                      help='Number of warmup steps for learning rate')
+    parser.add_argument('--layer_lr_decay', type=float, default=1.0,
+                      help='Per-layer learning rate decay factor (1.0 = disabled)')
 
-    parser.add_argument('--pretrained_model_path', type=str, required=True,
-                        help='Path to the saved pretrained model to fine-tune.')
-    parser.add_argument('--save_model_path', type=str, default='finetuned_model.pth',
-                        help='Where to save the fine-tuned model weights.')
-    parser.add_argument('--label_encoder_path', type=str, default='label_encoder.joblib',
-                        help='Path to the saved label encoder from previous training.')
+    # Checkpoints / preprocessors
+    parser.add_argument('--pretrained_model_path', type=str, required=True)
+    parser.add_argument('--save_model_path', type=str, default='finetuned_model.pth')
+    parser.add_argument('--label_encoder_path', type=str, default='label_encoder.joblib')
+
+    # Optional AMP to match your TrajectoryModel
+    parser.add_argument('--use_amp', action='store_true')
 
     args = parser.parse_args()
     set_global_seed(args.random_state)
 
     # -----------------------------
-    # 1) Data Processing
+    # 1) Data processing
     # -----------------------------
-    logger.info("Initializing DataProcessor for fine-tuning...")
+    if is_primary():
+        logger.info("Initializing DataProcessor for fine-tuning...")
     processor = DataProcessor(
         data_path=args.data_path,
         feature_columns=args.feature_columns,
@@ -138,72 +164,60 @@ def main():
         stride=args.stride
     )
     processor.load_and_process_data()
-    logger.info("Data loaded and processed successfully.")
 
-    logger.info(f"Loading label encoder from {args.label_encoder_path}...")
-    loaded_encoder = joblib.load(args.label_encoder_path)
-    processor.label_encoder = loaded_encoder
-    logger.info("Label encoder loaded and assigned to DataProcessor.")
+    # Use the saved label encoder (keeps class indices consistent with pretraining)
+    processor.label_encoder = joblib.load(args.label_encoder_path)
 
-    # Clear old sequences and re-create them using the loaded encoder
-    logger.info("Clearing old sequences and re-creating them using loaded encoder...")
-    processor.train_sequences.clear()
-    processor.train_labels.clear()
-    processor.train_masks.clear()
-    processor.val_sequences.clear()
-    processor.val_labels.clear()
-    processor.val_masks.clear()
-    processor.test_sequences.clear()
-    processor.test_labels.clear()
-    processor.test_masks.clear()
+    # Recreate sequences after replacing encoder
+    processor.train_sequences.clear(); processor.train_labels.clear(); processor.train_masks.clear()
+    processor.val_sequences.clear();   processor.val_labels.clear();   processor.val_masks.clear()
+    processor.test_sequences.clear();  processor.test_labels.clear();  processor.test_masks.clear()
     processor.create_sequences()
-    logger.info("Sequences re-created successfully.")
 
-    # Build datasets
-    train_dataset = TripDataset(processor.train_sequences, processor.train_labels, processor.train_masks)
-    val_dataset   = TripDataset(processor.val_sequences,   processor.val_labels,   processor.val_masks)
-    test_dataset  = TripDataset(processor.test_sequences,  processor.test_labels,  processor.test_masks)
+    # Datasets
+    train_ds = TripDataset(processor.train_sequences, processor.train_labels, processor.train_masks)
+    val_ds   = TripDataset(processor.val_sequences,   processor.val_labels,   processor.val_masks)
+    test_ds  = TripDataset(processor.test_sequences,  processor.test_labels,  processor.test_masks)
 
+    # Distributed samplers
+    if world_size() > 1:
+        train_samp = DistributedSampler(train_ds, shuffle=True,  drop_last=False)
+        val_samp   = DistributedSampler(val_ds,   shuffle=False, drop_last=False)
+        test_samp  = DistributedSampler(test_ds,  shuffle=False, drop_last=False)
+    else:
+        train_samp = val_samp = test_samp = None
+
+    # Deterministic worker init
     def worker_init_fn(worker_id):
-        # Each worker gets a unique seed based on the global seed + worker ID
-        seed = args.random_state + worker_id
-        np.random.seed(seed)
-        random.seed(seed)
+        base = args.random_state + 1000 * int(os.environ.get("RANK", "0"))
+        seed = base + worker_id
+        np.random.seed(seed); random.seed(seed); torch.manual_seed(seed)
 
+    # DataLoaders (batch_size is per-GPU)
     train_loader = DataLoader(
-        train_dataset,
-        batch_size=args.batch_size,
-        shuffle=True,
-        num_workers=args.num_workers,
+        train_ds, batch_size=args.batch_size, shuffle=(train_samp is None),
+        sampler=train_samp, num_workers=args.num_workers, pin_memory=True,
         worker_init_fn=worker_init_fn
     )
-
     val_loader = DataLoader(
-        val_dataset,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=args.num_workers,
+        val_ds, batch_size=args.batch_size, shuffle=False,
+        sampler=val_samp, num_workers=args.num_workers, pin_memory=True,
         worker_init_fn=worker_init_fn
     )
-
     test_loader = DataLoader(
-        test_dataset,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=args.num_workers,
+        test_ds, batch_size=args.batch_size, shuffle=False,
+        sampler=test_samp, num_workers=args.num_workers, pin_memory=True,
         worker_init_fn=worker_init_fn
     )
-    logger.info("DataLoaders for train, val, and test are ready.")
 
     # -----------------------------
-    # 2) Load Pretrained Model
+    # 2) Load model & wrap with DDP
     # -----------------------------
-    logger.info("Initializing model for fine-tuning...")
     model = TrajectoryModel(
         feature_columns=args.feature_columns,
-        label_encoder=processor.label_encoder
+        label_encoder=processor.label_encoder,
+        use_amp=args.use_amp
     )
-    
     model.prepare_model(
         window_size=args.window_size,
         d_model=args.d_model,
@@ -214,84 +228,229 @@ def main():
         weight_decay=args.weight_decay
     )
 
-    logger.info(f"Loading pretrained model from: {args.pretrained_model_path}")
+    if is_primary():
+        logger.info(f"Loading pretrained model from: {args.pretrained_model_path}")
     model.load_model(args.pretrained_model_path)
-    logger.info("Pretrained model loaded successfully.")
 
-    # # (Optional) Freeze certain layers if desired
-    # for name, param in model.model.named_parameters():
-    #     if "transformer_encoder.layers.0" in name or "transformer_encoder.layers.1" in name:
-    #         param.requires_grad = False
-    # logger.info("Optional: Frozen first two layers of the transformer encoder.")
+    # Apply fine-tuning controls
+    def get_layer_indices(layer_str):
+        return [int(i) for i in layer_str.split(',')] if layer_str else []
 
-    # Unfreeze all layers
-    for name, param in model.model.named_parameters():
-        param.requires_grad = True
-    logger.info("Unfrozen all layers of the transformer encoder.")
+    # 1. Process freezing options
+    freeze_layers = get_layer_indices(args.freeze_layers)
+    
+    # Get transformer layers for easier access
+    transformer_layers = model.model.encoder.layers    # Embeddings
+    if args.freeze_embeddings:
+        for p in model.model.embedding.parameters():
+            p.requires_grad = False
+        if is_primary():
+            logger.info("Frozen: Embedding layer")
+    
+    # Layer-specific freezing
+    for idx, layer in enumerate(transformer_layers):
+        if idx in freeze_layers:
+            for p in layer.parameters():
+                p.requires_grad = False
+            if is_primary():
+                logger.info(f"Frozen: Entire layer {idx}")
+        else:
+            # Selective mechanism freezing
+            if args.freeze_attention:
+                for p in layer.attn.parameters():
+                    p.requires_grad = False
+                if is_primary() and idx == 0:
+                    logger.info("Frozen: Attention mechanisms in all unfrozen layers")
+            
+            if args.freeze_feedforward:
+                for p in layer.ffn.up.parameters():
+                    p.requires_grad = False
+                for p in layer.ffn.down.parameters():
+                    p.requires_grad = False
+                if is_primary() and idx == 0:
+                    logger.info("Frozen: Feedforward networks in all unfrozen layers")
+    
+    # 2. Layer reinitialization
+    reinit_layers = get_layer_indices(args.reinit_layers)
+    for idx in reinit_layers:
+        if idx < len(transformer_layers):
+            layer = transformer_layers[idx]
+            
+            # Attention weights
+            if hasattr(layer.attn, 'q_proj'):
+                torch.nn.init.xavier_uniform_(layer.attn.q_proj.weight)
+                torch.nn.init.xavier_uniform_(layer.attn.k_proj.weight)
+                torch.nn.init.xavier_uniform_(layer.attn.v_proj.weight)
+                torch.nn.init.xavier_uniform_(layer.attn.out.weight)
+                if layer.attn.q_proj.bias is not None:
+                    torch.nn.init.zeros_(layer.attn.q_proj.bias)
+                    torch.nn.init.zeros_(layer.attn.k_proj.bias)
+                    torch.nn.init.zeros_(layer.attn.v_proj.bias)
+                    torch.nn.init.zeros_(layer.attn.out.bias)
+            
+            # FFN weights
+            if hasattr(layer.ffn, 'up'):
+                torch.nn.init.xavier_uniform_(layer.ffn.up.weight)
+                torch.nn.init.xavier_uniform_(layer.ffn.down.weight)
+                if layer.ffn.up.bias is not None:
+                    torch.nn.init.zeros_(layer.ffn.up.bias)
+                if layer.ffn.down.bias is not None:
+                    torch.nn.init.zeros_(layer.ffn.down.bias)
+            
+            # Layer norms (use standard initialization)
+            if hasattr(layer, 'norm1'):
+                torch.nn.init.ones_(layer.norm1.weight)
+                torch.nn.init.zeros_(layer.norm1.bias)
+            if hasattr(layer, 'norm2'):
+                torch.nn.init.ones_(layer.norm2.weight)
+                torch.nn.init.zeros_(layer.norm2.bias)
+                
+            if is_primary():
+                logger.info(f"Reinitialized: Layer {idx}")
+    
+    # 3. Setup optimizer with layer-wise learning rates
+    param_groups = []
+    
+    # Embedding group (if not frozen)
+    if not args.freeze_embeddings:
+        param_groups.append({
+            'params': model.model.embedding.parameters(),
+            'lr': args.learning_rate
+        })
+    
+    # Layer groups with decay
+    num_layers = len(transformer_layers)
+    for idx, layer in enumerate(transformer_layers):
+        if idx not in freeze_layers:
+            # Apply layer-wise learning rate decay
+            layer_lr = args.learning_rate * (args.layer_lr_decay ** (num_layers - idx - 1))
+            param_groups.append({
+                'params': layer.parameters(),
+                'lr': layer_lr
+            })
+            if is_primary() and args.layer_lr_decay != 1.0:
+                logger.info(f"Layer {idx} learning rate: {layer_lr:.2e}")
+    
+    # Create optimizer with param groups
+    model.optimizer = torch.optim.AdamW(param_groups, weight_decay=args.weight_decay)
+    
+    # 4. Add warmup scheduler if requested
+    if args.warmup_steps > 0:
+        def lr_lambda(step):
+            if step < args.warmup_steps:
+                return float(step) / float(max(1, args.warmup_steps))
+            return 1.0
+        
+        model.scheduler = torch.optim.lr_scheduler.LambdaLR(model.optimizer, lr_lambda)
+        if is_primary():
+            logger.info(f"Added warmup scheduler with {args.warmup_steps} steps")
 
-    # Re-initialize optimizer to only update unfrozen params
-    model.optimizer = torch.optim.AdamW(
-        filter(lambda p: p.requires_grad, model.model.parameters()),
-        lr=args.learning_rate,
-        weight_decay=args.weight_decay
-    )
-    logger.info("Optimizer re-initialized to only update unfrozen parameters.")
+    # Wrap core module with DDP
+    core = model.model.to(device)
+    if world_size() > 1:
+        model.model = DDP(core, device_ids=[local_rank], output_device=local_rank)
 
     # -----------------------------
-    # 3) Fine-Tuning
+    # 3) Fine-tuning loop (global metrics + early stop)
     # -----------------------------
-    logger.info("Starting the fine-tuning process...")
     best_val_acc = 0.0
     epochs_no_improve = 0
 
     for epoch in range(args.num_epochs):
+        if train_samp is not None:
+            train_samp.set_epoch(epoch)
+
+        if is_primary():
+            logger.info(f"[Epoch {epoch+1}/{args.num_epochs}]")
+
         train_loss, train_acc = model.train_one_epoch(train_loader, gradient_clip=args.gradient_clip)
+        
+        # Step LR scheduler if using warmup
+        if args.warmup_steps > 0:
+            model.scheduler.step()
+            
         val_loss, val_acc = model.evaluate(val_loader)
 
-        logger.info(
-            f"[Epoch {epoch+1}/{args.num_epochs}] "
-            f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}, "
-            f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}"
-        )
+        # Average across GPUs
+        train_loss = reduce_mean_scalar(train_loss, device)
+        train_acc  = reduce_mean_scalar(train_acc,  device)
+        val_loss   = reduce_mean_scalar(val_loss,   device)
+        val_acc    = reduce_mean_scalar(val_acc,    device)
+        
+        # Log learning rates if using layer-wise decay
+        if is_primary() and args.layer_lr_decay != 1.0:
+            for idx, group in enumerate(model.optimizer.param_groups):
+                logger.info(f"Group {idx} current lr: {group['lr']:.2e}")
 
-        # Monitor validation accuracy
-        if val_acc > best_val_acc:
-            best_val_acc = val_acc
-            epochs_no_improve = 0
-            model.save_model(args.save_model_path)
-            logger.info("  -> Best fine-tuned model saved.")
-        else:
-            epochs_no_improve += 1
-            logger.info(f"  -> No improvement ({epochs_no_improve}/{args.patience})")
+        if is_primary():
+            logger.info(f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}")
+            logger.info(f"Val   Loss: {val_loss:.4f}, Val   Acc: {val_acc:.4f}")
 
-        if epochs_no_improve >= args.patience:
-            logger.info("Early stopping triggered.")
+        # Early stopping on rank 0
+        improved = False
+        if is_primary():
+            if val_acc > best_val_acc:
+                best_val_acc = val_acc
+                epochs_no_improve = 0
+                # Save only on rank 0
+                model.save_model(args.save_model_path)
+                logger.info("  -> Best fine-tuned model saved.")
+                improved = True
+            else:
+                epochs_no_improve += 1
+                logger.info(f"  -> No improvement ({epochs_no_improve}/{args.patience})")
+
+        # Broadcast early-stop decision
+        stop = False
+        if is_primary():
+            stop = epochs_no_improve >= args.patience
+        stop = bcast_bool(stop, device)
+        if stop:
+            if is_primary():
+                logger.info("Early stopping triggered.")
             break
 
     # -----------------------------
-    # 4) Final Test
+    # 4) Final evaluation (rank 0 report)
     # -----------------------------
-    logger.info(f"\nLoading best fine-tuned model from {args.save_model_path} for final evaluation...")
-    model.load_model(args.save_model_path)
+    if is_primary():
+        logger.info(f"\nLoading best fine-tuned model from {args.save_model_path} for final evaluation...")
+    model.load_model(args.save_model_path)  # safe on all ranks; only rank0 saved
+
+    # Evaluate (per-rank), then reduce
     test_loss, test_acc = model.evaluate(test_loader)
-    logger.info(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_acc:.4f}")
+    test_loss = reduce_mean_scalar(test_loss, device)
+    test_acc  = reduce_mean_scalar(test_acc,  device)
 
-    all_labels, all_preds = model.predict(test_loader)
-    report = classification_report(all_labels, all_preds, target_names=processor.label_encoder.classes_)
-    logger.info("Classification Report:\n" + report)
+    # Gather predictions from all ranks for detailed report
+    local_labels, local_preds = model.predict(test_loader)
+    if world_size() > 1:
+        gathered_labels = [None for _ in range(world_size())]
+        gathered_preds  = [None for _ in range(world_size())]
+        dist.all_gather_object(gathered_labels, local_labels)
+        dist.all_gather_object(gathered_preds,  local_preds)
+        all_labels, all_preds = [], []
+        for la, pr in zip(gathered_labels, gathered_preds):
+            all_labels.extend(la); all_preds.extend(pr)
+    else:
+        all_labels, all_preds = local_labels, local_preds
 
-    cm = confusion_matrix(all_labels, all_preds)
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=processor.label_encoder.classes_,
-                yticklabels=processor.label_encoder.classes_)
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
-    plt.title('Confusion Matrix (Fine-Tuned Model)')
-    plt.savefig('confusion_matrix_finetune.png')
-    logger.info("Confusion matrix saved as 'confusion_matrix_finetune.png'.")
+    if is_primary():
+        logger.info(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_acc:.4f}")
+        report = classification_report(all_labels, all_preds, target_names=processor.label_encoder.classes_)
+        logger.info("Classification Report:\n" + report)
 
-    logger.info("Fine-tuning script completed successfully.")
+        cm = confusion_matrix(all_labels, all_preds)
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=processor.label_encoder.classes_,
+                    yticklabels=processor.label_encoder.classes_)
+        plt.ylabel('True Label'); plt.xlabel('Predicted Label'); plt.title('Confusion Matrix (Fine-Tuned)')
+        plt.tight_layout()
+        plt.savefig('confusion_matrix_finetune.png', dpi=200)
+        logger.info("Saved confusion_matrix_finetune.png")
+
+    ddp_cleanup()
 
 
 if __name__ == "__main__":

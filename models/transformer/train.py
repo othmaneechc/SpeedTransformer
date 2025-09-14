@@ -1,14 +1,14 @@
-# train.py
+#!/usr/bin/env python3
+# DDP-aware Transformer training
 
-import argparse
-import sys
-import logging
-import random
-import numpy as np
-
+import os, sys, argparse, logging, random, numpy as np
 import torch
+import torch.distributed as dist
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from torch.nn.parallel import DistributedDataParallel as DDP
 from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib
@@ -17,121 +17,134 @@ from tqdm import tqdm
 from data_utils import DataProcessor, TripDataset
 from model_utils import TrajectoryModel
 
+# --------- DDP helpers ---------
+def ddp_setup():
+    ws = int(os.environ.get("WORLD_SIZE", "1"))
+    if ws > 1:
+        dist.init_process_group(backend="nccl", init_method="env://")
+        torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
+
+def ddp_cleanup():
+    if dist.is_available() and dist.is_initialized():
+        dist.destroy_process_group()
+
+def is_primary() -> bool:
+    return int(os.environ.get("RANK", "0")) == 0
+
+def world_size() -> int:
+    return int(os.environ.get("WORLD_SIZE", "1"))
+
+@torch.no_grad()
+def reduce_mean_scalar(x: float, device: torch.device) -> float:
+    t = torch.tensor([x], device=device, dtype=torch.float64)
+    if world_size() > 1:
+        dist.all_reduce(t, op=dist.ReduceOp.SUM)
+        t /= world_size()
+    return float(t.item())
+# --------------------------------
 
 def setup_logger(log_file='train.log'):
-    """
-    Set up a logger to write logs to a file and to the console.
-    """
+    """Rank-aware logger: only rank 0 emits logs to console/file."""
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
-
-    # Avoid adding handlers multiple times if the logger already exists
     if logger.hasHandlers():
         return logger
-
-    # File handler
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.INFO)
-
-    # Console handler
-    ch = logging.StreamHandler(sys.stdout)
-    ch.setLevel(logging.INFO)
-
-    # Formatter
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-
-    # Add handlers
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-
+    if is_primary():
+        fh = logging.FileHandler(log_file); fh.setLevel(logging.INFO)
+        ch = logging.StreamHandler(sys.stdout); ch.setLevel(logging.INFO)
+        fmt = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        fh.setFormatter(fmt); ch.setFormatter(fmt)
+        logger.addHandler(fh); logger.addHandler(ch)
+    else:
+        logger.addHandler(logging.NullHandler()); logger.setLevel(logging.ERROR)
     return logger
 
-
-def set_seed(seed):
-    """
-    Set the seed for all relevant libraries to ensure reproducibility.
-    """
-    import os
-    import torch
-    import random
-    import numpy as np
-
-    random.seed(seed)
-    np.random.seed(seed)
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed)
-
-    # For CPU
+def set_seed(seed: int):
+    random.seed(seed); np.random.seed(seed)
+    torch.manual_seed(seed); torch.cuda.manual_seed_all(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
     torch.use_deterministic_algorithms(True)
-
-    # For CUDA (optional, can make some operations slower)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    # Environment variables (must be set before any CUDA operations)
-    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
-    os.environ['PYTHONHASHSEED'] = str(seed)
-
+def maybe_get_core_module(model: TrajectoryModel):
+    if hasattr(model, "net") and isinstance(getattr(model, "net"), torch.nn.Module):
+        return "net", model.net
+    if hasattr(model, "model") and isinstance(getattr(model, "model"), torch.nn.Module):
+        return "model", model.model
+    return None, None
 
 def main():
+    ddp_setup()
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    device = torch.device(f"cuda:{local_rank}" if torch.cuda.is_available() else "cpu")
 
-    import os
-
-    # Set PYTHONHASHSEED for hash-based operations
-    os.environ['PYTHONHASHSEED'] = '0'
-
-    # Set CUBLAS_WORKSPACE_CONFIG for deterministic CUDA operations
-    os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':16:8'
-    
     parser = argparse.ArgumentParser(description="Train a Trajectory Transformer model.")
-    
-    # Data
-    parser.add_argument("--checkpoint_dir", type=str, default=".", help="Directory to save model checkpoints.")
-    parser.add_argument('--data_path', type=str, required=True, help='Path to the CSV data file.')
-    parser.add_argument('--feature_columns', nargs='+', default=['speed'], help='List of feature columns to use.')
-    parser.add_argument('--target_column', type=str, default='label', help='Name of the target column.')
-    parser.add_argument('--traj_id_column', type=str, default='traj_id', help='Name of the trajectory ID column.')
-    parser.add_argument('--test_size', type=float, default=0.15, help='Proportion of data for testing.')
-    parser.add_argument('--val_size', type=float, default=0.15, help='Proportion of data for validation.')
-    parser.add_argument('--random_state', type=int, default=316, help='Random seed.')
-    parser.add_argument('--chunksize', type=int, default=10**6, help='Chunksize for reading CSV in chunks.')
-    parser.add_argument('--window_size', type=int, default=200, help='Sliding window size.')
-    parser.add_argument('--stride', type=int, default=50, help='Stride for the sliding window.')
-    
-    # Training
-    parser.add_argument('--batch_size', type=int, default=1024, help='Batch size for DataLoader.')
-    parser.add_argument('--num_workers', type=int, default=4, help='Number of workers for DataLoader.')
-    parser.add_argument('--num_epochs', type=int, default=50, help='Maximum number of training epochs.')
-    parser.add_argument('--patience', type=int, default=7, help='Early stopping patience.')
-    
-    # Model hyperparameters
-    parser.add_argument('--d_model', type=int, default=128, help='Transformer embedding dimension.')
-    parser.add_argument('--nhead', type=int, default=8, help='Number of attention heads.')
-    parser.add_argument('--num_layers', type=int, default=4, help='Number of transformer encoder layers.')
-    parser.add_argument('--dropout', type=float, default=0.1, help='Dropout rate in the transformer.')
-    
-    # Optimizer
-    parser.add_argument('--learning_rate', type=float, default=2e-4, help='Learning rate for AdamW optimizer.')
-    parser.add_argument('--weight_decay', type=float, default=1e-4, help='Weight decay for AdamW optimizer.')
-    parser.add_argument('--gradient_clip', type=float, default=1.0, help='Gradient clipping value.')
 
-    # Saving paths
-    parser.add_argument('--save_model_path', type=str, default='best_model.pth', help='Where to save the best model weights.')
-    parser.add_argument('--save_label_encoder_path', type=str, default='label_encoder.joblib', help='Where to save the fitted label encoder.')
-    parser.add_argument('--save_scaler_path', type=str, default='scaler.joblib', help='Where to save the fitted scaler.')
+    # --- Data ---
+    parser.add_argument('--data_path', type=str, required=True)
+    parser.add_argument('--feature_columns', nargs='+', default=['speed'])
+    parser.add_argument('--target_column', type=str, default='label')
+    parser.add_argument('--traj_id_column', type=str, default='traj_id')
+    parser.add_argument('--test_size', type=float, default=0.15)
+    parser.add_argument('--val_size', type=float, default=0.15)
+    parser.add_argument('--random_state', type=int, default=316)
+    parser.add_argument('--chunksize', type=int, default=10**6)
+    parser.add_argument('--window_size', type=int, default=100)   # <-- tuned
+    parser.add_argument('--stride', type=int, default=25)         # <-- tuned
+
+    # --- Training ---
+    parser.add_argument('--batch_size', type=int, default=128)    # <-- tuned (per-GPU)
+    parser.add_argument('--num_workers', type=int, default=4)
+    parser.add_argument('--num_epochs', type=int, default=50)
+    parser.add_argument('--patience', type=int, default=10)
+    parser.add_argument('--kv_heads', type=int, default=6, help='GQA KV heads')  # <-- tuned
+
+    # --- Model hparams ---
+    parser.add_argument('--d_model', type=int, default=384)       # <-- tuned
+    parser.add_argument('--nhead', type=int, default=12)          # <-- tuned
+    parser.add_argument('--num_layers', type=int, default=4)
+    parser.add_argument('--dropout', type=float, default=0.1)     # <-- tuned
+
+    # --- Optimizer ---
+    parser.add_argument('--learning_rate', type=float, default=5.64070780267346e-05)  # <-- tuned
+    parser.add_argument('--weight_decay', type=float, default=1e-4)                    # <-- tuned
+    parser.add_argument('--gradient_clip', type=float, default=1.0)
+
+    # --- Saving paths ---
+    parser.add_argument('--save_model_path', type=str, default='best_model.pth')
+    parser.add_argument('--save_label_encoder_path', type=str, default='label_encoder.joblib')
+    parser.add_argument('--save_scaler_path', type=str, default='scaler.joblib')
+
+    # --- AMP ---
+    parser.add_argument('--use_amp', action='store_true', default=False)  # tuned run used amp=0
+
+    # --- Sweep bookkeeping ---
+    parser.add_argument('--run_name', type=str, default=None)
+    parser.add_argument('--out_dir',  type=str, default='sweeps')
 
     args = parser.parse_args()
 
-    logger = setup_logger(f'{args.checkpoint_dir}/train.log')
+    # Per-run folder + logger (after parse)
+    run_name = args.run_name or "run"
+    run_dir  = os.path.join(args.out_dir, run_name)
+    if is_primary():
+        os.makedirs(run_dir, exist_ok=True)
+        args.save_model_path         = os.path.join(run_dir, 'best_model.pth')
+        args.save_label_encoder_path = os.path.join(run_dir, 'label_encoder.joblib')
+        args.save_scaler_path        = os.path.join(run_dir, 'scaler.joblib')
+    log_path = os.path.join(run_dir, 'train.log') if is_primary() else 'train.log'
+    logger = setup_logger(log_path)
 
-    # **Set Seeds for Reproducibility**
-    logger.info(f"Setting random seed to {args.random_state}")
+    # Seeds & DDP info
+    if is_primary():
+        logger.info(f"Setting random seed to {args.random_state}")
+        logger.info(f"DDP world_size={world_size()} local_rank={local_rank}")
     set_seed(args.random_state)
 
-    # 1) Data Processing
-    logger.info("Initializing DataProcessor...")
+    # 1) Data
+    if is_primary(): logger.info("Initializing DataProcessor...")
     processor = DataProcessor(
         data_path=args.data_path,
         feature_columns=args.feature_columns,
@@ -145,53 +158,48 @@ def main():
         stride=args.stride
     )
     processor.load_and_process_data()
+    if is_primary():
+        processor.save_preprocessors(args.save_scaler_path, args.save_label_encoder_path)
+        logger.info(f"Scaler saved to {args.save_scaler_path}")
+        logger.info(f"Label encoder saved to {args.save_label_encoder_path}")
 
-    # Save the fitted scaler & label encoder
-    processor.save_preprocessors(args.save_scaler_path, args.save_label_encoder_path)
-    logger.info(f"Scaler saved to {args.save_scaler_path}")
-    logger.info(f"Label encoder saved to {args.save_label_encoder_path}")
-
-    # Build Datasets
     train_dataset = TripDataset(processor.train_sequences, processor.train_labels, processor.train_masks)
     val_dataset   = TripDataset(processor.val_sequences,   processor.val_labels,   processor.val_masks)
     test_dataset  = TripDataset(processor.test_sequences,  processor.test_labels,  processor.test_masks)
 
-    # Set up a generator with the fixed seed for DataLoader
-    g = torch.Generator()
-    g.manual_seed(args.random_state)
-    
-    # Build DataLoaders
+    if world_size() > 1:
+        train_sampler = DistributedSampler(train_dataset, shuffle=True,  drop_last=False)
+        val_sampler   = DistributedSampler(val_dataset,   shuffle=False, drop_last=False)
+        test_sampler  = DistributedSampler(test_dataset,  shuffle=False, drop_last=False)
+        shuffle_train = False
+    else:
+        train_sampler = val_sampler = test_sampler = None
+        shuffle_train = True
+
+    g = torch.Generator(); g.manual_seed(args.random_state + 10_000 * int(os.environ.get("RANK", "0")))
+    def worker_init_fn(worker_id):
+        base = args.random_state + 1000 * int(os.environ.get("RANK", "0"))
+        ss = base + worker_id
+        np.random.seed(ss); random.seed(ss); torch.manual_seed(ss)
+
     train_loader = DataLoader(
-        train_dataset, 
-        batch_size=args.batch_size, 
-        shuffle=True, 
-        num_workers=args.num_workers,
-        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id),
-        generator=g
-    )
+        train_dataset, batch_size=args.batch_size, shuffle=shuffle_train, sampler=train_sampler,
+        num_workers=args.num_workers, worker_init_fn=worker_init_fn, generator=g, pin_memory=True)
     val_loader = DataLoader(
-        val_dataset,   
-        batch_size=args.batch_size, 
-        shuffle=False, 
-        num_workers=args.num_workers,
-        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id)
-    )
+        val_dataset, batch_size=args.batch_size, shuffle=False, sampler=val_sampler,
+        num_workers=args.num_workers, worker_init_fn=worker_init_fn, pin_memory=True)
     test_loader = DataLoader(
-        test_dataset,  
-        batch_size=args.batch_size, 
-        shuffle=False, 
-        num_workers=args.num_workers,
-        worker_init_fn=lambda worker_id: np.random.seed(args.random_state + worker_id)
-    )
+        test_dataset, batch_size=max(1, args.batch_size * 2), shuffle=False, sampler=test_sampler,
+        num_workers=args.num_workers, worker_init_fn=worker_init_fn, pin_memory=True)
 
-    logger.info("Datasets and DataLoaders ready.")
+    if is_primary(): logger.info("Datasets and DataLoaders ready (DDP-aware).")
 
-    # 2) Model Initialization
-    logger.info("Initializing TrajectoryModel...")
+    # 2) Model
+    if is_primary(): logger.info("Initializing TrajectoryModel...")
     model = TrajectoryModel(
         feature_columns=args.feature_columns,
         label_encoder=processor.label_encoder,
-        use_amp=False
+        use_amp=args.use_amp
     )
     model.prepare_model(
         window_size=args.window_size,
@@ -201,69 +209,87 @@ def main():
         dropout=args.dropout,
         lr=args.learning_rate,
         weight_decay=args.weight_decay,
+        kv_heads=args.kv_heads
     )
-    logger.info("Model initialization completed.")
 
-    # 3) Training Loop
-    best_val_loss = float("inf")
-    epochs_no_improve = 0
+    attr_name, core = maybe_get_core_module(model)
+    core = core if core is not None else None
+    if core is None:
+        if is_primary():
+            logger.warning("Could not locate underlying nn.Module inside TrajectoryModel; DDP wrapping skipped.")
+    else:
+        core.to(device)
+        if world_size() > 1:
+            wrapped = DDP(core, device_ids=[local_rank], output_device=local_rank)
+            setattr(model, attr_name, wrapped)
 
-    logger.info("Starting training loop...")
+    if is_primary(): logger.info("Model initialization completed.")
+
+    # 3) Train
+    best_val = float("inf"); epochs_no_improve = 0
+    if is_primary(): logger.info("Starting training loop...")
     for epoch in range(args.num_epochs):
-        train_loss, train_acc = model.train_one_epoch(train_loader, gradient_clip=args.gradient_clip)
-        val_loss, val_acc = model.evaluate(val_loader)
+        if train_sampler is not None and hasattr(train_sampler, "set_epoch"): train_sampler.set_epoch(epoch)
+        if val_sampler   is not None and hasattr(val_sampler,   "set_epoch"): val_sampler.set_epoch(epoch)
 
-        logger.info(
-            f"[Epoch {epoch+1}/{args.num_epochs}] "
-            f"Train Loss: {train_loss:.4f}, Train Acc: {train_acc:.4f}, "
-            f"Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}"
-        )
+        tr_loss, tr_acc = model.train_one_epoch(train_loader, gradient_clip=args.gradient_clip)
+        va_loss, va_acc = model.evaluate(val_loader)
 
-        # Early stopping
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            epochs_no_improve = 0
-            # Save best model
-            model.save_model(args.save_model_path)
-            logger.info("  -> Best model saved")
-        else:
-            epochs_no_improve += 1
-            logger.info(f"  -> No improvement ({epochs_no_improve}/{args.patience})")
+        tr_loss = reduce_mean_scalar(tr_loss, device)
+        tr_acc  = reduce_mean_scalar(tr_acc,  device)
+        va_loss = reduce_mean_scalar(va_loss, device)
+        va_acc  = reduce_mean_scalar(va_acc,  device)
 
-        if epochs_no_improve >= args.patience:
-            logger.info("Early stopping triggered.")
-            break
+        if is_primary():
+            logger.info(f"[Epoch {epoch+1}/{args.num_epochs}] "
+                        f"Train Loss: {tr_loss:.4f}, Train Acc: {tr_acc:.4f}, "
+                        f"Val Loss: {va_loss:.4f}, Val Acc: {va_acc:.4f}")
+            if va_loss < best_val:
+                best_val = va_loss; epochs_no_improve = 0
+                to_save = None
+                if attr_name and isinstance(getattr(model, attr_name), DDP):
+                    to_save = getattr(model, attr_name).module.state_dict()
+                elif attr_name:
+                    to_save = getattr(model, attr_name).state_dict()
+                if to_save is not None: torch.save(to_save, args.save_model_path)
+                elif hasattr(model, "save_model"): model.save_model(args.save_model_path)
+                logger.info("  -> Best model saved")
+            else:
+                epochs_no_improve += 1
+                logger.info(f"  -> No improvement ({epochs_no_improve}/{args.patience})")
+                if epochs_no_improve >= args.patience:
+                    logger.info("Early stopping triggered."); break
 
-    # 4) Test Evaluation
-    logger.info("\nLoading best model and evaluating on test set...")
-    model.load_model(args.save_model_path)
-    test_loss, test_acc = model.evaluate(test_loader)
-    logger.info(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_acc:.4f}")
+    # 4) Test (rank 0 only)
+    if is_primary():
+        logger.info("\nLoading best model and evaluating on test set...")
+        if attr_name:
+            core_mod = getattr(model, attr_name)
+            target = core_mod.module if isinstance(core_mod, DDP) else core_mod
+            state = torch.load(args.save_model_path, map_location=device)
+            target.load_state_dict(state)
+        elif hasattr(model, "load_model"):
+            model.load_model(args.save_model_path)
 
-    # Classification Report & Confusion Matrix
-    all_labels, all_preds = model.predict(test_loader)
-    report = classification_report(all_labels, all_preds, target_names=processor.label_encoder.classes_)
-    logger.info("Classification Report:\n" + report)
+        te_loss, te_acc = model.evaluate(test_loader)
+        te_loss = reduce_mean_scalar(te_loss, device)
+        te_acc  = reduce_mean_scalar(te_acc,  device)
+        logger.info(f"Test Loss: {te_loss:.4f}, Test Accuracy: {te_acc:.4f}")
 
-    cm = confusion_matrix(all_labels, all_preds)
-    logger.info("Saving confusion matrix as confusion_matrix.png...")
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=processor.label_encoder.classes_,
-                yticklabels=processor.label_encoder.classes_)
-    plt.ylabel('True Label')
-    plt.xlabel('Predicted Label')
-    plt.title('Confusion Matrix')
-    plt.savefig('confusion_matrix.png')
-    # plt.show()
+        all_labels, all_preds = model.predict(test_loader)
+        report = classification_report(all_labels, all_preds, target_names=processor.label_encoder.classes_)
+        logger.info("Classification Report:\n" + report)
 
-    from sklearn.metrics import accuracy_score, recall_score
-    exact_accuracy = accuracy_score(all_labels, all_preds)
-    exact_recall = recall_score(all_labels, all_preds, average='macro')
-    logger.info(f"Exact Test Accuracy: {exact_accuracy:.4f}, Exact Test Recall: {exact_recall:.4f}")
+        cm = confusion_matrix(all_labels, all_preds)
+        logger.info("Saving confusion matrix as confusion_matrix.png...")
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                    xticklabels=processor.label_encoder.classes_,
+                    yticklabels=processor.label_encoder.classes_)
+        plt.ylabel('True Label'); plt.xlabel('Predicted Label'); plt.title('Confusion Matrix')
+        plt.tight_layout(); plt.savefig(os.path.join(run_dir, 'confusion_matrix.png'), dpi=200)
 
-    logger.info("Training script completed successfully.")
-
+    ddp_cleanup()
 
 if __name__ == "__main__":
     main()

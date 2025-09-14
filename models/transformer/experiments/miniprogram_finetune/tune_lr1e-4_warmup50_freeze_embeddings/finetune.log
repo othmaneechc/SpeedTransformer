@@ -1,0 +1,245 @@
+2025-09-13 22:10:32,088 - INFO - Initializing DataProcessor for fine-tuning...
+Extracting unique trajectory IDs...
+Reading traj_ids: 0it [00:00, ?it/s]Reading traj_ids: 1it [00:00, 19.54it/s]
+Total unique traj_ids found: 629
+Splitting traj_ids into train, validation, and test sets...
+Train: 93, Val: 126, Test: 410
+Fitting label encoder on target column...
+Reading labels for encoding: 0it [00:00, ?it/s]Reading labels for encoding: 1it [00:00, 23.43it/s]
+Classes found: ['bike' 'bus' 'car' 'train' 'walk']
+Fitting scaler on training features...
+Reading training features for scaling: 0it [00:00, ?it/s]Reading training features for scaling: 1it [00:00, 17.59it/s]
+Scaler fitting completed.
+Creating sequences in sliding windows...
+Processing chunks: 0it [00:00, ?it/s]Processing chunks: 1it [00:00,  3.02it/s]Processing chunks: 1it [00:00,  3.01it/s]
+Train: 289, Val: 292, Test: 1158
+Skipped sequences (zero length): 0
+Creating sequences in sliding windows...
+Processing chunks: 0it [00:00, ?it/s]Processing chunks: 1it [00:00,  3.03it/s]Processing chunks: 1it [00:00,  3.02it/s]Train: 289, Val: 292, Test: 1158
+Skipped sequences (zero length): 0
+2025-09-13 22:10:35,957 - INFO - Loading pretrained model from: /data/A-SpeedTransformer/models/transformer/experiments/mobis_transformer_sweeps/mobis_lr1e-4_bs512_h8_d128_kv4_do0.1/mobis_lr1e-4_bs512_h8_d128_kv4_do0.1/best_model.pth
+2025-09-13 22:10:35,976 - INFO - Frozen: Embedding layer
+2025-09-13 22:10:35,977 - INFO - Added warmup scheduler with 50 steps
+2025-09-13 22:10:35,980 - INFO - [Epoch 1/50]
+
+/data/A-SpeedTransformer/models/transformer/model_utils.py:231: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler() if (use_amp and torch.cuda.is_available()) else None
+/data/A-SpeedTransformer/models/transformer/model_utils.py:361: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(path, map_location=self.device)
+/data/A-SpeedTransformer/models/transformer/model_utils.py:289: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast():
+/data/oe23/torchgpu/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:216: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn(
+2025-09-13 22:10:36,616 - INFO - Train Loss: 3.9927, Train Acc: 0.2561
+2025-09-13 22:10:36,616 - INFO - Val   Loss: 5.3301, Val   Acc: 0.3630
+2025-09-13 22:10:36,647 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:36,647 - INFO - [Epoch 2/50]
+/data/A-SpeedTransformer/models/transformer/model_utils.py:326: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+2025-09-13 22:10:37,063 - INFO - Train Loss: 4.0172, Train Acc: 0.2664
+2025-09-13 22:10:37,063 - INFO - Val   Loss: 5.3264, Val   Acc: 0.3630
+2025-09-13 22:10:37,063 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:37,063 - INFO - [Epoch 3/50]
+2025-09-13 22:10:37,438 - INFO - Train Loss: 4.0116, Train Acc: 0.2734
+2025-09-13 22:10:37,438 - INFO - Val   Loss: 5.3193, Val   Acc: 0.3630
+2025-09-13 22:10:37,439 - INFO -   -> No improvement (2/10)
+2025-09-13 22:10:37,439 - INFO - [Epoch 4/50]
+2025-09-13 22:10:37,811 - INFO - Train Loss: 3.9726, Train Acc: 0.2768
+2025-09-13 22:10:37,811 - INFO - Val   Loss: 5.3087, Val   Acc: 0.3664
+2025-09-13 22:10:37,837 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:37,837 - INFO - [Epoch 5/50]
+2025-09-13 22:10:38,257 - INFO - Train Loss: 3.9361, Train Acc: 0.2768
+2025-09-13 22:10:38,257 - INFO - Val   Loss: 5.2949, Val   Acc: 0.3699
+2025-09-13 22:10:38,284 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:38,284 - INFO - [Epoch 6/50]
+2025-09-13 22:10:38,711 - INFO - Train Loss: 3.9225, Train Acc: 0.2803
+2025-09-13 22:10:38,711 - INFO - Val   Loss: 5.2772, Val   Acc: 0.3767
+2025-09-13 22:10:38,743 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:38,743 - INFO - [Epoch 7/50]
+2025-09-13 22:10:39,172 - INFO - Train Loss: 3.9431, Train Acc: 0.2734
+2025-09-13 22:10:39,172 - INFO - Val   Loss: 5.2569, Val   Acc: 0.3801
+2025-09-13 22:10:39,205 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:39,205 - INFO - [Epoch 8/50]
+2025-09-13 22:10:39,605 - INFO - Train Loss: 3.8206, Train Acc: 0.2872
+2025-09-13 22:10:39,606 - INFO - Val   Loss: 5.2329, Val   Acc: 0.3836
+2025-09-13 22:10:39,636 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:39,637 - INFO - [Epoch 9/50]
+2025-09-13 22:10:40,047 - INFO - Train Loss: 3.8653, Train Acc: 0.2803
+2025-09-13 22:10:40,047 - INFO - Val   Loss: 5.2059, Val   Acc: 0.3836
+2025-09-13 22:10:40,047 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:40,049 - INFO - [Epoch 10/50]
+2025-09-13 22:10:40,428 - INFO - Train Loss: 3.7662, Train Acc: 0.2768
+2025-09-13 22:10:40,429 - INFO - Val   Loss: 5.1741, Val   Acc: 0.3836
+2025-09-13 22:10:40,429 - INFO -   -> No improvement (2/10)
+2025-09-13 22:10:40,429 - INFO - [Epoch 11/50]
+2025-09-13 22:10:40,839 - INFO - Train Loss: 3.6543, Train Acc: 0.2941
+2025-09-13 22:10:40,840 - INFO - Val   Loss: 5.1379, Val   Acc: 0.3836
+2025-09-13 22:10:40,842 - INFO -   -> No improvement (3/10)
+2025-09-13 22:10:40,842 - INFO - [Epoch 12/50]
+2025-09-13 22:10:41,251 - INFO - Train Loss: 3.5970, Train Acc: 0.3045
+2025-09-13 22:10:41,251 - INFO - Val   Loss: 5.0979, Val   Acc: 0.3870
+2025-09-13 22:10:41,310 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:41,310 - INFO - [Epoch 13/50]
+2025-09-13 22:10:41,726 - INFO - Train Loss: 3.6392, Train Acc: 0.2976
+2025-09-13 22:10:41,727 - INFO - Val   Loss: 5.0517, Val   Acc: 0.3870
+2025-09-13 22:10:41,729 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:41,729 - INFO - [Epoch 14/50]
+2025-09-13 22:10:42,105 - INFO - Train Loss: 3.4662, Train Acc: 0.3149
+2025-09-13 22:10:42,106 - INFO - Val   Loss: 4.9999, Val   Acc: 0.3973
+2025-09-13 22:10:42,134 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:42,135 - INFO - [Epoch 15/50]
+2025-09-13 22:10:42,540 - INFO - Train Loss: 3.3355, Train Acc: 0.3183
+2025-09-13 22:10:42,540 - INFO - Val   Loss: 4.9417, Val   Acc: 0.4041
+2025-09-13 22:10:42,581 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:42,582 - INFO - [Epoch 16/50]
+2025-09-13 22:10:43,142 - INFO - Train Loss: 3.3304, Train Acc: 0.3183
+2025-09-13 22:10:43,143 - INFO - Val   Loss: 4.9417, Val   Acc: 0.4041
+2025-09-13 22:10:43,145 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:43,145 - INFO - [Epoch 17/50]
+2025-09-13 22:10:43,635 - INFO - Train Loss: 3.3772, Train Acc: 0.3183
+2025-09-13 22:10:43,636 - INFO - Val   Loss: 4.8696, Val   Acc: 0.4178
+2025-09-13 22:10:43,665 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:43,665 - INFO - [Epoch 18/50]
+2025-09-13 22:10:44,077 - INFO - Train Loss: 3.2345, Train Acc: 0.3287
+2025-09-13 22:10:44,077 - INFO - Val   Loss: 4.7905, Val   Acc: 0.4247
+2025-09-13 22:10:44,104 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:44,105 - INFO - [Epoch 19/50]
+2025-09-13 22:10:44,479 - INFO - Train Loss: 3.1234, Train Acc: 0.3529
+2025-09-13 22:10:44,479 - INFO - Val   Loss: 4.7060, Val   Acc: 0.4384
+2025-09-13 22:10:44,517 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:44,518 - INFO - [Epoch 20/50]
+2025-09-13 22:10:44,917 - INFO - Train Loss: 3.0324, Train Acc: 0.3772
+2025-09-13 22:10:44,918 - INFO - Val   Loss: 4.6127, Val   Acc: 0.4349
+2025-09-13 22:10:44,920 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:44,920 - INFO - [Epoch 21/50]
+2025-09-13 22:10:45,315 - INFO - Train Loss: 2.8896, Train Acc: 0.4221
+2025-09-13 22:10:45,315 - INFO - Val   Loss: 4.5047, Val   Acc: 0.4418
+2025-09-13 22:10:45,344 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:45,345 - INFO - [Epoch 22/50]
+2025-09-13 22:10:45,751 - INFO - Train Loss: 2.6703, Train Acc: 0.4775
+2025-09-13 22:10:45,751 - INFO - Val   Loss: 4.3690, Val   Acc: 0.4452
+2025-09-13 22:10:45,779 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:45,779 - INFO - [Epoch 23/50]
+2025-09-13 22:10:46,208 - INFO - Train Loss: 2.5562, Train Acc: 0.5087
+2025-09-13 22:10:46,208 - INFO - Val   Loss: 4.1747, Val   Acc: 0.4452
+2025-09-13 22:10:46,210 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:46,210 - INFO - [Epoch 24/50]
+2025-09-13 22:10:46,608 - INFO - Train Loss: 2.3771, Train Acc: 0.5433
+2025-09-13 22:10:46,608 - INFO - Val   Loss: 4.1747, Val   Acc: 0.4452
+2025-09-13 22:10:46,608 - INFO -   -> No improvement (2/10)
+2025-09-13 22:10:46,608 - INFO - [Epoch 25/50]
+2025-09-13 22:10:47,023 - INFO - Train Loss: 2.3534, Train Acc: 0.5467
+2025-09-13 22:10:47,023 - INFO - Val   Loss: 3.8777, Val   Acc: 0.4486
+2025-09-13 22:10:47,052 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:47,052 - INFO - [Epoch 26/50]
+2025-09-13 22:10:47,447 - INFO - Train Loss: 2.1336, Train Acc: 0.5744
+2025-09-13 22:10:47,448 - INFO - Val   Loss: 3.4004, Val   Acc: 0.4521
+2025-09-13 22:10:47,477 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:47,478 - INFO - [Epoch 27/50]
+2025-09-13 22:10:47,868 - INFO - Train Loss: 1.9769, Train Acc: 0.5848
+2025-09-13 22:10:47,868 - INFO - Val   Loss: 2.7465, Val   Acc: 0.4623
+2025-09-13 22:10:47,903 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:47,904 - INFO - [Epoch 28/50]
+2025-09-13 22:10:48,288 - INFO - Train Loss: 1.6916, Train Acc: 0.5917
+2025-09-13 22:10:48,288 - INFO - Val   Loss: 2.1434, Val   Acc: 0.4863
+2025-09-13 22:10:48,318 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:48,318 - INFO - [Epoch 29/50]
+2025-09-13 22:10:48,739 - INFO - Train Loss: 1.4369, Train Acc: 0.5952
+2025-09-13 22:10:48,739 - INFO - Val   Loss: 1.7582, Val   Acc: 0.5445
+2025-09-13 22:10:48,770 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:48,770 - INFO - [Epoch 30/50]
+2025-09-13 22:10:49,191 - INFO - Train Loss: 1.1514, Train Acc: 0.6367
+2025-09-13 22:10:49,191 - INFO - Val   Loss: 1.5174, Val   Acc: 0.5856
+2025-09-13 22:10:49,230 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:49,231 - INFO - [Epoch 31/50]
+2025-09-13 22:10:49,639 - INFO - Train Loss: 0.9828, Train Acc: 0.6782
+2025-09-13 22:10:49,640 - INFO - Val   Loss: 1.4077, Val   Acc: 0.6130
+2025-09-13 22:10:49,675 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:49,675 - INFO - [Epoch 32/50]
+2025-09-13 22:10:50,098 - INFO - Train Loss: 0.9024, Train Acc: 0.7474
+2025-09-13 22:10:50,098 - INFO - Val   Loss: 1.3556, Val   Acc: 0.6199
+2025-09-13 22:10:50,138 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:50,139 - INFO - [Epoch 33/50]
+2025-09-13 22:10:50,558 - INFO - Train Loss: 0.8205, Train Acc: 0.7612
+2025-09-13 22:10:50,558 - INFO - Val   Loss: 1.3149, Val   Acc: 0.5993
+2025-09-13 22:10:50,560 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:50,560 - INFO - [Epoch 34/50]
+2025-09-13 22:10:50,952 - INFO - Train Loss: 0.7785, Train Acc: 0.7647
+2025-09-13 22:10:50,953 - INFO - Val   Loss: 1.2639, Val   Acc: 0.5925
+2025-09-13 22:10:50,954 - INFO -   -> No improvement (2/10)
+2025-09-13 22:10:50,955 - INFO - [Epoch 35/50]
+2025-09-13 22:10:51,349 - INFO - Train Loss: 0.7170, Train Acc: 0.7855
+2025-09-13 22:10:51,350 - INFO - Val   Loss: 1.2150, Val   Acc: 0.5959
+2025-09-13 22:10:51,352 - INFO -   -> No improvement (3/10)
+2025-09-13 22:10:51,352 - INFO - [Epoch 36/50]
+2025-09-13 22:10:51,734 - INFO - Train Loss: 0.6838, Train Acc: 0.7855
+2025-09-13 22:10:51,734 - INFO - Val   Loss: 1.1823, Val   Acc: 0.5993
+2025-09-13 22:10:51,736 - INFO -   -> No improvement (4/10)
+2025-09-13 22:10:51,736 - INFO - [Epoch 37/50]
+2025-09-13 22:10:52,137 - INFO - Train Loss: 0.6850, Train Acc: 0.7820
+2025-09-13 22:10:52,137 - INFO - Val   Loss: 1.1602, Val   Acc: 0.6199
+2025-09-13 22:10:52,139 - INFO -   -> No improvement (5/10)
+2025-09-13 22:10:52,139 - INFO - [Epoch 38/50]
+2025-09-13 22:10:52,561 - INFO - Train Loss: 0.6545, Train Acc: 0.7958
+2025-09-13 22:10:52,561 - INFO - Val   Loss: 1.1536, Val   Acc: 0.6267
+2025-09-13 22:10:52,597 - INFO -   -> Best fine-tuned model saved.
+2025-09-13 22:10:52,597 - INFO - [Epoch 39/50]
+2025-09-13 22:10:53,018 - INFO - Train Loss: 0.6234, Train Acc: 0.8235
+2025-09-13 22:10:53,018 - INFO - Val   Loss: 1.1524, Val   Acc: 0.6233
+2025-09-13 22:10:53,020 - INFO -   -> No improvement (1/10)
+2025-09-13 22:10:53,020 - INFO - [Epoch 40/50]
+2025-09-13 22:10:53,430 - INFO - Train Loss: 0.6246, Train Acc: 0.8131
+2025-09-13 22:10:53,430 - INFO - Val   Loss: 1.1461, Val   Acc: 0.6130
+2025-09-13 22:10:53,432 - INFO -   -> No improvement (2/10)
+2025-09-13 22:10:53,433 - INFO - [Epoch 41/50]
+2025-09-13 22:10:53,845 - INFO - Train Loss: 0.5876, Train Acc: 0.8270
+2025-09-13 22:10:53,846 - INFO - Val   Loss: 1.1343, Val   Acc: 0.6130
+2025-09-13 22:10:53,847 - INFO -   -> No improvement (3/10)
+2025-09-13 22:10:53,848 - INFO - [Epoch 42/50]
+2025-09-13 22:10:54,272 - INFO - Train Loss: 0.5746, Train Acc: 0.8270
+2025-09-13 22:10:54,272 - INFO - Val   Loss: 1.1174, Val   Acc: 0.5993
+2025-09-13 22:10:54,272 - INFO -   -> No improvement (4/10)
+2025-09-13 22:10:54,274 - INFO - [Epoch 43/50]
+2025-09-13 22:10:54,692 - INFO - Train Loss: 0.5538, Train Acc: 0.8443
+2025-09-13 22:10:54,692 - INFO - Val   Loss: 1.0978, Val   Acc: 0.5890
+2025-09-13 22:10:54,692 - INFO -   -> No improvement (5/10)
+2025-09-13 22:10:54,694 - INFO - [Epoch 44/50]
+2025-09-13 22:10:55,094 - INFO - Train Loss: 0.5568, Train Acc: 0.8235
+2025-09-13 22:10:55,094 - INFO - Val   Loss: 1.0712, Val   Acc: 0.5856
+2025-09-13 22:10:55,096 - INFO -   -> No improvement (6/10)
+2025-09-13 22:10:55,096 - INFO - [Epoch 45/50]
+2025-09-13 22:10:55,481 - INFO - Train Loss: 0.5616, Train Acc: 0.8235
+2025-09-13 22:10:55,481 - INFO - Val   Loss: 1.0409, Val   Acc: 0.5925
+2025-09-13 22:10:55,483 - INFO -   -> No improvement (7/10)
+2025-09-13 22:10:55,484 - INFO - [Epoch 46/50]
+2025-09-13 22:10:55,883 - INFO - Train Loss: 0.5434, Train Acc: 0.8304
+2025-09-13 22:10:55,883 - INFO - Val   Loss: 1.0069, Val   Acc: 0.5993
+2025-09-13 22:10:55,885 - INFO -   -> No improvement (8/10)
+2025-09-13 22:10:55,885 - INFO - [Epoch 47/50]
+2025-09-13 22:10:56,265 - INFO - Train Loss: 0.5473, Train Acc: 0.8270
+2025-09-13 22:10:56,265 - INFO - Val   Loss: 0.9752, Val   Acc: 0.5993
+2025-09-13 22:10:56,267 - INFO -   -> No improvement (9/10)
+2025-09-13 22:10:56,268 - INFO - [Epoch 48/50]
+2025-09-13 22:10:56,668 - INFO - Train Loss: 0.5059, Train Acc: 0.8235
+2025-09-13 22:10:56,668 - INFO - Val   Loss: 0.9505, Val   Acc: 0.6027
+2025-09-13 22:10:56,670 - INFO -   -> No improvement (10/10)
+2025-09-13 22:10:56,670 - INFO - Early stopping triggered.
+2025-09-13 22:10:56,670 - INFO - 
+Loading best fine-tuned model from /data/A-SpeedTransformer/models/transformer/experiments/miniprogram_finetune/tune_lr1e-4_warmup50_freeze_embeddings/best_model.pth for final evaluation...
+2025-09-13 22:10:57,235 - INFO - Test Loss: 0.7979, Test Accuracy: 0.7297
+2025-09-13 22:10:57,246 - INFO - Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.13      0.27      0.18        63
+         bus       0.81      0.28      0.42       288
+         car       0.89      0.92      0.91       467
+       train       0.20      0.34      0.25        29
+        walk       0.78      0.99      0.87       311
+
+    accuracy                           0.73      1158
+   macro avg       0.56      0.56      0.52      1158
+weighted avg       0.78      0.73      0.72      1158
+
+2025-09-13 22:10:57,748 - INFO - Saved confusion_matrix_finetune.png
+/data/A-SpeedTransformer/models/transformer/model_utils.py:349: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):

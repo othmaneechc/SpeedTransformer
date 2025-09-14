@@ -1,0 +1,134 @@
+2025-09-04 14:17:20,146 - INFO - Setting random seed to 316
+2025-09-04 14:17:20,146 - INFO - DDP world_size=1 local_rank=0
+2025-09-04 14:17:20,175 - INFO - Initializing DataProcessor...
+Extracting unique trajectory IDs...
+Reading traj_ids: 0it [00:00, ?it/s]Reading traj_ids: 1it [00:00,  2.34it/s]Reading traj_ids: 2it [00:00,  2.34it/s]Reading traj_ids: 3it [00:01,  2.34it/s]Reading traj_ids: 4it [00:01,  2.35it/s]Reading traj_ids: 5it [00:01,  2.91it/s]Reading traj_ids: 5it [00:01,  2.62it/s]
+Total unique traj_ids found: 9347
+Splitting traj_ids into train, validation, and test sets...
+Train: 6542, Val: 1402, Test: 1403
+Fitting label encoder on target column...
+Reading labels for encoding: 0it [00:00, ?it/s]Reading labels for encoding: 1it [00:00,  2.56it/s]Reading labels for encoding: 2it [00:00,  2.59it/s]Reading labels for encoding: 3it [00:01,  2.63it/s]Reading labels for encoding: 4it [00:01,  3.09it/s]Reading labels for encoding: 5it [00:01,  4.06it/s]Reading labels for encoding: 5it [00:01,  3.34it/s]
+Classes found: ['bike' 'bus' 'car' 'train' 'walk']
+Fitting scaler on training features...
+Reading training features for scaling: 0it [00:00, ?it/s]Reading training features for scaling: 1it [00:00,  3.05it/s]Reading training features for scaling: 2it [00:00,  2.99it/s]Reading training features for scaling: 3it [00:00,  3.05it/s]Reading training features for scaling: 4it [00:01,  3.03it/s]Reading training features for scaling: 5it [00:01,  3.78it/s]Reading training features for scaling: 5it [00:01,  3.39it/s]
+Scaler fitting completed.
+Creating sequences in sliding windows...
+Processing chunks: 0it [00:00, ?it/s]Processing chunks: 1it [00:01,  1.41s/it]Processing chunks: 2it [00:02,  1.45s/it]Processing chunks: 3it [00:04,  1.59s/it]Processing chunks: 4it [00:06,  1.68s/it]Processing chunks: 5it [00:07,  1.34s/it]Processing chunks: 5it [00:07,  1.44s/it]
+Train: 51515, Val: 10762, Test: 10729
+Skipped sequences (zero length): 0
+Scaler saved to /data/A-SpeedTransformer/experiments/transformer_sweeps/lr2e-4_bs512_h8_d128_kv2_do0.1/scaler.joblib
+Label encoder saved to /data/A-SpeedTransformer/experiments/transformer_sweeps/lr2e-4_bs512_h8_d128_kv2_do0.1/label_encoder.joblib
+2025-09-04 14:17:32,319 - INFO - Scaler saved to /data/A-SpeedTransformer/experiments/transformer_sweeps/lr2e-4_bs512_h8_d128_kv2_do0.1/scaler.joblib
+2025-09-04 14:17:32,320 - INFO - Label encoder saved to /data/A-SpeedTransformer/experiments/transformer_sweeps/lr2e-4_bs512_h8_d128_kv2_do0.1/label_encoder.joblib
+2025-09-04 14:17:32,321 - INFO - Datasets and DataLoaders ready (DDP-aware).
+2025-09-04 14:17:32,322 - INFO - Initializing TrajectoryModel...
+/data/A-SpeedTransformer/models/transformer_/model_utils.py:231: FutureWarning: `torch.cuda.amp.GradScaler(args...)` is deprecated. Please use `torch.amp.GradScaler('cuda', args...)` instead.
+  self.scaler = torch.cuda.amp.GradScaler() if (use_amp and torch.cuda.is_available()) else None
+2025-09-04 14:17:42,232 - INFO - Model initialization completed.
+2025-09-04 14:17:42,234 - INFO - Starting training loop...
+/data/A-SpeedTransformer/models/transformer_/model_utils.py:289: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast():
+/data/A-SpeedTransformer/models/transformer_/model_utils.py:326: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+2025-09-04 14:18:03,378 - INFO - [Epoch 1/50] Train Loss: 0.8052, Train Acc: 0.7036, Val Loss: 0.6244, Val Acc: 0.8051
+2025-09-04 14:18:03,442 - INFO -   -> Best model saved
+2025-09-04 14:18:24,027 - INFO - [Epoch 2/50] Train Loss: 0.6377, Train Acc: 0.7770, Val Loss: 0.5740, Val Acc: 0.8025
+2025-09-04 14:18:24,088 - INFO -   -> Best model saved
+2025-09-04 14:18:44,618 - INFO - [Epoch 3/50] Train Loss: 0.5884, Train Acc: 0.7986, Val Loss: 0.4805, Val Acc: 0.8483
+2025-09-04 14:18:44,667 - INFO -   -> Best model saved
+2025-09-04 14:19:05,000 - INFO - [Epoch 4/50] Train Loss: 0.5496, Train Acc: 0.8123, Val Loss: 0.4705, Val Acc: 0.8537
+2025-09-04 14:19:05,051 - INFO -   -> Best model saved
+2025-09-04 14:19:25,388 - INFO - [Epoch 5/50] Train Loss: 0.5143, Train Acc: 0.8262, Val Loss: 0.4371, Val Acc: 0.8647
+2025-09-04 14:19:25,493 - INFO -   -> Best model saved
+2025-09-04 14:19:46,079 - INFO - [Epoch 6/50] Train Loss: 0.4953, Train Acc: 0.8323, Val Loss: 0.4494, Val Acc: 0.8622
+2025-09-04 14:19:46,079 - INFO -   -> No improvement (1/7)
+2025-09-04 14:20:06,732 - INFO - [Epoch 7/50] Train Loss: 0.4737, Train Acc: 0.8417, Val Loss: 0.4021, Val Acc: 0.8707
+2025-09-04 14:20:06,795 - INFO -   -> Best model saved
+2025-09-04 14:20:27,244 - INFO - [Epoch 8/50] Train Loss: 0.4598, Train Acc: 0.8444, Val Loss: 0.4069, Val Acc: 0.8699
+2025-09-04 14:20:27,244 - INFO -   -> No improvement (1/7)
+2025-09-04 14:20:47,786 - INFO - [Epoch 9/50] Train Loss: 0.4312, Train Acc: 0.8560, Val Loss: 0.3851, Val Acc: 0.8831
+2025-09-04 14:20:47,828 - INFO -   -> Best model saved
+2025-09-04 14:21:08,347 - INFO - [Epoch 10/50] Train Loss: 0.4080, Train Acc: 0.8655, Val Loss: 0.3512, Val Acc: 0.8920
+2025-09-04 14:21:08,398 - INFO -   -> Best model saved
+2025-09-04 14:21:28,788 - INFO - [Epoch 11/50] Train Loss: 0.4105, Train Acc: 0.8653, Val Loss: 0.3640, Val Acc: 0.8906
+2025-09-04 14:21:28,788 - INFO -   -> No improvement (1/7)
+2025-09-04 14:21:49,134 - INFO - [Epoch 12/50] Train Loss: 0.3931, Train Acc: 0.8724, Val Loss: 0.3184, Val Acc: 0.9042
+2025-09-04 14:21:49,174 - INFO -   -> Best model saved
+2025-09-04 14:22:09,500 - INFO - [Epoch 13/50] Train Loss: 0.3642, Train Acc: 0.8805, Val Loss: 0.3289, Val Acc: 0.9037
+2025-09-04 14:22:09,500 - INFO -   -> No improvement (1/7)
+2025-09-04 14:22:30,497 - INFO - [Epoch 14/50] Train Loss: 0.3521, Train Acc: 0.8868, Val Loss: 0.3139, Val Acc: 0.9055
+2025-09-04 14:22:30,734 - INFO -   -> Best model saved
+2025-09-04 14:22:51,713 - INFO - [Epoch 15/50] Train Loss: 0.3454, Train Acc: 0.8882, Val Loss: 0.3233, Val Acc: 0.9066
+2025-09-04 14:22:51,714 - INFO -   -> No improvement (1/7)
+2025-09-04 14:23:12,508 - INFO - [Epoch 16/50] Train Loss: 0.3476, Train Acc: 0.8858, Val Loss: 0.3235, Val Acc: 0.9078
+2025-09-04 14:23:12,508 - INFO -   -> No improvement (2/7)
+2025-09-04 14:23:33,936 - INFO - [Epoch 17/50] Train Loss: 0.3251, Train Acc: 0.8937, Val Loss: 0.3183, Val Acc: 0.9072
+2025-09-04 14:23:33,936 - INFO -   -> No improvement (3/7)
+2025-09-04 14:23:55,299 - INFO - [Epoch 18/50] Train Loss: 0.3322, Train Acc: 0.8916, Val Loss: 0.3207, Val Acc: 0.9106
+2025-09-04 14:23:55,299 - INFO -   -> No improvement (4/7)
+2025-09-04 14:24:15,697 - INFO - [Epoch 19/50] Train Loss: 0.3185, Train Acc: 0.8972, Val Loss: 0.2953, Val Acc: 0.9143
+2025-09-04 14:24:15,732 - INFO -   -> Best model saved
+2025-09-04 14:24:36,057 - INFO - [Epoch 20/50] Train Loss: 0.3141, Train Acc: 0.8979, Val Loss: 0.4096, Val Acc: 0.8925
+2025-09-04 14:24:36,058 - INFO -   -> No improvement (1/7)
+2025-09-04 14:24:56,425 - INFO - [Epoch 21/50] Train Loss: 0.3044, Train Acc: 0.9013, Val Loss: 0.2982, Val Acc: 0.9165
+2025-09-04 14:24:56,426 - INFO -   -> No improvement (2/7)
+2025-09-04 14:25:16,906 - INFO - [Epoch 22/50] Train Loss: 0.2990, Train Acc: 0.9035, Val Loss: 0.3285, Val Acc: 0.8994
+2025-09-04 14:25:16,907 - INFO -   -> No improvement (3/7)
+2025-09-04 14:25:37,401 - INFO - [Epoch 23/50] Train Loss: 0.3090, Train Acc: 0.8985, Val Loss: 0.2943, Val Acc: 0.9163
+2025-09-04 14:25:37,446 - INFO -   -> Best model saved
+2025-09-04 14:25:57,872 - INFO - [Epoch 24/50] Train Loss: 0.2887, Train Acc: 0.9074, Val Loss: 0.2706, Val Acc: 0.9223
+2025-09-04 14:25:57,915 - INFO -   -> Best model saved
+2025-09-04 14:26:18,649 - INFO - [Epoch 25/50] Train Loss: 0.2967, Train Acc: 0.9041, Val Loss: 0.2724, Val Acc: 0.9229
+2025-09-04 14:26:18,650 - INFO -   -> No improvement (1/7)
+2025-09-04 14:26:39,190 - INFO - [Epoch 26/50] Train Loss: 0.2916, Train Acc: 0.9049, Val Loss: 0.2557, Val Acc: 0.9294
+2025-09-04 14:26:39,232 - INFO -   -> Best model saved
+2025-09-04 14:26:59,566 - INFO - [Epoch 27/50] Train Loss: 0.3013, Train Acc: 0.9007, Val Loss: 0.2755, Val Acc: 0.9278
+2025-09-04 14:26:59,567 - INFO -   -> No improvement (1/7)
+2025-09-04 14:27:19,889 - INFO - [Epoch 28/50] Train Loss: 0.2884, Train Acc: 0.9046, Val Loss: 0.3098, Val Acc: 0.9090
+2025-09-04 14:27:19,890 - INFO -   -> No improvement (2/7)
+2025-09-04 14:27:40,271 - INFO - [Epoch 29/50] Train Loss: 0.2801, Train Acc: 0.9069, Val Loss: 0.2672, Val Acc: 0.9207
+2025-09-04 14:27:40,272 - INFO -   -> No improvement (3/7)
+2025-09-04 14:28:00,714 - INFO - [Epoch 30/50] Train Loss: 0.2686, Train Acc: 0.9118, Val Loss: 0.2717, Val Acc: 0.9249
+2025-09-04 14:28:00,715 - INFO -   -> No improvement (4/7)
+2025-09-04 14:28:21,000 - INFO - [Epoch 31/50] Train Loss: 0.2764, Train Acc: 0.9095, Val Loss: 0.2757, Val Acc: 0.9269
+2025-09-04 14:28:21,001 - INFO -   -> No improvement (5/7)
+2025-09-04 14:28:41,227 - INFO - [Epoch 32/50] Train Loss: 0.2917, Train Acc: 0.9022, Val Loss: 0.2707, Val Acc: 0.9277
+2025-09-04 14:28:41,227 - INFO -   -> No improvement (6/7)
+2025-09-04 14:29:01,512 - INFO - [Epoch 33/50] Train Loss: 0.2658, Train Acc: 0.9122, Val Loss: 0.2476, Val Acc: 0.9306
+2025-09-04 14:29:01,602 - INFO -   -> Best model saved
+2025-09-04 14:29:22,209 - INFO - [Epoch 34/50] Train Loss: 0.2623, Train Acc: 0.9126, Val Loss: 0.2823, Val Acc: 0.9181
+2025-09-04 14:29:22,210 - INFO -   -> No improvement (1/7)
+2025-09-04 14:29:42,575 - INFO - [Epoch 35/50] Train Loss: 0.2665, Train Acc: 0.9124, Val Loss: 0.2830, Val Acc: 0.9275
+2025-09-04 14:29:42,575 - INFO -   -> No improvement (2/7)
+2025-09-04 14:30:03,002 - INFO - [Epoch 36/50] Train Loss: 0.2650, Train Acc: 0.9118, Val Loss: 0.2538, Val Acc: 0.9316
+2025-09-04 14:30:03,003 - INFO -   -> No improvement (3/7)
+2025-09-04 14:30:23,316 - INFO - [Epoch 37/50] Train Loss: 0.2724, Train Acc: 0.9084, Val Loss: 0.2956, Val Acc: 0.9114
+2025-09-04 14:30:23,316 - INFO -   -> No improvement (4/7)
+2025-09-04 14:30:43,752 - INFO - [Epoch 38/50] Train Loss: 0.2488, Train Acc: 0.9172, Val Loss: 0.2766, Val Acc: 0.9300
+2025-09-04 14:30:43,753 - INFO -   -> No improvement (5/7)
+2025-09-04 14:31:04,067 - INFO - [Epoch 39/50] Train Loss: 0.2606, Train Acc: 0.9145, Val Loss: 0.2566, Val Acc: 0.9329
+2025-09-04 14:31:04,068 - INFO -   -> No improvement (6/7)
+2025-09-04 14:31:24,465 - INFO - [Epoch 40/50] Train Loss: 0.2755, Train Acc: 0.9093, Val Loss: 0.2684, Val Acc: 0.9247
+2025-09-04 14:31:24,465 - INFO -   -> No improvement (7/7)
+2025-09-04 14:31:24,465 - INFO - Early stopping triggered.
+2025-09-04 14:31:24,466 - INFO - 
+Loading best model and evaluating on test set...
+/data/A-SpeedTransformer/models/transformer_/train.py:269: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state = torch.load(args.save_model_path, map_location=device)
+2025-09-04 14:31:25,907 - INFO - Test Loss: 0.1646, Test Accuracy: 0.9536
+/data/A-SpeedTransformer/models/transformer_/model_utils.py:349: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(enabled=self.scaler is not None):
+2025-09-04 14:31:27,346 - INFO - Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.98      0.94      0.96      1757
+         bus       0.98      0.95      0.96      2639
+         car       0.87      0.91      0.89      1244
+       train       0.93      0.93      0.93      2136
+        walk       0.97      1.00      0.98      2953
+
+    accuracy                           0.95     10729
+   macro avg       0.95      0.95      0.95     10729
+weighted avg       0.95      0.95      0.95     10729
+
+2025-09-04 14:31:27,349 - INFO - Saving confusion matrix as confusion_matrix.png...

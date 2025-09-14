@@ -10,6 +10,70 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import random 
 
+# --- add near the top if not present ---
+import torch.distributed as dist
+from torch.utils.data.distributed import DistributedSampler
+
+def _world_size() -> int:
+    return int(os.environ.get("WORLD_SIZE", "1"))
+
+def _rank() -> int:
+    return int(os.environ.get("RANK", "0"))
+
+# --- add inside DataProcessor class (methods) ---
+
+    def _worker_init_fn(self, worker_id: int, base_seed: int):
+        """
+        Deterministic seeding per worker and per rank.
+        """
+        seed = base_seed + 1000 * _rank() + worker_id
+        np.random.seed(seed)
+        random.seed(seed)
+        torch.manual_seed(seed)
+
+    def make_dataloader(self, dataset, batch_size: int, num_workers: int,
+                        shuffle: bool, base_seed: int, sampler=None):
+        """
+        Centralized DataLoader builder with pinned memory and deterministic worker seeding.
+        If `sampler` is provided, `shuffle` is ignored.
+        """
+        return DataLoader(
+            dataset,
+            batch_size=max(1, batch_size),
+            shuffle=(sampler is None and shuffle),
+            sampler=sampler,
+            num_workers=num_workers,
+            pin_memory=True,
+            worker_init_fn=lambda wid: self._worker_init_fn(wid, base_seed),
+        )
+
+    def get_dataloaders(self, batch_size: int, num_workers: int,
+                        ddp: bool = False, seed: int = 42):
+        """
+        Convenience constructor for train/val/test loaders. If `ddp=True`,
+        attaches DistributedSampler to each split.
+        """
+        # Build datasets from the sequences/masks/labels already populated
+        train_ds = TripDataset(self.train_sequences, self.train_labels, self.train_masks)
+        val_ds   = TripDataset(self.val_sequences,   self.val_labels,   self.val_masks)
+        test_ds  = TripDataset(self.test_sequences,  self.test_labels,  self.test_masks)
+
+        if ddp and _world_size() > 1:
+            train_samp = DistributedSampler(train_ds, shuffle=True,  drop_last=False)
+            val_samp   = DistributedSampler(val_ds,   shuffle=False, drop_last=False)
+            test_samp  = DistributedSampler(test_ds,  shuffle=False, drop_last=False)
+        else:
+            train_samp = val_samp = test_samp = None
+
+        train_loader = self.make_dataloader(train_ds, batch_size, num_workers,
+                                            shuffle=True, base_seed=seed, sampler=train_samp)
+        val_loader   = self.make_dataloader(val_ds,   batch_size, num_workers,
+                                            shuffle=False, base_seed=seed, sampler=val_samp)
+        test_loader  = self.make_dataloader(test_ds,  batch_size, num_workers,
+                                            shuffle=False, base_seed=seed, sampler=test_samp)
+
+        return {"train": train_loader, "val": val_loader, "test": test_loader}
+
 class TripDataset(Dataset):
     """
     Handles storing sequences and labels (and/or masks, lengths, etc.).
@@ -50,7 +114,7 @@ class DataProcessor:
         val_size=0.15,
         random_state=42,
         chunksize=10**6,
-        window_size=200,
+        window_size=100,
         stride=50
     ):
         self.data_path = data_path
@@ -187,7 +251,7 @@ class DataProcessor:
             train_chunk = chunk[chunk[self.traj_id_column].isin(self.train_ids)].copy()
             val_chunk   = chunk[chunk[self.traj_id_column].isin(self.val_ids)].copy()
             test_chunk  = chunk[chunk[self.traj_id_column].isin(self.test_ids)].copy()
-            
+
             for split, df in zip(['train', 'val', 'test'], [train_chunk, val_chunk, test_chunk]):
                 if df.empty:
                     continue
