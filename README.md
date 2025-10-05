@@ -2,21 +2,6 @@
 
 This repository contains the code used in the paper **"[Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models](#)"**. 
 
-## Table of Contents
-
-1. [Requirements](#requirements)
-2. [Preparing the Data](#preparing-the-data)  
-   - [Geolife Dataset](#geolife-dataset)  
-   - [MOBIS Dataset](#mobis-dataset)  
-3. [Running the Models](#running-the-models)  
-   - [LSTM Model](#lstm-model)   
-   - [Transformer Model](#transformer-model)  
-4. [Replicating Results](#replicating-results)
-
----
-
-## Requirements
-
 ## Preparing the Data
 
 ### Geolife Dataset
@@ -57,20 +42,6 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 
 ### Shell Scripts Overview
 
-#### Transformer experiments (`models/transformer/`)
-
-- `run_sweep.sh` – grid over learning rate, batch size, hidden dim, heads, KV heads, and dropout on the Geolife/Mobis pretraining tasks.
-- `ws_sweep.sh` – window-size sweep (20–500) for trajectory segmentation sensitivity studies.
-- `finetune.sh` – Geolife finetuning from the best MOBIS checkpoint with multiple freezing / warm-up strategies.
-- `finetune_miniprogram.sh` – CarbonClever (WeChat miniprogram) finetuning across data-subset sizes.
-
-#### LSTM experiments (`models/lstm/`)
-
-- `run_sweep.sh` – hyperparameter sweep covering learning rate, batch size, hidden size, layer count, and dropout.
-- `ws_sweep.sh` – optional LSTM sequence-length sweep mirroring the transformer study.
-- `finetune.sh` – MOBIS→Geolife transfer with automated checkpoint discovery and sweeps over lr/hidden size.
-- `finetune_miniprogram.sh` – CarbonClever finetuning with subset splits matched to the transformer runs.
-
 #### Replication helpers (`models/replication/`)
 
 - `run_training_experiments.sh` – replays the best transformer and LSTM Geolife/Mobis training jobs.
@@ -80,14 +51,6 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 - `metrics_gen.py` – converts experiment logs into the replication figures and summary table (`experiment_summary.csv`).
 
 All scripts assume the datasets under `data/` and write results back into their respective `models/**/experiments/` folders so checkpoints, logs, and metrics line up with the paper tables.
-
-### Script Usage Guide
-
-1. **Pretraining sweeps** – from `models/{transformer,lstm}/`, run `./run_sweep.sh` to search the base Geolife/Mobis configurations.
-2. **Window analysis** – use the matching `ws_sweep.sh` to generate window-length curves (transformer + optional LSTM).
-3. **Finetuning** – invoke `./finetune.sh` for MOBIS→Geolife or `./finetune_miniprogram.sh` for CarbonClever transfer.
-4. **Rapid replication** – execute the consolidated helpers under `models/replication/` when you only need the headline runs.
-5. **Metrics summary** – run `python models/replication/metrics_gen.py` (optionally with `--output-dir`) to rebuild figures and the summary CSV.
 
 ### Quick Start Snippet
 
@@ -99,8 +62,6 @@ cd /data/A-SpeedTransformer/models/replication
 # Then regenerate plots / tables
 python metrics_gen.py
 ```
-
-Use `tmux`, `watch tail -f <log>`, or your preferred scheduler if you want to fan out individual sweep scripts in parallel GPU sessions.
 
 ## License & Contact
 
