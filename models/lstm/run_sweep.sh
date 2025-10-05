@@ -25,7 +25,7 @@ cd "$ROOT/models/lstm"
 # Datasets to process
 declare -a DATASETS=(
   "geolife_processed.csv"
-  "mobis_processed.csv"
+  # "mobis_processed.csv"
 )
 
 # ===== LSTM Hyperparameter Search Space =====

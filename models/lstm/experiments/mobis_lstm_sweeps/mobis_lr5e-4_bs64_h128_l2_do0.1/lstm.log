@@ -60,3 +60,68 @@
 2025-09-14 13:34:59,884 - INFO - Val Loss: 0.2086, Val Acc: 92.20%
 2025-09-14 13:34:59,884 - INFO - No improvement for 4 epoch(s).
 2025-09-14 13:34:59,884 - INFO - Epoch 14/50
+2025-09-14 13:50:04,302 - INFO - Train Loss: 0.2088, Train Acc: 92.29%
+2025-09-14 13:50:50,443 - INFO - Val Loss: 0.2024, Val Acc: 92.49%
+2025-09-14 13:50:50,484 - INFO - Best model saved with validation accuracy: 92.49%
+2025-09-14 13:50:50,484 - INFO - Epoch 15/50
+2025-09-14 14:09:04,198 - INFO - Train Loss: 0.2086, Train Acc: 92.32%
+2025-09-14 14:09:50,255 - INFO - Val Loss: 0.2037, Val Acc: 92.48%
+2025-09-14 14:09:50,256 - INFO - No improvement for 1 epoch(s).
+2025-09-14 14:09:50,256 - INFO - Epoch 16/50
+2025-09-14 14:27:54,343 - INFO - Train Loss: 0.2084, Train Acc: 92.31%
+2025-09-14 14:28:39,793 - INFO - Val Loss: 0.2033, Val Acc: 92.45%
+2025-09-14 14:28:39,795 - INFO - No improvement for 2 epoch(s).
+2025-09-14 14:28:39,795 - INFO - Epoch 17/50
+2025-09-14 14:46:57,932 - INFO - Train Loss: 0.2080, Train Acc: 92.32%
+2025-09-14 14:47:43,955 - INFO - Val Loss: 0.2016, Val Acc: 92.52%
+2025-09-14 14:47:43,990 - INFO - Best model saved with validation accuracy: 92.52%
+2025-09-14 14:47:43,990 - INFO - Epoch 18/50
+2025-09-14 15:06:37,067 - INFO - Train Loss: 0.2077, Train Acc: 92.34%
+2025-09-14 15:07:24,211 - INFO - Val Loss: 0.2013, Val Acc: 92.57%
+2025-09-14 15:07:24,237 - INFO - Best model saved with validation accuracy: 92.57%
+2025-09-14 15:07:24,237 - INFO - Epoch 19/50
+2025-09-14 15:26:13,842 - INFO - Train Loss: 0.2074, Train Acc: 92.34%
+2025-09-14 15:26:59,067 - INFO - Val Loss: 0.2032, Val Acc: 92.45%
+2025-09-14 15:26:59,069 - INFO - No improvement for 1 epoch(s).
+2025-09-14 15:26:59,069 - INFO - Epoch 20/50
+2025-09-14 15:45:18,884 - INFO - Train Loss: 0.2072, Train Acc: 92.35%
+2025-09-14 15:46:03,406 - INFO - Val Loss: 0.2035, Val Acc: 92.51%
+2025-09-14 15:46:03,407 - INFO - No improvement for 2 epoch(s).
+2025-09-14 15:46:03,407 - INFO - Epoch 21/50
+2025-09-14 16:04:39,008 - INFO - Train Loss: 0.2071, Train Acc: 92.37%
+2025-09-14 16:05:25,470 - INFO - Val Loss: 0.2016, Val Acc: 92.48%
+2025-09-14 16:05:25,472 - INFO - No improvement for 3 epoch(s).
+2025-09-14 16:05:25,472 - INFO - Epoch 22/50
+2025-09-14 16:23:55,575 - INFO - Train Loss: 0.2068, Train Acc: 92.36%
+2025-09-14 16:24:39,335 - INFO - Val Loss: 0.2034, Val Acc: 92.50%
+2025-09-14 16:24:39,336 - INFO - No improvement for 4 epoch(s).
+2025-09-14 16:24:39,336 - INFO - Epoch 23/50
+2025-09-14 16:42:48,394 - INFO - Train Loss: 0.2068, Train Acc: 92.37%
+2025-09-14 16:43:34,147 - INFO - Val Loss: 0.2161, Val Acc: 92.04%
+2025-09-14 16:43:34,149 - INFO - No improvement for 5 epoch(s).
+2025-09-14 16:43:34,149 - INFO - Epoch 24/50
+2025-09-14 16:58:50,604 - INFO - Train Loss: 0.2067, Train Acc: 92.36%
+2025-09-14 16:59:33,820 - INFO - Val Loss: 0.2001, Val Acc: 92.52%
+2025-09-14 16:59:33,821 - INFO - No improvement for 6 epoch(s).
+2025-09-14 16:59:33,821 - INFO - Epoch 25/50
+2025-09-14 17:13:52,102 - INFO - Train Loss: 0.2068, Train Acc: 92.36%
+2025-09-14 17:14:35,993 - INFO - Val Loss: 0.2036, Val Acc: 92.50%
+2025-09-14 17:14:35,994 - INFO - No improvement for 7 epoch(s).
+2025-09-14 17:14:35,995 - INFO - Early stopping triggered!
+2025-09-14 17:14:35,995 - INFO - Training completed.
+2025-09-14 17:14:35,995 - INFO - Evaluating on test set...
+2025-09-14 17:15:17,127 - INFO - Test Accuracy: 92.35%
+2025-09-14 17:15:17,466 - INFO - Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.89      0.67      0.76      8156
+         bus       0.90      0.85      0.87     11753
+         car       0.88      0.99      0.93    130174
+       train       0.90      0.28      0.43     21654
+        walk       0.98      0.99      0.99    121081
+
+    accuracy                           0.92    292818
+   macro avg       0.91      0.76      0.80    292818
+weighted avg       0.92      0.92      0.91    292818
+
+2025-09-14 17:15:17,683 - INFO - Evaluation completed. LSTM script finished successfully.

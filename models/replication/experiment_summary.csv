@@ -1,0 +1,10 @@
+Experiment Type,Model,Best Configuration,Test Accuracy,Test Accuracy (%)
+Geolife Dataset,Transformer,lr2e-4_bs512_h8_d128_kv4_do0.1,0.9597,95.97%
+Geolife Dataset,LSTM,geolife_lr5e-4_bs128_h256_l3_do0.1,0.9240,92.40%
+Mobis Dataset,Transformer,mobis_lr1e-4_bs512_h8_d128_kv4_do0.1,0.9422,94.22%
+Mobis Dataset,LSTM,mobis_lr5e-4_bs128_h256_l3_do0.1,0.9233,92.33%
+Geolife Window Sweeps,Transformer,geolife_ws200_lr2e-4_bs512_h8_d128_kv4_do0.1,0.9597,95.97%
+Finetune Sweeps,Transformer,lr2e-4_warmup0_freeze_attention,0.8638,86.38%
+Finetune Sweeps,LSTM,lstm_lr1e-3_h128,0.8417,84.17%
+Miniprogram Finetune,Transformer,final_50pct_313trips_lr5e-4_warmup0_none,0.9422,94.22%
+Miniprogram Finetune,LSTM,final_30pct_189trips_lr5e-4_h128,0.8897,88.97%

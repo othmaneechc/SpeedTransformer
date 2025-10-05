@@ -144,7 +144,7 @@ class Trainer:
             else:
                 self.trigger_times += 1
                 self.logger.info(f"No improvement for {self.trigger_times} epoch(s).")
-                if self.trigger_times >= self.patience:
+                if self.patience is not None and self.trigger_times >= self.patience:
                     self.logger.info("Early stopping triggered!")
                     break
 

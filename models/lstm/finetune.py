@@ -171,16 +171,37 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Using device: {device}")
 
+    # Load pretrained model state dict to infer hyperparameters
+    logger.info(f"Loading pretrained model state dict from {args.pretrained_model_path}...")
+    pretrained_state_dict = torch.load(args.pretrained_model_path, map_location=device, weights_only=True)
+    
+    # Infer hidden_size and num_layers from the pretrained model weights
+    # For bidirectional LSTM, weight_ih_l0 has shape [4*hidden_size, input_size]
+    lstm_weight_ih_l0_shape = pretrained_state_dict['lstm.weight_ih_l0'].shape
+    inferred_hidden_size = lstm_weight_ih_l0_shape[0] // 4  # Because it's 4*hidden_size for LSTM gates
+    
+    # Count the number of layers by checking for layer weights
+    inferred_num_layers = 0
+    for key in pretrained_state_dict.keys():
+        if key.startswith('lstm.weight_ih_l'):
+            layer_num = int(key.split('_l')[1][0])
+            inferred_num_layers = max(inferred_num_layers, layer_num + 1)
+    
+    logger.info(f"Inferred hyperparameters from pretrained model:")
+    logger.info(f"  Hidden size: {inferred_hidden_size} (arg: {args.hidden_size})")
+    logger.info(f"  Num layers: {inferred_num_layers} (arg: {args.num_layers})")
+    logger.info(f"  Using inferred values to ensure compatibility")
+
     model = LSTMTripClassifier(
         input_size=input_size,
-        hidden_size=args.hidden_size,
-        num_layers=args.num_layers,
+        hidden_size=inferred_hidden_size,
+        num_layers=inferred_num_layers,
         num_classes=num_classes,
         dropout=args.dropout
     ).to(device)
 
-    logger.info(f"Loading pretrained model from {args.pretrained_model_path}...")
-    model.load_state_dict(torch.load(args.pretrained_model_path, map_location=device))
+    logger.info(f"Loading pretrained model weights...")
+    model.load_state_dict(pretrained_state_dict)
     logger.info("Pretrained model weights loaded successfully.")
 
     # (Optional) Freeze or unfreeze layers as needed
