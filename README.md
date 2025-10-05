@@ -57,90 +57,52 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 
 ### Shell Scripts Overview
 
-#### Transformer Scripts (`models/transformer/`)
+#### Transformer experiments (`models/transformer/`)
 
-- **`run_sweep.sh`** - Comprehensive hyperparameter sweep across learning rates, batch sizes, model dimensions, attention heads, and dropout rates
-- **`ws_sweep.sh`** - Window size optimization sweep to find optimal trajectory sequence lengths (tests 20, 50, 100, 200, 300, 400, 500)
-- **`finetune.sh`** - Transfer learning from MOBIS pretrained model to Geolife with multiple fine-tuning strategies (full, layer freezing, gradual unfreezing)
-- **`finetune_miniprogram.sh`** - Specialized fine-tuning for miniprogram (WeChat) mobility data with various data subset sizes (15%, 20%, 30%, 40%, 50%)
+- `run_sweep.sh` – grid over learning rate, batch size, hidden dim, heads, KV heads, and dropout on the Geolife/Mobis pretraining tasks.
+- `ws_sweep.sh` – window-size sweep (20–500) for trajectory segmentation sensitivity studies.
+- `finetune.sh` – Geolife finetuning from the best MOBIS checkpoint with multiple freezing / warm-up strategies.
+- `finetune_miniprogram.sh` – CarbonClever (WeChat miniprogram) finetuning across data-subset sizes.
 
-#### LSTM Scripts (`models/lstm/`)
+#### LSTM experiments (`models/lstm/`)
 
-- **`run_sweep.sh`** - Comprehensive hyperparameter sweep across learning rates, batch sizes, hidden dimensions, layer counts, and dropout rates
-- **`finetune.sh`** - Enhanced transfer learning from MOBIS to Geolife with comprehensive hyperparameter sweeps and smart dependency waiting
-- **`finetune_miniprogram.sh`** - Specialized fine-tuning for miniprogram (WeChat) mobility data with LSTM architecture and various data subset sizes (15%, 20%, 30%, 40%, 50%)
+- `run_sweep.sh` – hyperparameter sweep covering learning rate, batch size, hidden size, layer count, and dropout.
+- `ws_sweep.sh` – optional LSTM sequence-length sweep mirroring the transformer study.
+- `finetune.sh` – MOBIS→Geolife transfer with automated checkpoint discovery and sweeps over lr/hidden size.
+- `finetune_miniprogram.sh` – CarbonClever finetuning with subset splits matched to the transformer runs.
 
-**Note**: LSTM models use a fixed sequence length of 200 frames (hardcoded in the model architecture), so window size optimization is not applicable.
+#### Replication helpers (`models/replication/`)
+
+- `run_training_experiments.sh` – replays the best transformer and LSTM Geolife/Mobis training jobs.
+- `run_gl_finetune_experiments.sh` – reproduces the Geolife finetuning winners for both model families.
+- `run_miniprogram_finetune_experiments.sh` – regenerates the CarbonClever finetuning leaderboard models.
+- `run_window_sweep_experiments.sh` – reruns the top Geolife window sweep configuration.
+- `metrics_gen.py` – converts experiment logs into the replication figures and summary table (`experiment_summary.csv`).
+
+All scripts assume the datasets under `data/` and write results back into their respective `models/**/experiments/` folders so checkpoints, logs, and metrics line up with the paper tables.
 
 ### Script Usage Guide
 
-1. **Hyperparameter Optimization**: Use `run_sweep.sh` for automated parameter search across multiple dimensions
-2. **Sequence Length Tuning**: Use `ws_sweep.sh` (transformer only) to determine optimal window sizes for trajectory segmentation
-3. **Transfer Learning**: Use `finetune.sh` for cross-dataset adaptation or `finetune_miniprogram.sh` for WeChat data
-4. **Baseline Comparison**: Run LSTM scripts to establish traditional sequence model benchmarks
+1. **Pretraining sweeps** – from `models/{transformer,lstm}/`, run `./run_sweep.sh` to search the base Geolife/Mobis configurations.
+2. **Window analysis** – use the matching `ws_sweep.sh` to generate window-length curves (transformer + optional LSTM).
+3. **Finetuning** – invoke `./finetune.sh` for MOBIS→Geolife or `./finetune_miniprogram.sh` for CarbonClever transfer.
+4. **Rapid replication** – execute the consolidated helpers under `models/replication/` when you only need the headline runs.
+5. **Metrics summary** – run `python models/replication/metrics_gen.py` (optionally with `--output-dir`) to rebuild figures and the summary CSV.
 
----
+### Quick Start Snippet
 
-#### Experiment Types
-
-**Transformer Models** (`models/transformer/`):
-1. **Basic Training**: Use `train.sh` scripts with specified random seeds
-2. **Hyperparameter Optimization**: Run `run_sweep.sh` for automated parameter search across attention heads, model dimensions, and learning rates
-3. **Window Size Analysis**: Execute `ws_sweep.sh` for sequence length optimization (20-500 windows)
-4. **Transfer Learning**: Use `finetune.sh` for MOBIS→Geolife cross-dataset experiments
-5. **Data Efficiency**: Run `finetune_miniprogram.sh` for miniprogram subset size analysis (15%-50% data)
-
-**LSTM Models** (`models/lstm/`):
-1. **Comprehensive Sweeps**: `run_sweep.sh` performs exhaustive hyperparameter search across hidden dimensions (64-256), layer counts (2-3), and learning rates (1e-3 to 2e-3)
-2. **Window Optimization**: `ws_sweep.sh` finds optimal sequence lengths for LSTM memory efficiency
-3. **Enhanced Transfer Learning**: `finetune.sh` includes learning rate and hidden dimension grid search for MOBIS→Geolife transfer
-4. **Advanced Miniprogram Experiments**: `finetune_miniprogram.sh` combines hyperparameter tuning with data subset analysis, plus automated summary generation
-
-#### Model Comparison Framework
-
-- **Transformer Scripts**: Focus on attention mechanisms, multi-head configurations, and model depth
-- **LSTM Scripts**: Emphasize memory cell optimization, hidden state dimensions, and recurrent layer stacking
-- **Shared Features**: Both model types use identical random seeds, data preprocessing, and evaluation metrics for fair comparison
-
-The provided shell scripts ensure reproducible experiments with consistent configurations. All experiment logs, model checkpoints, and performance metrics are preserved in organized subdirectories under `models/`.
-
----
-
-#### Quick Start Guide
-
-**Run All Transformer Experiments:**
 ```bash
-cd models/transformer
-tmux new-session -d -s transformer_experiments
-tmux send-keys "cd /data/A-SpeedTransformer/models/transformer" C-m
-tmux send-keys "./run_sweep.sh" C-m
-# Add more windows for parallel execution
-tmux new-window -t transformer_experiments
-tmux send-keys "cd /data/A-SpeedTransformer/models/transformer && ./ws_sweep.sh" C-m
+# Example: reproduce the key training checkpoints
+cd /data/A-SpeedTransformer/models/replication
+./run_training_experiments.sh
+
+# Then regenerate plots / tables
+python metrics_gen.py
 ```
 
-**Run All LSTM Experiments:**
-```bash
-cd models/lstm  
-tmux new-session -d -s lstm_experiments
-tmux send-keys "cd /data/A-SpeedTransformer/models/lstm" C-m
-tmux send-keys "./run_sweep.sh" C-m
-# Parallel window execution
-tmux new-window -t lstm_experiments
-tmux send-keys "cd /data/A-SpeedTransformer/models/lstm && ./ws_sweep.sh" C-m
-```
-
-**Monitor Progress:**
-```bash
-tmux list-sessions
-tmux attach-session -t lstm_experiments
-tmux attach-session -t transformer_experiments
-```
-
-**Note**: Make sure to use the correct model checkpoints and data paths when running the scripts!
+Use `tmux`, `watch tail -f <log>`, or your preferred scheduler if you want to fan out individual sweep scripts in parallel GPU sessions.
 
 ## License & Contact
 
 This project is licensed under the MIT License. Feel free to open issues or pull requests on GitHub.
 For questions or contributions, please reach out to [Othmane Echchabi](mailto:othmane.echchabi@mail.mcgill.ca).
-
