@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/data/A-SpeedTransformer"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TRANSFORMER_DIR="$ROOT/models/transformer"
 LSTM_DIR="$ROOT/models/lstm"
+DATA_DIR="$ROOT/data"
 
 TRANSFORMER_PRETRAIN_DIR="$TRANSFORMER_DIR/experiments/mobis_transformer_sweeps/mobis_lr1e-4_bs512_h8_d128_kv4_do0.1"
 LSTM_PRETRAIN_DIR="$LSTM_DIR/experiments/mobis_lstm_sweeps/mobis_lr1e-3_bs128_h128_l2_do0.1"
@@ -27,7 +29,7 @@ mkdir -p "$TF_OUT_DIR"
 python "$TRANSFORMER_DIR/finetune.py" \
   --pretrained_model_path "$TRANSFORMER_PRETRAIN_DIR/best_model.pth" \
   --label_encoder_path "$TRANSFORMER_PRETRAIN_DIR/label_encoder.joblib" \
-  --data_path "$ROOT/data/miniprogram_balanced.csv" \
+  --data_path "$DATA_DIR/miniprogram_balanced.csv" \
   --test_size 0.3217 \
   --val_size 0.2 \
   --random_state 42 \
@@ -50,7 +52,7 @@ python "$LSTM_DIR/finetune.py" \
   --pretrained_model_path "$LSTM_PRETRAIN_DIR/best_model.pth" \
   --scaler_path "$LSTM_PRETRAIN_DIR/scaler.joblib" \
   --label_encoder_path "$LSTM_PRETRAIN_DIR/label_encoder.joblib" \
-  --data_path "$ROOT/data/miniprogram_balanced.csv" \
+  --data_path "$DATA_DIR/miniprogram_balanced.csv" \
   --test_size 0.5097 \
   --val_size 0.2 \
   --random_state 42 \

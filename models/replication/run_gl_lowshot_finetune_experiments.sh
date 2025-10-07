@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/data/A-SpeedTransformer"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TRANSFORMER_DIR="$ROOT/models/transformer"
 PRETRAIN_DIR="$TRANSFORMER_DIR/experiments/mobis_transformer_sweeps/mobis_lr1e-4_bs512_h8_d128_kv4_do0.1"
 OUT_DIR="$TRANSFORMER_DIR/experiments/finetune_lowshot"
 LSTM_DIR="$ROOT/models/lstm"
 LSTM_PRETRAIN_DIR="$LSTM_DIR/experiments/mobis_lstm_sweeps/mobis_lr5e-4_bs128_h256_l3_do0.1"
 LSTM_OUT_DIR="$LSTM_DIR/experiments/finetune_lowshot"
+DATA_DIR="$ROOT/data"
 
 if [[ ! -f "$PRETRAIN_DIR/best_model.pth" ]]; then
   echo "Missing MOBIS pretrained weights at $PRETRAIN_DIR" >&2
@@ -54,7 +56,7 @@ for key in train100 train200; do
   python "$TRANSFORMER_DIR/finetune.py" \
     --pretrained_model_path "$PRETRAIN_DIR/best_model.pth" \
     --label_encoder_path "$PRETRAIN_DIR/label_encoder.joblib" \
-    --data_path "$ROOT/data/geolife_processed.csv" \
+    --data_path "$DATA_DIR/geolife_processed.csv" \
     --test_size "$test_frac" \
     --val_size "$val_frac" \
     --random_state 42 \
@@ -84,7 +86,7 @@ for key in train100 train200; do
     --pretrained_model_path "$LSTM_PRETRAIN_DIR/best_model.pth" \
     --scaler_path "$LSTM_PRETRAIN_DIR/scaler.joblib" \
     --label_encoder_path "$LSTM_PRETRAIN_DIR/label_encoder.joblib" \
-    --data_path "$ROOT/data/geolife_processed.csv" \
+    --data_path "$DATA_DIR/geolife_processed.csv" \
     --feature_columns speed \
     --test_size "$test_frac" \
     --val_size "$val_frac" \

@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/data/A-SpeedTransformer"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TRANSFORMER_DIR="$ROOT/models/transformer"
 LSTM_DIR="$ROOT/models/lstm"
+DATA_DIR="$ROOT/data"
 
 # Ensure experiment output directories exist
 mkdir -p "$TRANSFORMER_DIR/experiments/geolife_transformer_sweeps"
@@ -33,7 +35,7 @@ for entry in "${TRANSFORMER_RUNS[@]}"; do
 
   echo "\n[Transformer] ${dataset_name^} → $run_name"
   python "$TRANSFORMER_DIR/train.py" \
-    --data_path "$ROOT/data/$dataset" \
+    --data_path "$DATA_DIR/$dataset" \
     --feature_columns speed \
     --target_column label \
     --traj_id_column traj_id \
@@ -86,7 +88,7 @@ for entry in "${LSTM_RUNS[@]}"; do
 
   echo "\n[LSTM] ${dataset_name^} → $run_name"
   python "$LSTM_DIR/lstm.py" \
-    --data_path "$ROOT/data/$dataset" \
+    --data_path "$DATA_DIR/$dataset" \
     --feature_columns speed \
     --target_column label \
     --traj_id_column traj_id \

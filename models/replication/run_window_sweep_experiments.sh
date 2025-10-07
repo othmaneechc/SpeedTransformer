@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="/data/A-SpeedTransformer"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 TRANSFORMER_DIR="$ROOT/models/transformer"
+DATA_DIR="$ROOT/data"
 mkdir -p "$TRANSFORMER_DIR/experiments/geolife_window_sweeps"
 
 RUN_NAME="geolife_ws200_lr2e-4_bs512_h8_d128_kv4_do0.1"
@@ -10,7 +12,7 @@ OUT_DIR="$TRANSFORMER_DIR/experiments/geolife_window_sweeps"
 
 echo "[Window Sweep] Geolife → $RUN_NAME"
 python "$TRANSFORMER_DIR/train.py" \
-  --data_path "$ROOT/data/geolife_processed.csv" \
+  --data_path "$DATA_DIR/geolife_processed.csv" \
   --feature_columns speed \
   --target_column label \
   --traj_id_column traj_id \
