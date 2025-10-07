@@ -103,7 +103,7 @@ for entry in "${LSTM_RUNS[@]}"; do
     --checkpoint_dir "$checkpoint_dir" \
     --scaler_path "$checkpoint_dir/scaler.joblib" \
     --label_encoder_path "$checkpoint_dir/label_encoder.joblib" \
-    --num_workers 4\n
+    --num_workers 4 
   unset cfg
   declare -A cfg=()
 done

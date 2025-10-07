@@ -8,3 +8,4 @@ Finetune Sweeps,Transformer,lr2e-4_warmup0_freeze_attention,0.8638,86.38%
 Finetune Sweeps,LSTM,lstm_lr1e-3_h128,0.8417,84.17%
 Miniprogram Finetune,Transformer,final_50pct_313trips_lr5e-4_warmup0_none,0.9422,94.22%
 Miniprogram Finetune,LSTM,final_30pct_189trips_lr5e-4_h128,0.8897,88.97%
+Geolife Low-shot Finetune,Transformer,train200_lr2e-4_warmup0_freeze_attention,0.8722,87.22%

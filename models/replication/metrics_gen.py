@@ -7,10 +7,12 @@ artifacts that ship with the project and regenerates the exact plots and CSV
 summary referenced in the replication guide:
 
 1. ``original_datasets_training_comparison.png`` – Transformer vs LSTM val curves
-2. ``finetune_sweeps_per_class_f1.png`` – Geolife finetuning per-class F1 scores
-3. ``miniprogram_finetune_per_class_f1.png`` – CarbonClever finetuning per-class F1
-4. ``geolife_window_size_accuracy.png`` – Window size sweep accuracy trend
-5. ``experiment_summary.csv`` – Tabular view of the headline results
+2. ``geolife_mobis_model_f1.png`` – Transformer vs LSTM class-level comparison for Geolife and MOBIS
+3. ``finetune_sweeps_per_class_f1.png`` – Geolife finetuning per-class F1 scores
+4. ``miniprogram_finetune_per_class_f1.png`` – CarbonClever finetuning per-class F1
+5. ``geolife_window_size_accuracy.png`` – Window size sweep accuracy trend
+6. ``geolife_lowshot_accuracy.png`` – Low-shot (100/200 trajs) Geolife finetuning accuracy
+7. ``experiment_summary.csv`` – Tabular view of the headline results
 
 By default the outputs are written next to this script (``models/replication``).
 Pass ``--output-dir`` to change that or ``--show`` to display the figures while
@@ -124,6 +126,20 @@ def extract_per_class_metrics_from_log(log_path: Path) -> Dict[str, Dict[str, fl
             }
 
     return per_class
+
+
+def extract_split_counts(log_path: Path) -> Optional[Tuple[int, int, int]]:
+    """Return the (train, val, test) trajectory counts from the log header, if present."""
+    try:
+        content = log_path.read_text()
+    except OSError as exc:
+        print(f"Error reading {log_path}: {exc}")
+        return None
+
+    match = re.search(r"Train:\s*(\d+),\s*Val:\s*(\d+),\s*Test:\s*(\d+)", content)
+    if match:
+        return tuple(int(value) for value in match.groups())
+    return None
 
 
 # -----------------------------------------------------------------------------
@@ -590,6 +606,187 @@ def plot_window_sweep(window_results: Sequence[Dict[str, object]], output_path: 
     return output_path
 
 
+def plot_lowshot_results(lowshot_results: Sequence[Dict[str, object]], output_path: Path, *, show: bool) -> Optional[Path]:
+    if not lowshot_results:
+        print("No low-shot Geolife finetuning experiments found")
+        return None
+
+    plotted_data: List[Tuple[int, float, str]] = []
+    for result in lowshot_results:
+        train_count = None
+        split_counts = extract_split_counts(Path(result["log_path"]))
+        if split_counts:
+            train_count = split_counts[0]
+        else:
+            match = re.search(r"train(\d+)", result["experiment"], re.IGNORECASE)
+            if match:
+                train_count = int(match.group(1))
+        if train_count is None:
+            continue
+        plotted_data.append((train_count, result["test_accuracy"] * 100, result["experiment"]))
+
+    if not plotted_data:
+        print("Unable to determine training counts for low-shot runs")
+        return None
+
+    plotted_data.sort(key=lambda item: item[0])
+    train_counts = [item[0] for item in plotted_data]
+    accuracies = [item[1] for item in plotted_data]
+    labels = [item[2] for item in plotted_data]
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    ax.plot(
+        train_counts,
+        accuracies,
+        marker="o",
+        markersize=8,
+        linestyle="-",
+        linewidth=3,
+        color=PASTEL_COLORS["train_transformer"],
+        alpha=0.9,
+    )
+
+    for count, acc, label in zip(train_counts, accuracies, labels):
+        ax.annotate(
+            f"{acc:.2f}%\n({label})",
+            xy=(count, acc),
+            xytext=(0, 10),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            fontweight="bold",
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8),
+        )
+
+    ax.set_title("Geolife Low-shot Finetuning Accuracy", fontsize=18, fontweight="bold", pad=15)
+    ax.set_xlabel("Number of training trajectories", fontsize=16)
+    ax.set_ylabel("Test Accuracy (%)", fontsize=16)
+    ax.tick_params(axis="both", which="major", labelsize=14)
+    ax.grid(True, linestyle=":", alpha=0.6)
+
+    y_min = min(accuracies) - 1
+    y_max = max(accuracies) + 1
+    ax.set_ylim(y_min, y_max)
+
+    plt.tight_layout()
+
+    output_path = output_path.with_suffix(".png")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=300, bbox_inches="tight", facecolor="white")
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    print(f"Saved low-shot accuracy plot to {output_path}")
+    return output_path
+
+
+def plot_model_dataset_f1_histograms(
+    geolife_pair: Tuple[Optional[Dict[str, object]], Optional[Dict[str, object]]],
+    mobis_pair: Tuple[Optional[Dict[str, object]], Optional[Dict[str, object]]],
+    output_path: Path,
+    *,
+    show: bool,
+) -> Optional[Path]:
+    plot_data: List[Tuple[str, Dict[str, float], Dict[str, float]]] = []
+
+    for dataset_label, (transformer_result, lstm_result) in (
+        ("Geolife", geolife_pair),
+        ("Mobis", mobis_pair),
+    ):
+        if not transformer_result or not lstm_result:
+            continue
+
+        transformer_metrics = extract_per_class_metrics_from_log(Path(transformer_result["log_path"]))
+        lstm_metrics = extract_per_class_metrics_from_log(Path(lstm_result["log_path"]))
+        if not transformer_metrics or not lstm_metrics:
+            continue
+
+        plot_data.append((dataset_label, transformer_metrics, lstm_metrics))
+
+    if not plot_data:
+        print("Skipping model F1 histograms – insufficient data for Geolife or Mobis")
+        return None
+
+    n_plots = len(plot_data)
+    fig, axes = plt.subplots(1, n_plots, figsize=(12 if n_plots == 1 else 20, 7), squeeze=False)
+    axes = axes[0]
+
+    preferred_order = ["bike", "bus", "car", "train", "walk"]
+
+    for ax, (dataset_label, transformer_metrics, lstm_metrics) in zip(axes, plot_data):
+        classes = [cls for cls in preferred_order if cls in transformer_metrics or cls in lstm_metrics]
+        if not classes:
+            classes = sorted(set(transformer_metrics.keys()) | set(lstm_metrics.keys()))
+
+        transformer_scores = [transformer_metrics.get(cls, {}).get("f1_score", 0.0) for cls in classes]
+        lstm_scores = [lstm_metrics.get(cls, {}).get("f1_score", 0.0) for cls in classes]
+
+        x = np.arange(len(classes))
+        width = 0.35
+
+        bars_transformer = ax.bar(
+            x - width / 2,
+            transformer_scores,
+            width,
+            label="Transformer",
+            color=PASTEL_COLORS["train_transformer"],
+            edgecolor="white",
+            linewidth=1.5,
+            alpha=0.9,
+        )
+        bars_lstm = ax.bar(
+            x + width / 2,
+            lstm_scores,
+            width,
+            label="LSTM",
+            color=PASTEL_COLORS["train_lstm"],
+            edgecolor="white",
+            linewidth=1.5,
+            alpha=0.9,
+        )
+
+        for bars in (bars_transformer, bars_lstm):
+            for bar in bars:
+                height = bar.get_height()
+                ax.annotate(
+                    f"{height:.3f}",
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),
+                    textcoords="offset points",
+                    ha="center",
+                    va="bottom",
+                    fontsize=12,
+                    fontweight="bold",
+                )
+
+        ax.set_title(f"{dataset_label} Training – Class F1", fontsize=18, fontweight="bold", pad=15)
+        ax.set_xlabel("Class", fontsize=16)
+        ax.set_ylabel("F1-Score", fontsize=16)
+        ax.set_xticks(x)
+        ax.set_xticklabels([cls.capitalize() for cls in classes])
+        ax.set_ylim(0, 1.05)
+        ax.tick_params(axis="both", which="major", labelsize=13)
+        ax.grid(True, axis="y", linestyle=":", alpha=0.6)
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, -0.05), ncol=2, frameon=True, fancybox=True, shadow=True)
+
+    plt.tight_layout(rect=(0, 0, 1, 0.95))
+
+    output_path = output_path.with_suffix(".png")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=300, bbox_inches="tight", facecolor="white")
+    if show:
+        plt.show()
+    plt.close(fig)
+
+    print(f"Saved model comparison histograms to {output_path}")
+    return output_path
+
+
+
 # -----------------------------------------------------------------------------
 # Summary table
 # -----------------------------------------------------------------------------
@@ -604,6 +801,7 @@ def create_experiment_summary(
     finetune_lstm_match: Optional[Dict[str, object]],
     miniprogram_transformer_results: Sequence[Dict[str, object]],
     miniprogram_lstm_match: Optional[Dict[str, object]],
+    lowshot_transformer_results: Sequence[Dict[str, object]],
 ) -> pd.DataFrame:
     summary_data: List[Dict[str, str]] = []
 
@@ -638,6 +836,9 @@ def create_experiment_summary(
     if miniprogram_transformer_results:
         add_row("Miniprogram Finetune", "Transformer", miniprogram_transformer_results[0])
     add_row("Miniprogram Finetune", "LSTM", miniprogram_lstm_match)
+
+    if lowshot_transformer_results:
+        add_row("Geolife Low-shot Finetune", "Transformer", lowshot_transformer_results[0])
 
     return pd.DataFrame(summary_data)
 
@@ -697,6 +898,7 @@ def main() -> None:
     miniprogram_lstm_results = analyze_experiments(models_root, "lstm", "miniprogram_finetune")
 
     geolife_window_results = analyze_window_sweeps(models_root)
+    geolife_lowshot_results = analyze_experiments(models_root, "transformer", "finetune_lowshot")
 
     print("\nFound experiments:")
     print(f"  Geolife: {len(geolife_transformer_results)} Transformer, {len(geolife_lstm_results)} LSTM")
@@ -704,11 +906,13 @@ def main() -> None:
     print(f"  Finetune Sweeps: {len(finetune_transformer_results)} Transformer, {len(finetune_lstm_results)} LSTM")
     print(f"  Miniprogram: {len(miniprogram_transformer_results)} Transformer, {len(miniprogram_lstm_results)} LSTM")
     print(f"  Geolife Window Sweeps: {len(geolife_window_results)} Transformer")
+    print(f"  Geolife Low-shot Finetune: {len(geolife_lowshot_results)} Transformer")
 
     best_geolife_transformer = geolife_transformer_results[0] if geolife_transformer_results else None
     best_mobis_transformer = mobis_transformer_results[0] if mobis_transformer_results else None
     best_finetune_transformer = finetune_transformer_results[0] if finetune_transformer_results else None
     best_miniprogram_transformer = miniprogram_transformer_results[0] if miniprogram_transformer_results else None
+    best_lowshot_transformer = geolife_lowshot_results[0] if geolife_lowshot_results else None
 
     matching_geolife_lstm = find_similar_hyperparams(best_geolife_transformer, geolife_lstm_results)
     matching_mobis_lstm = find_similar_hyperparams(best_mobis_transformer, mobis_lstm_results)
@@ -733,6 +937,19 @@ def main() -> None:
     display_best_results(finetune_lstm_results, "BEST FINETUNE SWEEPS LSTM RESULTS", args.top_n)
     display_best_results(miniprogram_transformer_results, "BEST MINIPROGRAM FINETUNE TRANSFORMER RESULTS", args.top_n)
     display_best_results(miniprogram_lstm_results, "BEST MINIPROGRAM FINETUNE LSTM RESULTS", args.top_n)
+    display_best_results(geolife_lowshot_results, "BEST GEOLIFE LOW-SHOT FINETUNE TRANSFORMER RESULTS", args.top_n)
+
+    if geolife_lowshot_results:
+        print("\nLow-shot split summary:")
+        for result in geolife_lowshot_results:
+            counts = extract_split_counts(Path(result["log_path"]))
+            if counts:
+                train_count, val_count, test_count = counts
+                acc = result["test_accuracy"] * 100 if result["test_accuracy"] <= 1 else result["test_accuracy"]
+                print(
+                    f"  {result['experiment']}: train={train_count}, val={val_count}, test={test_count}, "
+                    f"accuracy={acc:.2f}%"
+                )
 
     # Visualisations ---------------------------------------------------------
     outputs: List[Path] = []
@@ -747,6 +964,15 @@ def main() -> None:
         path = plot_training_comparison(training_data, output_dir / "original_datasets_val_comparison", show=show)
         if path:
             outputs.append(path)
+
+    model_hist = plot_model_dataset_f1_histograms(
+        (best_geolife_transformer, matching_geolife_lstm),
+        (best_mobis_transformer, matching_mobis_lstm),
+        output_dir / "geolife_mobis_model_f1",
+        show=show,
+    )
+    if model_hist:
+        outputs.append(model_hist)
 
     per_class_metrics: Dict[str, Dict[str, Dict[str, Dict[str, float]]]] = {}
     if best_finetune_transformer and matching_finetune_lstm:
@@ -771,6 +997,10 @@ def main() -> None:
     if window_plot:
         outputs.append(window_plot)
 
+    lowshot_plot = plot_lowshot_results(geolife_lowshot_results, output_dir / "geolife_lowshot_accuracy", show=show)
+    if lowshot_plot:
+        outputs.append(lowshot_plot)
+
     # Summary table ---------------------------------------------------------
     summary_df = create_experiment_summary(
         geolife_transformer_results,
@@ -782,6 +1012,7 @@ def main() -> None:
         matching_finetune_lstm,
         miniprogram_transformer_results,
         matching_miniprogram_lstm,
+        geolife_lowshot_results,
     )
 
     print("=" * 80)

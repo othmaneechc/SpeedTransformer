@@ -46,6 +46,7 @@ Each architecture includes dedicated scripts for training and fine-tuning. The f
 
 - `run_training_experiments.sh` – replays the best transformer and LSTM Geolife/Mobis training jobs.
 - `run_gl_finetune_experiments.sh` – reproduces the Geolife finetuning winners for both model families.
+- `run_gl_lowshot_finetune_experiments.sh` – fine-tunes the MOBIS transformer on 100/200 Geolife trajectories (low-shot).
 - `run_miniprogram_finetune_experiments.sh` – regenerates the CarbonClever finetuning leaderboard models.
 - `run_window_sweep_experiments.sh` – reruns the top Geolife window sweep configuration.
 - `metrics_gen.py` – converts experiment logs into the replication figures and summary table (`experiment_summary.csv`).

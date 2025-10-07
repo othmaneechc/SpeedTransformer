@@ -1,0 +1,186 @@
+## Training on MOBIS
+
+| Model | Experiment | Dataset size | Learning rate | Batch size | Dropout | Weight decay | Epochs (max) | Early stopping | Frozen layers | Test accuracy |
+|-------|-----------|--------------|---------------|-----------|---------|--------------|-------------|----------------|---------------|---------------|
+| LSTM-Attention | mobis_lr1e-3_bs128_h128_l2_do0.1 | — | 1e-3 | 128 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.40% |
+| LSTM-Attention | mobis_lr1e-3_bs64_h128_l2_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645 | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.20% |
+| LSTM-Attention | mobis_lr1e-3_bs64_h128_l2_do0.2 | — | 1e-3 | 64 | 0.2 | 1e-4 | 50 | Patience 7 | None | 92.15% |
+| LSTM-Attention | mobis_lr1e-3_bs64_h128_l3_do0.1 | — | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.26% |
+| LSTM-Attention | mobis_lr1e-3_bs64_h256_l2_do0.1 | — | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.04% |
+| LSTM-Attention | mobis_lr2e-3_bs64_h128_l2_do0.1 | — | 2e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.14% |
+| LSTM-Attention | mobis_lr5e-4_bs128_h256_l3_do0.1 | — | 5e-4 | 128 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.33% |
+| LSTM-Attention | mobis_lr5e-4_bs64_h128_l2_do0.1 | — | 5e-4 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.35% |
+| SpeedTransformer | mobis_lr1e-4_bs512_h8_d128_kv4_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 1e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.22% |
+| SpeedTransformer | mobis_lr2e-4_bs1024_h8_d128_kv4_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 1024 | 0.1 | 1e-4 | 50 | Patience 7 | None | 93.69% |
+| SpeedTransformer | mobis_lr2e-4_bs512_h12_d192_kv6_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 93.71% |
+| SpeedTransformer | mobis_lr2e-4_bs512_h8_d128_kv2_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.20% |
+| SpeedTransformer | mobis_lr2e-4_bs512_h8_d128_kv4_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 93.69% |
+| SpeedTransformer | mobis_lr2e-4_bs512_h8_d128_kv4_do0.2 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 93.54% |
+| SpeedTransformer | mobis_lr2e-4_bs512_h8_d256_kv4_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 93.54% |
+| SpeedTransformer | mobis_lr3e-4_bs512_h8_d128_kv4_do0.1 | Train: 1,071,673<br>Val: 229,644<br>Test: 229,645<br>Windows: Train 1,844,960, Val 397,503, Test 395,946 | 3e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.09% |
+
+
+## Training on Geolife
+
+| Model | Experiment | Dataset size | Learning rate | Batch size | Dropout | Weight decay | Epochs (max) | Early stopping | Frozen layers | Test accuracy |
+|-------|-----------|--------------|---------------|-----------|---------|--------------|-------------|----------------|---------------|---------------|
+| LSTM-Attention | geolife_lr1e-3_bs128_h128_l2_do0.1 | — | 1e-3 | 128 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.77% |
+| LSTM-Attention | geolife_lr1e-3_bs64_h128_l2_do0.1 | — | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 91.77% |
+| LSTM-Attention | geolife_lr1e-3_bs64_h128_l2_do0.2 | — | 1e-3 | 64 | 0.2 | 1e-4 | 50 | Patience 7 | None | 92.71% |
+| LSTM-Attention | geolife_lr1e-3_bs64_h128_l3_do0.1 | — | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.16% |
+| LSTM-Attention | geolife_lr1e-3_bs64_h256_l2_do0.1 | — | 1e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.73% |
+| LSTM-Attention | geolife_lr2e-3_bs64_h128_l2_do0.1 | — | 2e-3 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.56% |
+| LSTM-Attention | geolife_lr5e-4_bs128_h256_l3_do0.1 | — | 5e-4 | 128 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.40% |
+| LSTM-Attention | geolife_lr5e-4_bs64_h128_l2_do0.1 | — | 5e-4 | 64 | 0.1 | 1e-4 | 50 | Patience 7 | None | 91.63% |
+| SpeedTransformer | lr1e-4_bs512_h8_d128_kv4_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 1e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.44% |
+| SpeedTransformer | lr2e-4_bs1024_h8_d128_kv4_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 1024 | 0.1 | 1e-4 | 50 | Patience 7 | None | 92.72% |
+| SpeedTransformer | lr2e-4_bs512_h12_d192_kv6_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.72% |
+| SpeedTransformer | lr2e-4_bs512_h8_d128_kv2_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 95.36% |
+| SpeedTransformer | lr2e-4_bs512_h8_d128_kv4_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 95.97% |
+| SpeedTransformer | lr2e-4_bs512_h8_d128_kv4_do0.2 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 92.70% |
+| SpeedTransformer | lr2e-4_bs512_h8_d256_kv4_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 2e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.69% |
+| SpeedTransformer | lr3e-4_bs512_h8_d128_kv4_do0.1 | Train: 6,542<br>Val: 1,402<br>Test: 1,403<br>Windows: Train 51,515, Val 10,762, Test 10,729 | 3e-4 | 512 | 0.1 | 1e-4 | 50 | Patience 7 | None | 94.68% |
+
+
+## Fine-tuning MOBIS → Geolife
+
+| Model | Experiment | Dataset size | Learning rate | Batch size | Dropout | Weight decay | Epochs (max) | Early stopping | Frozen layers | Test accuracy |
+|-------|-----------|--------------|---------------|-----------|---------|--------------|-------------|----------------|---------------|---------------|
+| LSTM-Attention | lstm_lr1e-3_h128 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-3 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.17% |
+| LSTM-Attention | lstm_lr1e-3_h256 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-3 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.17% |
+| LSTM-Attention | lstm_lr1e-3_h64 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-3 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.17% |
+| LSTM-Attention | lstm_lr1e-4_h128 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 82.84% |
+| LSTM-Attention | lstm_lr1e-4_h256 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 82.84% |
+| LSTM-Attention | lstm_lr1e-4_h64 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 1e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 82.84% |
+| LSTM-Attention | lstm_lr5e-4_h128 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 5e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.13% |
+| LSTM-Attention | lstm_lr5e-4_h256 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 5e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.13% |
+| LSTM-Attention | lstm_lr5e-4_h64 | Train: 93<br>Val: 1,869<br>Test: 7,385 | 5e-4 | 128 | 0.3 | 1e-4 | 60 | Patience 7 | None | 84.13% |
+| LSTM-Attention | train100_lr5e-5_bs128_do0.3 | Train: 100<br>Val: 4,623<br>Test: 4,624 | 5e-5 | 128 | 0.3 | 5e-3 | 20 | Patience 3 | None | 75.47% |
+| LSTM-Attention | train200_lr5e-5_bs128_do0.3 | Train: 200<br>Val: 4,573<br>Test: 4,574 | 5e-5 | 128 | 0.3 | 5e-3 | 20 | Patience 3 | None | 79.15% |
+| SpeedTransformer | lr1e-4_warmup0_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.82% |
+| SpeedTransformer | lr1e-4_warmup0_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 84.22% |
+| SpeedTransformer | lr1e-4_warmup0_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 74.16% |
+| SpeedTransformer | lr1e-4_warmup0_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.82% |
+| SpeedTransformer | lr1e-4_warmup0_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 84.08% |
+| SpeedTransformer | lr1e-4_warmup0_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.58% |
+| SpeedTransformer | lr1e-4_warmup0_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 85.70% |
+| SpeedTransformer | lr1e-4_warmup100_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.87% |
+| SpeedTransformer | lr1e-4_warmup100_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.85% |
+| SpeedTransformer | lr1e-4_warmup100_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.77% |
+| SpeedTransformer | lr1e-4_warmup100_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.95% |
+| SpeedTransformer | lr1e-4_warmup100_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.81% |
+| SpeedTransformer | lr1e-4_warmup100_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.73% |
+| SpeedTransformer | lr1e-4_warmup100_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.46% |
+| SpeedTransformer | lr1e-4_warmup500_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.89% |
+| SpeedTransformer | lr1e-4_warmup500_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.90% |
+| SpeedTransformer | lr1e-4_warmup500_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.80% |
+| SpeedTransformer | lr1e-4_warmup500_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.96% |
+| SpeedTransformer | lr1e-4_warmup500_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.85% |
+| SpeedTransformer | lr1e-4_warmup500_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.77% |
+| SpeedTransformer | lr1e-4_warmup500_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.55% |
+| SpeedTransformer | lr2e-4_warmup0_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 86.38% |
+| SpeedTransformer | lr2e-4_warmup0_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 84.98% |
+| SpeedTransformer | lr2e-4_warmup0_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 83.25% |
+| SpeedTransformer | lr2e-4_warmup0_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 81.77% |
+| SpeedTransformer | lr2e-4_warmup0_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 85.01% |
+| SpeedTransformer | lr2e-4_warmup0_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 62.54% |
+| SpeedTransformer | lr2e-4_warmup0_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 86.30% |
+| SpeedTransformer | lr2e-4_warmup100_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.86% |
+| SpeedTransformer | lr2e-4_warmup100_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.80% |
+| SpeedTransformer | lr2e-4_warmup100_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.79% |
+| SpeedTransformer | lr2e-4_warmup100_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.95% |
+| SpeedTransformer | lr2e-4_warmup100_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.82% |
+| SpeedTransformer | lr2e-4_warmup100_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.73% |
+| SpeedTransformer | lr2e-4_warmup100_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.42% |
+| SpeedTransformer | lr2e-4_warmup500_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.90% |
+| SpeedTransformer | lr2e-4_warmup500_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.85% |
+| SpeedTransformer | lr2e-4_warmup500_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.78% |
+| SpeedTransformer | lr2e-4_warmup500_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.93% |
+| SpeedTransformer | lr2e-4_warmup500_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.84% |
+| SpeedTransformer | lr2e-4_warmup500_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.74% |
+| SpeedTransformer | lr2e-4_warmup500_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.50% |
+| SpeedTransformer | lr5e-5_warmup0_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.86% |
+| SpeedTransformer | lr5e-5_warmup0_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.53% |
+| SpeedTransformer | lr5e-5_warmup0_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.77% |
+| SpeedTransformer | lr5e-5_warmup0_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.81% |
+| SpeedTransformer | lr5e-5_warmup0_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.74% |
+| SpeedTransformer | lr5e-5_warmup0_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.67% |
+| SpeedTransformer | lr5e-5_warmup0_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 85.07% |
+| SpeedTransformer | lr5e-5_warmup100_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.88% |
+| SpeedTransformer | lr5e-5_warmup100_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.86% |
+| SpeedTransformer | lr5e-5_warmup100_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.79% |
+| SpeedTransformer | lr5e-5_warmup100_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.93% |
+| SpeedTransformer | lr5e-5_warmup100_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.82% |
+| SpeedTransformer | lr5e-5_warmup100_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.73% |
+| SpeedTransformer | lr5e-5_warmup100_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.51% |
+| SpeedTransformer | lr5e-5_warmup500_freeze_attention | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Attention frozen | 63.92% |
+| SpeedTransformer | lr5e-5_warmup500_freeze_embeddings | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Embeddings frozen | 63.96% |
+| SpeedTransformer | lr5e-5_warmup500_freeze_feedforward | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Feedforward frozen | 63.80% |
+| SpeedTransformer | lr5e-5_warmup500_freeze_first_half | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | First half frozen | 63.86% |
+| SpeedTransformer | lr5e-5_warmup500_full | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | None | 63.86% |
+| SpeedTransformer | lr5e-5_warmup500_grad_unfreeze | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Gradual unfreeze | 63.64% |
+| SpeedTransformer | lr5e-5_warmup500_reinit_last | Train: 93<br>Val: 1,869<br>Test: 7,385<br>Windows: Train 899, Val 16,344, Test 55,763 | 5e-5 | 512 | 0.2 | 1e-4 | 50 | Patience 7 | Reinit last block | 66.58% |
+| SpeedTransformer | train100_lr2e-4_warmup0_freeze_attention | Train: 100<br>Val: 4,623<br>Test: 4,624<br>Windows: Train 932, Val 36,325, Test 35,749 | 2e-4 | 512 | 0.1 | 1e-4 | 20 | Patience 7 | Attention frozen | 80.53% |
+| SpeedTransformer | train200_lr2e-4_warmup0_freeze_attention | Train: 200<br>Val: 4,573<br>Test: 4,574<br>Windows: Train 1,496, Val 36,980, Test 34,530 | 2e-4 | 512 | 0.1 | 1e-4 | 20 | Patience 7 | Attention frozen | 86.13% |
+
+
+## Fine-tuning MOBIS → Mini-Program
+
+| Model | Experiment | Dataset size | Learning rate | Batch size | Dropout | Weight decay | Epochs (max) | Early stopping | Frozen layers | Test accuracy |
+|-------|-----------|--------------|---------------|-----------|---------|--------------|-------------|----------------|---------------|---------------|
+| LSTM-Attention | final_15pct_94trips_lr5e-4_h128 | Train: 93<br>Val: 126<br>Test: 410 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.62% |
+| LSTM-Attention | final_20pct_125trips_lr5e-4_h128 | Train: 123<br>Val: 125<br>Test: 381 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 88.02% |
+| LSTM-Attention | final_30pct_189trips_lr5e-4_h128 | Train: 182<br>Val: 125<br>Test: 322 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 88.97% |
+| LSTM-Attention | final_40pct_251trips_lr5e-4_h128 | Train: 241<br>Val: 126<br>Test: 262 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 87.45% |
+| LSTM-Attention | final_50pct_313trips_lr5e-4_h128 | Train: 300<br>Val: 126<br>Test: 203 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 87.57% |
+| LSTM-Attention | tune_lr1e-3_h128 | Train: 93<br>Val: 126<br>Test: 410 | 1e-3 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.19% |
+| LSTM-Attention | tune_lr1e-3_h256 | Train: 93<br>Val: 126<br>Test: 410 | 1e-3 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.19% |
+| LSTM-Attention | tune_lr1e-3_h64 | Train: 93<br>Val: 126<br>Test: 410 | 1e-3 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.19% |
+| LSTM-Attention | tune_lr1e-4_h128 | Train: 93<br>Val: 126<br>Test: 410 | 1e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 85.18% |
+| LSTM-Attention | tune_lr1e-4_h256 | Train: 93<br>Val: 126<br>Test: 410 | 1e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 85.18% |
+| LSTM-Attention | tune_lr1e-4_h64 | Train: 93<br>Val: 126<br>Test: 410 | 1e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 85.18% |
+| LSTM-Attention | tune_lr5e-4_h128 | Train: 93<br>Val: 126<br>Test: 410 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.62% |
+| LSTM-Attention | tune_lr5e-4_h256 | Train: 93<br>Val: 126<br>Test: 410 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.62% |
+| LSTM-Attention | tune_lr5e-4_h64 | Train: 93<br>Val: 126<br>Test: 410 | 5e-4 | 128 | 0.3 | 1e-4 | 50 | Patience 10 | None | 86.62% |
+| SpeedTransformer | final_15pct_94trips_lr5e-4_warmup0_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 89.12% |
+| SpeedTransformer | final_20pct_125trips_lr5e-4_warmup0_none | Train: 124<br>Val: 126<br>Test: 379<br>Windows: Train 397, Val 249, Test 1,093 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 82.53% |
+| SpeedTransformer | final_30pct_189trips_lr5e-4_warmup0_none | Train: 189<br>Val: 125<br>Test: 315<br>Windows: Train 587, Val 248, Test 904 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 91.15% |
+| SpeedTransformer | final_40pct_251trips_lr5e-4_warmup0_none | Train: 250<br>Val: 126<br>Test: 253<br>Windows: Train 711, Val 235, Test 793 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 88.78% |
+| SpeedTransformer | final_50pct_313trips_lr5e-4_warmup0_none | Train: 313<br>Val: 126<br>Test: 190<br>Windows: Train 836, Val 349, Test 554 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 94.22% |
+| SpeedTransformer | tune_lr1e-4_warmup0_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 71.85% |
+| SpeedTransformer | tune_lr1e-4_warmup0_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 72.37% |
+| SpeedTransformer | tune_lr1e-4_warmup0_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.21% |
+| SpeedTransformer | tune_lr1e-4_warmup0_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.76% |
+| SpeedTransformer | tune_lr1e-4_warmup100_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 69.34% |
+| SpeedTransformer | tune_lr1e-4_warmup100_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 71.16% |
+| SpeedTransformer | tune_lr1e-4_warmup100_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.38% |
+| SpeedTransformer | tune_lr1e-4_warmup100_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.76% |
+| SpeedTransformer | tune_lr1e-4_warmup50_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 72.02% |
+| SpeedTransformer | tune_lr1e-4_warmup50_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 72.97% |
+| SpeedTransformer | tune_lr1e-4_warmup50_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.03% |
+| SpeedTransformer | tune_lr1e-4_warmup50_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 1e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.33% |
+| SpeedTransformer | tune_lr2e-4_warmup0_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 71.59% |
+| SpeedTransformer | tune_lr2e-4_warmup0_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 80.66% |
+| SpeedTransformer | tune_lr2e-4_warmup0_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.29% |
+| SpeedTransformer | tune_lr2e-4_warmup0_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 79.97% |
+| SpeedTransformer | tune_lr2e-4_warmup100_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 72.02% |
+| SpeedTransformer | tune_lr2e-4_warmup100_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 72.97% |
+| SpeedTransformer | tune_lr2e-4_warmup100_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.03% |
+| SpeedTransformer | tune_lr2e-4_warmup100_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.33% |
+| SpeedTransformer | tune_lr2e-4_warmup50_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 71.68% |
+| SpeedTransformer | tune_lr2e-4_warmup50_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 80.57% |
+| SpeedTransformer | tune_lr2e-4_warmup50_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.12% |
+| SpeedTransformer | tune_lr2e-4_warmup50_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 2e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.59% |
+| SpeedTransformer | tune_lr5e-4_warmup0_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 82.64% |
+| SpeedTransformer | tune_lr5e-4_warmup0_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 87.82% |
+| SpeedTransformer | tune_lr5e-4_warmup0_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 78.93% |
+| SpeedTransformer | tune_lr5e-4_warmup0_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 89.12% |
+| SpeedTransformer | tune_lr5e-4_warmup100_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 71.50% |
+| SpeedTransformer | tune_lr5e-4_warmup100_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 77.20% |
+| SpeedTransformer | tune_lr5e-4_warmup100_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.12% |
+| SpeedTransformer | tune_lr5e-4_warmup100_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 71.33% |
+| SpeedTransformer | tune_lr5e-4_warmup50_freeze_attention | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Attention frozen | 71.33% |
+| SpeedTransformer | tune_lr5e-4_warmup50_freeze_embeddings | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Embeddings frozen | 77.98% |
+| SpeedTransformer | tune_lr5e-4_warmup50_freeze_feedforward | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | Feedforward frozen | 70.29% |
+| SpeedTransformer | tune_lr5e-4_warmup50_none | Train: 93<br>Val: 126<br>Test: 410<br>Windows: Train 289, Val 292, Test 1,158 | 5e-4 | 512 | 0.2 | 1e-4 | 50 | Patience 10 | None | 79.02% |
+
