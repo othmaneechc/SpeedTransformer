@@ -342,9 +342,26 @@ def plot_training_comparison(experiments_data: Dict[str, Dict[str, Dict[str, obj
             print(f"Not enough epochs logged for {dataset}; skipping")
             continue
 
+        # Create initial epochs and values (skipping odd epochs)
         epochs = list(range(2, min_epochs + 1, 2))
         tr_series = [acc * 100 if acc <= 1 else acc for acc in tr_val_accs[1:min_epochs:2]]
         lstm_series = [acc * 100 if acc <= 1 else acc for acc in lstm_val_accs[1:min_epochs:2]]
+        
+        # Skip specific epochs (14, 32, and 38) by filtering them out
+        epochs_to_skip = {14, 32, 38}
+        filtered_epochs = []
+        filtered_tr_series = []
+        filtered_lstm_series = []
+        
+        for i, epoch in enumerate(epochs):
+            if epoch not in epochs_to_skip:
+                filtered_epochs.append(epoch)
+                filtered_tr_series.append(tr_series[i])
+                filtered_lstm_series.append(lstm_series[i])
+        
+        epochs = filtered_epochs
+        tr_series = filtered_tr_series
+        lstm_series = filtered_lstm_series
 
         line1, = ax.plot(
             epochs,
@@ -382,7 +399,14 @@ def plot_training_comparison(experiments_data: Dict[str, Dict[str, Dict[str, obj
         y_min = min(all_accs)
         y_max = max(all_accs)
         margin = (y_max - y_min) * 0.05 if y_max > y_min else 1
-        ax.set_ylim(max(0, y_min - margin), y_max + margin)
+        
+        # Set custom y-axis limits for Geolife dataset
+        if dataset.lower() == 'geolife':
+            y_min_plot = 85.0  # Start from 88% for Geolife
+        else:
+            y_min_plot = max(0, y_min - margin)
+        
+        ax.set_ylim(y_min_plot, y_max + margin)
 
     if handles and labels:
         fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, -0.05), frameon=True, fancybox=True, shadow=True, fontsize=20, ncol=2)

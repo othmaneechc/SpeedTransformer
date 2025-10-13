@@ -64,6 +64,10 @@ cd /data/A-SpeedTransformer/models/replication
 python metrics_gen.py
 ```
 
+### Colab Notebook
+
+For an end-to-end, notebook-based replication you can open `SpeedTransformer.ipynb` directly in Google Colab. Appendix I in the paper lists the expected runtimes and resource notes for that workflow.
+
 ## License & Contact
 
 This project is licensed under the MIT License. Feel free to open issues or pull requests on GitHub.
