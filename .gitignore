@@ -1,7 +1,3 @@
-*.joblib
-fine_tune_checkpoints/
+*.png
 data/
 __pycache__/
-models_exp/
-experiments/
-

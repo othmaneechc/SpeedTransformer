@@ -1,0 +1,414 @@
+2025-09-16 12:04:59,745 - INFO - Initializing DataHandler for fine-tuning...
+2025-09-16 12:04:59,745 - INFO - Loading and processing the data...
+Gathering unique trajectory IDs and labels in one pass...
+Reading IDs & labels: 0it [00:00, ?it/s]Reading IDs & labels: 1it [00:00,  2.80it/s]Reading IDs & labels: 2it [00:00,  2.89it/s]Reading IDs & labels: 3it [00:01,  2.92it/s]Reading IDs & labels: 4it [00:01,  2.93it/s]Reading IDs & labels: 5it [00:01,  3.68it/s]Reading IDs & labels: 5it [00:01,  3.28it/s]
+Total unique traj_ids found: 9347
+Classes found: ['bike' 'bus' 'car' 'train' 'walk']
+Splitting traj_ids into train, val, and test sets...
+Train: 93, Val: 1869, Test: 7385
+Partial fitting scaler on training features...
+Reading training features for scaling: 0it [00:00, ?it/s]Reading training features for scaling: 1it [00:00,  2.94it/s]Reading training features for scaling: 2it [00:00,  2.96it/s]Reading training features for scaling: 3it [00:01,  2.99it/s]Reading training features for scaling: 4it [00:01,  3.01it/s]Reading training features for scaling: 5it [00:01,  3.75it/s]Reading training features for scaling: 5it [00:01,  3.36it/s]
+Scaler fitting completed.
+Creating trip sequences (fixed length=200, stride=150) from CSV in chunks...
+Processing & transforming chunks: 0it [00:00, ?it/s]Processing & transforming chunks: 1it [00:01,  1.94s/it]Processing & transforming chunks: 2it [00:03,  1.98s/it]Processing & transforming chunks: 3it [00:06,  2.15s/it]Processing & transforming chunks: 4it [00:08,  2.24s/it]Processing & transforming chunks: 5it [00:09,  1.77s/it]Processing & transforming chunks: 5it [00:09,  1.93s/it]2025-09-16 12:05:12,408 - INFO - Data loaded and processed successfully.
+2025-09-16 12:05:12,408 - INFO - Loading scaler from /data/A-SpeedTransformer/models/lstm/experiments/mobis_lstm_sweeps/mobis_lr1e-3_bs128_h128_l2_do0.1/scaler.joblib...
+2025-09-16 12:05:12,412 - INFO - Scaler overwritten with saved scaler.
+2025-09-16 12:05:12,412 - INFO - Loading label encoder from /data/A-SpeedTransformer/models/lstm/experiments/mobis_lstm_sweeps/mobis_lr1e-3_bs128_h128_l2_do0.1/label_encoder.joblib...
+2025-09-16 12:05:12,414 - INFO - Label encoder overwritten with saved encoder.
+2025-09-16 12:05:12,414 - INFO - Re-building datasets using the loaded scaler/encoder...
+
+Creating trip sequences (fixed length=200, stride=150) from CSV in chunks...
+Processing & transforming chunks: 0it [00:00, ?it/s]Processing & transforming chunks: 1it [00:01,  1.87s/it]Processing & transforming chunks: 2it [00:03,  1.94s/it]Processing & transforming chunks: 3it [00:06,  2.11s/it]Processing & transforming chunks: 4it [00:08,  2.21s/it]Processing & transforming chunks: 5it [00:09,  1.76s/it]Processing & transforming chunks: 5it [00:09,  1.90s/it]2025-09-16 12:05:21,929 - INFO - Sequences re-created successfully.
+Creating DataLoaders...
+DataLoaders created.
+2025-09-16 12:05:21,929 - INFO - DataLoaders for train, val, and test are ready.
+2025-09-16 12:05:21,929 - INFO - Initializing LSTM model for fine-tuning...
+2025-09-16 12:05:21,948 - INFO - Using device: cuda
+2025-09-16 12:05:21,948 - INFO - Loading pretrained model state dict from /data/A-SpeedTransformer/models/lstm/experiments/mobis_lstm_sweeps/mobis_lr1e-3_bs128_h128_l2_do0.1/best_model.pth...
+2025-09-16 12:05:22,165 - INFO - Inferred hyperparameters from pretrained model:
+2025-09-16 12:05:22,165 - INFO -   Hidden size: 128 (arg: 256)
+2025-09-16 12:05:22,165 - INFO -   Num layers: 2 (arg: 2)
+2025-09-16 12:05:22,165 - INFO -   Using inferred values to ensure compatibility
+2025-09-16 12:05:22,197 - INFO - Loading pretrained model weights...
+2025-09-16 12:05:22,197 - INFO - Pretrained model weights loaded successfully.
+2025-09-16 12:05:25,367 - INFO - Optimizer re-initialized for fine-tuning.
+2025-09-16 12:05:25,368 - INFO - Starting fine-tuning for up to 60 epochs...
+2025-09-16 12:05:25,368 - INFO - Epoch 1/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:01,  1.83it/s]Training: 100%|██████████| 3/3 [00:00<00:00,  4.64it/s]2025-09-16 12:05:26,016 - INFO - Train Loss: 1.3319, Train Acc: 58.05%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.30it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 42.59it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 65.47it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 73.66it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 76.83it/s]Validation:  80%|████████  | 45/56 [00:00<00:00, 80.64it/s]Validation:  96%|█████████▋| 54/56 [00:00<00:00, 81.86it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 69.11it/s]2025-09-16 12:05:26,828 - INFO - Val Loss: 1.3461, Val Acc: 60.24%
+2025-09-16 12:05:26,852 - INFO - Best model saved with validation accuracy: 60.24%
+2025-09-16 12:05:26,853 - INFO - Epoch 2/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.62it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.77it/s]2025-09-16 12:05:27,109 - INFO - Train Loss: 1.2169, Train Acc: 59.63%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.21it/s]Validation:  16%|█▌        | 9/56 [00:00<00:01, 44.74it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 67.56it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 78.81it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 85.06it/s]Validation:  88%|████████▊ | 49/56 [00:00<00:00, 88.56it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 74.96it/s]2025-09-16 12:05:27,857 - INFO - Val Loss: 1.2729, Val Acc: 62.16%
+2025-09-16 12:05:27,880 - INFO - Best model saved with validation accuracy: 62.16%
+2025-09-16 12:05:27,880 - INFO - Epoch 3/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.51it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.19it/s]2025-09-16 12:05:28,129 - INFO - Train Loss: 1.1887, Train Acc: 60.95%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  7.97it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 34.36it/s]Validation:  29%|██▊       | 16/56 [00:00<00:00, 57.39it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 71.47it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 85.35it/s]Validation:  86%|████████▌ | 48/56 [00:00<00:00, 88.46it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 71.84it/s]2025-09-16 12:05:28,910 - INFO - Val Loss: 1.2174, Val Acc: 63.15%
+2025-09-16 12:05:28,938 - INFO - Best model saved with validation accuracy: 63.15%
+2025-09-16 12:05:28,938 - INFO - Epoch 4/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.49it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.67it/s]2025-09-16 12:05:29,143 - INFO - Train Loss: 1.1033, Train Acc: 63.85%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.62it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 40.31it/s]Validation:  30%|███       | 17/56 [00:00<00:00, 60.18it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 73.27it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 80.40it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 84.56it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 72.56it/s]2025-09-16 12:05:29,916 - INFO - Val Loss: 1.1705, Val Acc: 63.96%
+2025-09-16 12:05:29,942 - INFO - Best model saved with validation accuracy: 63.96%
+2025-09-16 12:05:29,942 - INFO - Epoch 5/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.48it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.98it/s]2025-09-16 12:05:30,175 - INFO - Train Loss: 1.0385, Train Acc: 67.81%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.42it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 40.41it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 77.28it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 95.04it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 105.43it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 88.24it/s] 2025-09-16 12:05:30,810 - INFO - Val Loss: 1.1250, Val Acc: 64.75%
+2025-09-16 12:05:30,832 - INFO - Best model saved with validation accuracy: 64.75%
+2025-09-16 12:05:30,832 - INFO - Epoch 6/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.03it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.20it/s]2025-09-16 12:05:31,060 - INFO - Train Loss: 0.9566, Train Acc: 69.66%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  7.03it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 38.15it/s]Validation:  39%|███▉      | 22/56 [00:00<00:00, 77.91it/s]Validation:  62%|██████▎   | 35/56 [00:00<00:00, 95.45it/s]Validation:  86%|████████▌ | 48/56 [00:00<00:00, 106.82it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 85.78it/s] 2025-09-16 12:05:31,715 - INFO - Val Loss: 1.0793, Val Acc: 65.82%
+2025-09-16 12:05:31,740 - INFO - Best model saved with validation accuracy: 65.82%
+2025-09-16 12:05:31,740 - INFO - Epoch 7/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.77it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.85it/s]2025-09-16 12:05:31,944 - INFO - Train Loss: 1.0579, Train Acc: 68.07%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.27it/s]Validation:  20%|█▉        | 11/56 [00:00<00:00, 55.73it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 88.93it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 102.84it/s]Validation:  91%|█████████ | 51/56 [00:00<00:00, 111.91it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 92.27it/s] 2025-09-16 12:05:32,553 - INFO - Val Loss: 1.0431, Val Acc: 67.22%
+2025-09-16 12:05:32,574 - INFO - Best model saved with validation accuracy: 67.22%
+2025-09-16 12:05:32,574 - INFO - Epoch 8/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  5.39it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.08it/s]2025-09-16 12:05:32,847 - INFO - Train Loss: 0.9615, Train Acc: 70.18%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:08,  6.17it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 63.64it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 91.42it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 104.23it/s]Validation:  98%|█████████▊| 55/56 [00:00<00:00, 113.26it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 90.80it/s] 2025-09-16 12:05:33,466 - INFO - Val Loss: 1.0036, Val Acc: 68.46%
+2025-09-16 12:05:33,504 - INFO - Best model saved with validation accuracy: 68.46%
+2025-09-16 12:05:33,504 - INFO - Epoch 9/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.16it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.19it/s]2025-09-16 12:05:33,752 - INFO - Train Loss: 0.8971, Train Acc: 71.77%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.25it/s]Validation:  20%|█▉        | 11/56 [00:00<00:00, 57.12it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 87.93it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 102.16it/s]Validation:  89%|████████▉ | 50/56 [00:00<00:00, 111.60it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 82.18it/s] 2025-09-16 12:05:34,435 - INFO - Val Loss: 0.9713, Val Acc: 69.28%
+2025-09-16 12:05:34,529 - INFO - Best model saved with validation accuracy: 69.28%
+2025-09-16 12:05:34,530 - INFO - Epoch 10/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  4.95it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.07it/s]2025-09-16 12:05:34,829 - INFO - Train Loss: 0.8661, Train Acc: 72.82%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.19it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 41.96it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 79.47it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 97.13it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 107.55it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 90.24it/s] 2025-09-16 12:05:35,452 - INFO - Val Loss: 0.9347, Val Acc: 70.01%
+2025-09-16 12:05:35,471 - INFO - Best model saved with validation accuracy: 70.01%
+2025-09-16 12:05:35,472 - INFO - Epoch 11/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.70it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.02it/s]2025-09-16 12:05:35,703 - INFO - Train Loss: 0.8835, Train Acc: 73.88%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  7.84it/s]Validation:  18%|█▊        | 10/56 [00:00<00:00, 50.31it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 83.69it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 98.77it/s]Validation:  88%|████████▊ | 49/56 [00:00<00:00, 106.89it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 88.92it/s] 2025-09-16 12:05:36,334 - INFO - Val Loss: 0.9001, Val Acc: 70.58%
+2025-09-16 12:05:36,393 - INFO - Best model saved with validation accuracy: 70.58%
+2025-09-16 12:05:36,393 - INFO - Epoch 12/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.18it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.50it/s]2025-09-16 12:05:36,616 - INFO - Train Loss: 0.7734, Train Acc: 77.31%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  9.10it/s]Validation:  18%|█▊        | 10/56 [00:00<00:00, 52.83it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 86.15it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 102.18it/s]Validation:  88%|████████▊ | 49/56 [00:00<00:00, 110.87it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 93.22it/s] 2025-09-16 12:05:37,217 - INFO - Val Loss: 0.8690, Val Acc: 71.16%
+2025-09-16 12:05:37,269 - INFO - Best model saved with validation accuracy: 71.16%
+2025-09-16 12:05:37,269 - INFO - Epoch 13/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.48it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.98it/s]2025-09-16 12:05:37,501 - INFO - Train Loss: 0.7471, Train Acc: 75.73%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:10,  5.32it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 57.84it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 83.56it/s]Validation:  71%|███████▏  | 40/56 [00:00<00:00, 97.16it/s]Validation:  95%|█████████▍| 53/56 [00:00<00:00, 106.49it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 85.23it/s] 2025-09-16 12:05:38,159 - INFO - Val Loss: 0.8432, Val Acc: 71.57%
+2025-09-16 12:05:38,188 - INFO - Best model saved with validation accuracy: 71.57%
+2025-09-16 12:05:38,188 - INFO - Epoch 14/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.55it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.37it/s]2025-09-16 12:05:38,384 - INFO - Train Loss: 0.7836, Train Acc: 76.25%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  7.72it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 39.88it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 76.11it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 93.58it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 103.42it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 86.66it/s] 2025-09-16 12:05:39,031 - INFO - Val Loss: 0.8193, Val Acc: 72.05%
+2025-09-16 12:05:39,058 - INFO - Best model saved with validation accuracy: 72.05%
+2025-09-16 12:05:39,058 - INFO - Epoch 15/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.92it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.59it/s]2025-09-16 12:05:39,251 - INFO - Train Loss: 0.7164, Train Acc: 77.57%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.81it/s]Validation:  18%|█▊        | 10/56 [00:00<00:00, 55.16it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 85.77it/s]Validation:  62%|██████▎   | 35/56 [00:00<00:00, 98.66it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 106.12it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 92.07it/s] 2025-09-16 12:05:39,861 - INFO - Val Loss: 0.7945, Val Acc: 72.34%
+2025-09-16 12:05:39,896 - INFO - Best model saved with validation accuracy: 72.34%
+2025-09-16 12:05:39,896 - INFO - Epoch 16/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.69it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.51it/s]2025-09-16 12:05:40,104 - INFO - Train Loss: 0.6735, Train Acc: 77.31%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.97it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 68.21it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 92.00it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 101.67it/s]Validation:  93%|█████████▎| 52/56 [00:00<00:00, 109.75it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 92.56it/s] 2025-09-16 12:05:40,709 - INFO - Val Loss: 0.7710, Val Acc: 72.86%
+2025-09-16 12:05:40,741 - INFO - Best model saved with validation accuracy: 72.86%
+2025-09-16 12:05:40,742 - INFO - Epoch 17/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.46it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.27it/s]2025-09-16 12:05:40,939 - INFO - Train Loss: 0.6500, Train Acc: 78.10%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.30it/s]Validation:  16%|█▌        | 9/56 [00:00<00:00, 48.98it/s]Validation:  39%|███▉      | 22/56 [00:00<00:00, 83.04it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 97.07it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 105.93it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 90.68it/s] 2025-09-16 12:05:41,557 - INFO - Val Loss: 0.7526, Val Acc: 73.26%
+2025-09-16 12:05:41,578 - INFO - Best model saved with validation accuracy: 73.26%
+2025-09-16 12:05:41,578 - INFO - Epoch 18/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.97it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.77it/s]2025-09-16 12:05:41,769 - INFO - Train Loss: 0.6672, Train Acc: 78.36%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 13.85it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 71.12it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 95.14it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 106.88it/s]Validation:  96%|█████████▋| 54/56 [00:00<00:00, 113.28it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 93.74it/s] 2025-09-16 12:05:42,367 - INFO - Val Loss: 0.7272, Val Acc: 73.80%
+2025-09-16 12:05:42,387 - INFO - Best model saved with validation accuracy: 73.80%
+2025-09-16 12:05:42,387 - INFO - Epoch 19/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  9.19it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.55it/s]2025-09-16 12:05:42,594 - INFO - Train Loss: 0.6219, Train Acc: 78.10%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 15.45it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 75.05it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 97.95it/s]Validation:  71%|███████▏  | 40/56 [00:00<00:00, 105.48it/s]Validation:  95%|█████████▍| 53/56 [00:00<00:00, 112.49it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 94.30it/s] 2025-09-16 12:05:43,188 - INFO - Val Loss: 0.6995, Val Acc: 74.67%
+2025-09-16 12:05:43,208 - INFO - Best model saved with validation accuracy: 74.67%
+2025-09-16 12:05:43,208 - INFO - Epoch 20/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  9.57it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.57it/s]2025-09-16 12:05:43,401 - INFO - Train Loss: 0.6140, Train Acc: 78.89%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 16.52it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 76.31it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 98.85it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 110.34it/s]Validation:  96%|█████████▋| 54/56 [00:00<00:00, 117.13it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 97.50it/s] 2025-09-16 12:05:43,976 - INFO - Val Loss: 0.6729, Val Acc: 75.25%
+2025-09-16 12:05:44,009 - INFO - Best model saved with validation accuracy: 75.25%
+2025-09-16 12:05:44,009 - INFO - Epoch 21/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  9.88it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 16.56it/s]2025-09-16 12:05:44,191 - INFO - Train Loss: 0.5892, Train Acc: 78.36%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 16.14it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 75.37it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 98.45it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 109.73it/s]Validation:  96%|█████████▋| 54/56 [00:00<00:00, 116.81it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 97.54it/s] 2025-09-16 12:05:44,766 - INFO - Val Loss: 0.6555, Val Acc: 75.67%
+2025-09-16 12:05:44,801 - INFO - Best model saved with validation accuracy: 75.67%
+2025-09-16 12:05:44,801 - INFO - Epoch 22/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.74it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.27it/s]2025-09-16 12:05:44,999 - INFO - Train Loss: 0.5557, Train Acc: 80.21%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 13.19it/s]Validation:  29%|██▊       | 16/56 [00:00<00:00, 72.76it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 94.74it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 107.36it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 115.97it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 93.14it/s] 2025-09-16 12:05:45,601 - INFO - Val Loss: 0.6410, Val Acc: 75.82%
+2025-09-16 12:05:45,638 - INFO - Best model saved with validation accuracy: 75.82%
+2025-09-16 12:05:45,639 - INFO - Epoch 23/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.79it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.88it/s]2025-09-16 12:05:45,857 - INFO - Train Loss: 0.5548, Train Acc: 78.89%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 15.14it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 74.45it/s]Validation:  50%|█████     | 28/56 [00:00<00:00, 97.99it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 109.84it/s]Validation:  98%|█████████▊| 55/56 [00:00<00:00, 117.33it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 96.16it/s] 2025-09-16 12:05:46,441 - INFO - Val Loss: 0.6270, Val Acc: 75.83%
+2025-09-16 12:05:46,461 - INFO - Best model saved with validation accuracy: 75.83%
+2025-09-16 12:05:46,461 - INFO - Epoch 24/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  9.61it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 16.40it/s]2025-09-16 12:05:46,644 - INFO - Train Loss: 0.5265, Train Acc: 81.27%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 11.89it/s]Validation:  29%|██▊       | 16/56 [00:00<00:00, 68.71it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 93.63it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 106.28it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 90.21it/s] 2025-09-16 12:05:47,266 - INFO - Val Loss: 0.6174, Val Acc: 75.82%
+2025-09-16 12:05:47,266 - INFO - No improvement for 1 epoch(s).
+2025-09-16 12:05:47,266 - INFO - Epoch 25/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.47it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.94it/s]2025-09-16 12:05:47,468 - INFO - Train Loss: 0.4763, Train Acc: 82.59%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.61it/s]Validation:  20%|█▉        | 11/56 [00:00<00:00, 59.25it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 92.08it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 106.11it/s]Validation:  91%|█████████ | 51/56 [00:00<00:00, 113.91it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 94.81it/s] 2025-09-16 12:05:48,061 - INFO - Val Loss: 0.6075, Val Acc: 75.76%
+2025-09-16 12:05:48,061 - INFO - No improvement for 2 epoch(s).
+2025-09-16 12:05:48,061 - INFO - Epoch 26/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.82it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.00it/s]2025-09-16 12:05:48,277 - INFO - Train Loss: 0.4628, Train Acc: 82.85%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.58it/s]Validation:  18%|█▊        | 10/56 [00:00<00:00, 54.18it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 87.75it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 103.83it/s]Validation:  88%|████████▊ | 49/56 [00:00<00:00, 112.40it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 93.15it/s] 2025-09-16 12:05:48,881 - INFO - Val Loss: 0.5894, Val Acc: 76.15%
+2025-09-16 12:05:48,903 - INFO - Best model saved with validation accuracy: 76.15%
+2025-09-16 12:05:48,903 - INFO - Epoch 27/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.02it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.17it/s]2025-09-16 12:05:49,115 - INFO - Train Loss: 0.4588, Train Acc: 81.79%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 16.21it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 77.07it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 101.21it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 111.56it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 119.27it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 99.27it/s] 2025-09-16 12:05:49,680 - INFO - Val Loss: 0.5728, Val Acc: 76.28%
+2025-09-16 12:05:49,713 - INFO - Best model saved with validation accuracy: 76.28%
+2025-09-16 12:05:49,713 - INFO - Epoch 28/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.83it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.32it/s]2025-09-16 12:05:49,910 - INFO - Train Loss: 0.4735, Train Acc: 82.32%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.27it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 71.49it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 96.90it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 108.52it/s]Validation:  98%|█████████▊| 55/56 [00:00<00:00, 115.32it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 95.39it/s] 2025-09-16 12:05:50,499 - INFO - Val Loss: 0.5464, Val Acc: 77.13%
+2025-09-16 12:05:50,524 - INFO - Best model saved with validation accuracy: 77.13%
+2025-09-16 12:05:50,524 - INFO - Epoch 29/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.03it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.25it/s]2025-09-16 12:05:50,751 - INFO - Train Loss: 0.4126, Train Acc: 82.85%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:08,  6.47it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 63.64it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 87.62it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 99.10it/s]Validation:  91%|█████████ | 51/56 [00:00<00:00, 105.52it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 87.97it/s] 2025-09-16 12:05:51,388 - INFO - Val Loss: 0.5207, Val Acc: 77.96%
+2025-09-16 12:05:51,425 - INFO - Best model saved with validation accuracy: 77.96%
+2025-09-16 12:05:51,426 - INFO - Epoch 30/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.49it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.88it/s]2025-09-16 12:05:51,643 - INFO - Train Loss: 0.4310, Train Acc: 83.11%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  9.05it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 37.12it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 77.65it/s]Validation:  59%|█████▉    | 33/56 [00:00<00:00, 97.07it/s]Validation:  82%|████████▏ | 46/56 [00:00<00:00, 107.80it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 89.87it/s] 2025-09-16 12:05:52,267 - INFO - Val Loss: 0.4944, Val Acc: 78.74%
+2025-09-16 12:05:52,315 - INFO - Best model saved with validation accuracy: 78.74%
+2025-09-16 12:05:52,315 - INFO - Epoch 31/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.50it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.90it/s]2025-09-16 12:05:52,569 - INFO - Train Loss: 0.3685, Train Acc: 84.96%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.39it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 38.21it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 79.05it/s]Validation:  59%|█████▉    | 33/56 [00:00<00:00, 97.51it/s]Validation:  82%|████████▏ | 46/56 [00:00<00:00, 108.65it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 88.81it/s] 2025-09-16 12:05:53,201 - INFO - Val Loss: 0.4721, Val Acc: 79.27%
+2025-09-16 12:05:53,231 - INFO - Best model saved with validation accuracy: 79.27%
+2025-09-16 12:05:53,232 - INFO - Epoch 32/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.08it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.30it/s]2025-09-16 12:05:53,478 - INFO - Train Loss: 0.3551, Train Acc: 84.43%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:08,  6.71it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 35.49it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 43.14it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 47.01it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 50.20it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 49.77it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 50.26it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 51.27it/s]Validation:  89%|████████▉ | 50/56 [00:01<00:00, 50.72it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 52.30it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 46.73it/s]2025-09-16 12:05:54,679 - INFO - Val Loss: 0.4593, Val Acc: 79.95%
+2025-09-16 12:05:54,699 - INFO - Best model saved with validation accuracy: 79.95%
+2025-09-16 12:05:54,699 - INFO - Epoch 33/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.58it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.07it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.10it/s]2025-09-16 12:05:54,997 - INFO - Train Loss: 0.3637, Train Acc: 84.17%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.70it/s]Validation:   9%|▉         | 5/56 [00:00<00:01, 26.30it/s]Validation:  20%|█▉        | 11/56 [00:00<00:01, 40.30it/s]Validation:  30%|███       | 17/56 [00:00<00:00, 45.46it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 48.02it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 49.27it/s]Validation:  62%|██████▎   | 35/56 [00:00<00:00, 50.71it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 52.28it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 51.58it/s]Validation:  95%|█████████▍| 53/56 [00:01<00:00, 52.49it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.26it/s]2025-09-16 12:05:56,184 - INFO - Val Loss: 0.4539, Val Acc: 80.84%
+2025-09-16 12:05:56,215 - INFO - Best model saved with validation accuracy: 80.84%
+2025-09-16 12:05:56,215 - INFO - Epoch 34/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.21it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.14it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.96it/s]2025-09-16 12:05:56,489 - INFO - Train Loss: 0.3515, Train Acc: 83.64%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  7.00it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 33.45it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 45.66it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 50.38it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 53.97it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 56.90it/s]Validation:  71%|███████▏  | 40/56 [00:00<00:00, 56.25it/s]Validation:  82%|████████▏ | 46/56 [00:00<00:00, 56.63it/s]Validation:  95%|█████████▍| 53/56 [00:01<00:00, 57.43it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 50.97it/s]2025-09-16 12:05:57,588 - INFO - Val Loss: 0.4562, Val Acc: 81.36%
+2025-09-16 12:05:57,609 - INFO - Best model saved with validation accuracy: 81.36%
+2025-09-16 12:05:57,610 - INFO - Epoch 35/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.67it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.49it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.28it/s]2025-09-16 12:05:57,876 - INFO - Train Loss: 0.3383, Train Acc: 84.17%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.99it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 31.05it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 41.55it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 47.81it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 50.08it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 51.29it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 53.18it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 55.10it/s]Validation:  86%|████████▌ | 48/56 [00:00<00:00, 54.25it/s]Validation:  96%|█████████▋| 54/56 [00:01<00:00, 54.36it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 49.14it/s]2025-09-16 12:05:59,017 - INFO - Val Loss: 0.4540, Val Acc: 81.87%
+2025-09-16 12:05:59,037 - INFO - Best model saved with validation accuracy: 81.87%
+2025-09-16 12:05:59,037 - INFO - Epoch 36/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.01it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.13it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.67it/s]2025-09-16 12:05:59,295 - INFO - Train Loss: 0.3233, Train Acc: 86.54%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:08,  6.23it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 25.92it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 35.87it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 42.16it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 46.50it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 47.73it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 52.24it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 52.30it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 54.15it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 56.41it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 46.44it/s]2025-09-16 12:06:00,503 - INFO - Val Loss: 0.4565, Val Acc: 82.15%
+2025-09-16 12:06:00,523 - INFO - Best model saved with validation accuracy: 82.15%
+2025-09-16 12:06:00,523 - INFO - Epoch 37/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.99it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.14it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.80it/s]2025-09-16 12:06:00,801 - INFO - Train Loss: 0.2859, Train Acc: 89.18%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 16.49it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 37.65it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 46.12it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 50.12it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 52.78it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 54.27it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 66.91it/s]Validation:  98%|█████████▊| 55/56 [00:00<00:00, 85.21it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 62.36it/s]2025-09-16 12:06:01,700 - INFO - Val Loss: 0.4672, Val Acc: 82.21%
+2025-09-16 12:06:01,751 - INFO - Best model saved with validation accuracy: 82.21%
+2025-09-16 12:06:01,751 - INFO - Epoch 38/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.36it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.35it/s]2025-09-16 12:06:01,977 - INFO - Train Loss: 0.2870, Train Acc: 87.34%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.44it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 42.78it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 79.40it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 72.27it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 65.63it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 61.15it/s]Validation:  91%|█████████ | 51/56 [00:00<00:00, 58.27it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 57.50it/s]2025-09-16 12:06:02,952 - INFO - Val Loss: 0.4773, Val Acc: 82.32%
+2025-09-16 12:06:03,005 - INFO - Best model saved with validation accuracy: 82.32%
+2025-09-16 12:06:03,005 - INFO - Epoch 39/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.41it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.05it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.91it/s]2025-09-16 12:06:03,281 - INFO - Train Loss: 0.3148, Train Acc: 86.54%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.22it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 34.38it/s]Validation:  23%|██▎       | 13/56 [00:00<00:00, 45.14it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 48.18it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 52.15it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 52.09it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 52.38it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 53.25it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 51.97it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 53.00it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 48.64it/s]2025-09-16 12:06:04,433 - INFO - Val Loss: 0.4795, Val Acc: 82.56%
+2025-09-16 12:06:04,467 - INFO - Best model saved with validation accuracy: 82.56%
+2025-09-16 12:06:04,467 - INFO - Epoch 40/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.50it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.68it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.34it/s]2025-09-16 12:06:04,732 - INFO - Train Loss: 0.2879, Train Acc: 87.07%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.94it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 34.69it/s]Validation:  23%|██▎       | 13/56 [00:00<00:00, 44.87it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 52.18it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 54.30it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 55.44it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 55.80it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 56.42it/s]Validation:  89%|████████▉ | 50/56 [00:00<00:00, 56.44it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 56.71it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 51.23it/s]2025-09-16 12:06:05,826 - INFO - Val Loss: 0.4722, Val Acc: 83.23%
+2025-09-16 12:06:05,851 - INFO - Best model saved with validation accuracy: 83.23%
+2025-09-16 12:06:05,851 - INFO - Epoch 41/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.57it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.65it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.40it/s]2025-09-16 12:06:06,140 - INFO - Train Loss: 0.3062, Train Acc: 86.81%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.66it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 33.00it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 42.78it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 48.58it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 52.37it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 52.96it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 54.09it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 55.22it/s]Validation:  86%|████████▌ | 48/56 [00:00<00:00, 56.09it/s]Validation:  96%|█████████▋| 54/56 [00:01<00:00, 55.66it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 50.08it/s]2025-09-16 12:06:07,260 - INFO - Val Loss: 0.4643, Val Acc: 83.81%
+2025-09-16 12:06:07,283 - INFO - Best model saved with validation accuracy: 83.81%
+2025-09-16 12:06:07,283 - INFO - Epoch 42/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.05it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.93it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.80it/s]2025-09-16 12:06:07,562 - INFO - Train Loss: 0.2518, Train Acc: 90.24%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.96it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 30.08it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 40.21it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 46.69it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 48.64it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 49.87it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 51.96it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 52.66it/s]Validation:  86%|████████▌ | 48/56 [00:01<00:00, 52.76it/s]Validation:  96%|█████████▋| 54/56 [00:01<00:00, 54.74it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.83it/s]2025-09-16 12:06:08,734 - INFO - Val Loss: 0.4652, Val Acc: 84.09%
+2025-09-16 12:06:08,792 - INFO - Best model saved with validation accuracy: 84.09%
+2025-09-16 12:06:08,792 - INFO - Epoch 43/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.04it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.26it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.93it/s]2025-09-16 12:06:09,067 - INFO - Train Loss: 0.2465, Train Acc: 91.03%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.21it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 34.33it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 42.75it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 46.56it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 49.40it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 49.83it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 51.43it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 51.78it/s]Validation:  89%|████████▉ | 50/56 [00:01<00:00, 51.17it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 52.58it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.10it/s]2025-09-16 12:06:10,257 - INFO - Val Loss: 0.4692, Val Acc: 84.23%
+2025-09-16 12:06:10,291 - INFO - Best model saved with validation accuracy: 84.23%
+2025-09-16 12:06:10,291 - INFO - Epoch 44/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  5.47it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.81it/s]2025-09-16 12:06:10,569 - INFO - Train Loss: 0.2371, Train Acc: 90.24%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.11it/s]Validation:  18%|█▊        | 10/56 [00:00<00:00, 46.90it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 60.04it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 81.19it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 91.41it/s]Validation:  93%|█████████▎| 52/56 [00:00<00:00, 75.03it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 66.32it/s]2025-09-16 12:06:11,415 - INFO - Val Loss: 0.4739, Val Acc: 84.10%
+2025-09-16 12:06:11,415 - INFO - No improvement for 1 epoch(s).
+2025-09-16 12:06:11,415 - INFO - Epoch 45/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.64it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.83it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.49it/s]2025-09-16 12:06:11,676 - INFO - Train Loss: 0.2250, Train Acc: 91.03%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.69it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 31.85it/s]Validation:  23%|██▎       | 13/56 [00:00<00:01, 40.77it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 45.60it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 48.21it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 51.06it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 50.96it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 52.40it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 51.64it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 53.27it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.26it/s]2025-09-16 12:06:12,862 - INFO - Val Loss: 0.4812, Val Acc: 83.99%
+2025-09-16 12:06:12,862 - INFO - No improvement for 2 epoch(s).
+2025-09-16 12:06:12,862 - INFO - Epoch 46/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  5.66it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.52it/s]Training: 100%|██████████| 3/3 [00:00<00:00,  9.52it/s]2025-09-16 12:06:13,178 - INFO - Train Loss: 0.2661, Train Acc: 90.50%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.40it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 32.45it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 43.15it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 45.95it/s]Validation:  43%|████▎     | 24/56 [00:00<00:00, 49.98it/s]Validation:  54%|█████▎    | 30/56 [00:00<00:00, 48.54it/s]Validation:  64%|██████▍   | 36/56 [00:00<00:00, 50.13it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 51.31it/s]Validation:  86%|████████▌ | 48/56 [00:01<00:00, 52.39it/s]Validation:  96%|█████████▋| 54/56 [00:01<00:00, 52.09it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.68it/s]2025-09-16 12:06:14,353 - INFO - Val Loss: 0.4873, Val Acc: 84.00%
+2025-09-16 12:06:14,354 - INFO - No improvement for 3 epoch(s).
+2025-09-16 12:06:14,354 - INFO - Epoch 47/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.08it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.82it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.70it/s]2025-09-16 12:06:14,635 - INFO - Train Loss: 0.2567, Train Acc: 90.77%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.37it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 38.89it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 44.93it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 48.01it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 51.54it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 54.10it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 52.58it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 53.18it/s]Validation:  89%|████████▉ | 50/56 [00:01<00:00, 51.73it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 51.86it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 48.18it/s]2025-09-16 12:06:15,798 - INFO - Val Loss: 0.4917, Val Acc: 83.95%
+2025-09-16 12:06:15,798 - INFO - No improvement for 4 epoch(s).
+2025-09-16 12:06:15,798 - INFO - Epoch 48/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.37it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.08it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.95it/s]2025-09-16 12:06:16,073 - INFO - Train Loss: 0.2327, Train Acc: 90.24%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 12.52it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 32.55it/s]Validation:  25%|██▌       | 14/56 [00:00<00:01, 40.10it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 43.34it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 46.40it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 49.30it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 49.33it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 51.61it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 51.15it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 51.78it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 45.57it/s]2025-09-16 12:06:17,302 - INFO - Val Loss: 0.4873, Val Acc: 84.06%
+2025-09-16 12:06:17,302 - INFO - No improvement for 5 epoch(s).
+2025-09-16 12:06:17,302 - INFO - Epoch 49/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.40it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.51it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.23it/s]2025-09-16 12:06:17,570 - INFO - Train Loss: 0.2172, Train Acc: 90.50%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.49it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 36.90it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 44.48it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 45.66it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 48.74it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 50.27it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 50.17it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 50.23it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 51.28it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 53.10it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.38it/s]2025-09-16 12:06:18,753 - INFO - Val Loss: 0.4827, Val Acc: 84.50%
+2025-09-16 12:06:18,773 - INFO - Best model saved with validation accuracy: 84.50%
+2025-09-16 12:06:18,773 - INFO - Epoch 50/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.85it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 15.45it/s]2025-09-16 12:06:18,967 - INFO - Train Loss: 0.2096, Train Acc: 91.82%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 12.52it/s]Validation:  20%|█▉        | 11/56 [00:00<00:00, 47.07it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 62.81it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 71.63it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 77.11it/s]Validation:  89%|████████▉ | 50/56 [00:00<00:00, 89.29it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 73.76it/s]2025-09-16 12:06:19,727 - INFO - Val Loss: 0.4819, Val Acc: 84.48%
+2025-09-16 12:06:19,728 - INFO - No improvement for 1 epoch(s).
+2025-09-16 12:06:19,728 - INFO - Epoch 51/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.68it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.81it/s]2025-09-16 12:06:20,007 - INFO - Train Loss: 0.2003, Train Acc: 93.14%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  6.90it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 30.82it/s]Validation:  23%|██▎       | 13/56 [00:00<00:01, 40.41it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 46.31it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 48.22it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 51.19it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 52.03it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 52.97it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 53.99it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 53.41it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.07it/s]2025-09-16 12:06:21,197 - INFO - Val Loss: 0.4855, Val Acc: 84.12%
+2025-09-16 12:06:21,198 - INFO - No improvement for 2 epoch(s).
+2025-09-16 12:06:21,198 - INFO - Epoch 52/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.86it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.81it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.32it/s]2025-09-16 12:06:21,463 - INFO - Train Loss: 0.2550, Train Acc: 90.77%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.70it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 35.58it/s]Validation:  23%|██▎       | 13/56 [00:00<00:00, 45.56it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 51.30it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 55.54it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 57.92it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 58.71it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 55.96it/s]Validation:  95%|█████████▍| 53/56 [00:01<00:00, 55.83it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 51.12it/s]2025-09-16 12:06:22,560 - INFO - Val Loss: 0.4897, Val Acc: 83.81%
+2025-09-16 12:06:22,560 - INFO - No improvement for 3 epoch(s).
+2025-09-16 12:06:22,561 - INFO - Epoch 53/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.92it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.07it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.83it/s]2025-09-16 12:06:22,839 - INFO - Train Loss: 0.2072, Train Acc: 91.56%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.73it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 28.99it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 39.87it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 43.62it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 45.43it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 49.34it/s]Validation:  61%|██████    | 34/56 [00:00<00:00, 49.05it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 48.41it/s]Validation:  80%|████████  | 45/56 [00:00<00:00, 51.40it/s]Validation:  91%|█████████ | 51/56 [00:01<00:00, 50.68it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 45.62it/s]2025-09-16 12:06:24,067 - INFO - Val Loss: 0.5020, Val Acc: 83.45%
+2025-09-16 12:06:24,068 - INFO - No improvement for 4 epoch(s).
+2025-09-16 12:06:24,068 - INFO - Epoch 54/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.72it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.61it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.39it/s]2025-09-16 12:06:24,332 - INFO - Train Loss: 0.2143, Train Acc: 92.61%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:05,  9.21it/s]Validation:  11%|█         | 6/56 [00:00<00:01, 31.67it/s]Validation:  21%|██▏       | 12/56 [00:00<00:01, 42.20it/s]Validation:  32%|███▏      | 18/56 [00:00<00:00, 46.93it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 47.47it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 49.70it/s]Validation:  62%|██████▎   | 35/56 [00:00<00:00, 49.48it/s]Validation:  73%|███████▎  | 41/56 [00:00<00:00, 51.72it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 51.34it/s]Validation:  95%|█████████▍| 53/56 [00:01<00:00, 51.41it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 46.85it/s]2025-09-16 12:06:25,528 - INFO - Val Loss: 0.5008, Val Acc: 83.71%
+2025-09-16 12:06:25,528 - INFO - No improvement for 5 epoch(s).
+2025-09-16 12:06:25,528 - INFO - Epoch 55/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.01it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.00it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.67it/s]2025-09-16 12:06:25,786 - INFO - Train Loss: 0.2019, Train Acc: 92.08%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 15.75it/s]Validation:  16%|█▌        | 9/56 [00:00<00:01, 40.48it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 46.31it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 49.76it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 49.82it/s]Validation:  59%|█████▉    | 33/56 [00:00<00:00, 51.64it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 51.61it/s]Validation:  80%|████████  | 45/56 [00:00<00:00, 51.80it/s]Validation:  91%|█████████ | 51/56 [00:01<00:00, 53.91it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 49.04it/s]2025-09-16 12:06:26,928 - INFO - Val Loss: 0.4867, Val Acc: 84.17%
+2025-09-16 12:06:26,928 - INFO - No improvement for 6 epoch(s).
+2025-09-16 12:06:26,928 - INFO - Epoch 56/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  7.45it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 13.56it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.29it/s]2025-09-16 12:06:27,195 - INFO - Train Loss: 0.2352, Train Acc: 91.82%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 13.42it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 35.34it/s]Validation:  25%|██▌       | 14/56 [00:00<00:00, 43.21it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 72.94it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 83.40it/s]Validation:  84%|████████▍ | 47/56 [00:00<00:00, 81.47it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 80.75it/s]Validation: 100%|██████████| 56/56 [00:00<00:00, 67.18it/s]2025-09-16 12:06:28,029 - INFO - Val Loss: 0.4788, Val Acc: 84.71%
+2025-09-16 12:06:28,050 - INFO - Best model saved with validation accuracy: 84.71%
+2025-09-16 12:06:28,050 - INFO - Epoch 57/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.54it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.48it/s]2025-09-16 12:06:28,258 - INFO - Train Loss: 0.1745, Train Acc: 92.35%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:04, 11.40it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 31.57it/s]Validation:  25%|██▌       | 14/56 [00:00<00:01, 40.90it/s]Validation:  36%|███▌      | 20/56 [00:00<00:00, 47.10it/s]Validation:  46%|████▋     | 26/56 [00:00<00:00, 50.77it/s]Validation:  57%|█████▋    | 32/56 [00:00<00:00, 51.90it/s]Validation:  68%|██████▊   | 38/56 [00:00<00:00, 53.01it/s]Validation:  79%|███████▊  | 44/56 [00:00<00:00, 54.21it/s]Validation:  89%|████████▉ | 50/56 [00:01<00:00, 52.73it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 53.15it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.10it/s]2025-09-16 12:06:29,448 - INFO - Val Loss: 0.4802, Val Acc: 84.57%
+2025-09-16 12:06:29,448 - INFO - No improvement for 1 epoch(s).
+2025-09-16 12:06:29,448 - INFO - Epoch 58/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.61it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.54it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.35it/s]2025-09-16 12:06:29,740 - INFO - Train Loss: 0.1991, Train Acc: 92.35%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:06,  8.85it/s]Validation:   9%|▉         | 5/56 [00:00<00:02, 25.22it/s]Validation:  20%|█▉        | 11/56 [00:00<00:01, 37.97it/s]Validation:  30%|███       | 17/56 [00:00<00:00, 42.84it/s]Validation:  41%|████      | 23/56 [00:00<00:00, 48.34it/s]Validation:  52%|█████▏    | 29/56 [00:00<00:00, 51.98it/s]Validation:  62%|██████▎   | 35/56 [00:00<00:00, 53.23it/s]Validation:  75%|███████▌  | 42/56 [00:00<00:00, 55.87it/s]Validation:  86%|████████▌ | 48/56 [00:00<00:00, 54.09it/s]Validation:  96%|█████████▋| 54/56 [00:01<00:00, 55.49it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 48.51it/s]2025-09-16 12:06:30,896 - INFO - Val Loss: 0.4844, Val Acc: 84.57%
+2025-09-16 12:06:30,896 - INFO - No improvement for 2 epoch(s).
+2025-09-16 12:06:30,896 - INFO - Epoch 59/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  8.53it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 14.19it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 11.90it/s]2025-09-16 12:06:31,149 - INFO - Train Loss: 0.1849, Train Acc: 92.08%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   2%|▏         | 1/56 [00:00<00:07,  7.52it/s]Validation:  12%|█▎        | 7/56 [00:00<00:01, 34.52it/s]Validation:  23%|██▎       | 13/56 [00:00<00:01, 42.79it/s]Validation:  34%|███▍      | 19/56 [00:00<00:00, 47.39it/s]Validation:  45%|████▍     | 25/56 [00:00<00:00, 50.51it/s]Validation:  55%|█████▌    | 31/56 [00:00<00:00, 49.79it/s]Validation:  66%|██████▌   | 37/56 [00:00<00:00, 50.69it/s]Validation:  77%|███████▋  | 43/56 [00:00<00:00, 51.88it/s]Validation:  88%|████████▊ | 49/56 [00:01<00:00, 52.51it/s]Validation:  98%|█████████▊| 55/56 [00:01<00:00, 53.12it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 47.30it/s]2025-09-16 12:06:32,334 - INFO - Val Loss: 0.4895, Val Acc: 84.30%
+2025-09-16 12:06:32,335 - INFO - No improvement for 3 epoch(s).
+2025-09-16 12:06:32,335 - INFO - Epoch 60/60
+
+Training:   0%|          | 0/3 [00:00<?, ?it/s]Training:  33%|███▎      | 1/3 [00:00<00:00,  6.58it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 12.90it/s]Training: 100%|██████████| 3/3 [00:00<00:00, 10.64it/s]2025-09-16 12:06:32,618 - INFO - Train Loss: 0.1870, Train Acc: 93.67%
+
+Validation:   0%|          | 0/56 [00:00<?, ?it/s]Validation:   4%|▎         | 2/56 [00:00<00:03, 14.16it/s]Validation:  14%|█▍        | 8/56 [00:00<00:01, 37.05it/s]Validation:  27%|██▋       | 15/56 [00:00<00:00, 48.21it/s]Validation:  38%|███▊      | 21/56 [00:00<00:00, 52.21it/s]Validation:  48%|████▊     | 27/56 [00:00<00:00, 54.06it/s]Validation:  59%|█████▉    | 33/56 [00:00<00:00, 55.67it/s]Validation:  70%|██████▉   | 39/56 [00:00<00:00, 55.90it/s]Validation:  80%|████████  | 45/56 [00:00<00:00, 56.66it/s]Validation:  93%|█████████▎| 52/56 [00:00<00:00, 57.05it/s]Validation: 100%|██████████| 56/56 [00:01<00:00, 51.77it/s]2025-09-16 12:06:33,701 - INFO - Val Loss: 0.4913, Val Acc: 84.15%
+2025-09-16 12:06:33,701 - INFO - No improvement for 4 epoch(s).
+2025-09-16 12:06:33,702 - INFO - Fine-tuning completed.
+2025-09-16 12:06:33,702 - INFO - Evaluating the fine-tuned model on the test set...
+
+Testing:   0%|          | 0/195 [00:00<?, ?it/s]Testing:   1%|          | 1/195 [00:00<00:22,  8.72it/s]Testing:   2%|▏         | 3/195 [00:00<00:13, 13.86it/s]Testing:   5%|▌         | 10/195 [00:00<00:05, 35.88it/s]Testing:   8%|▊         | 16/195 [00:00<00:04, 44.24it/s]Testing:  12%|█▏        | 23/195 [00:00<00:03, 51.59it/s]Testing:  15%|█▍        | 29/195 [00:00<00:03, 53.96it/s]Testing:  18%|█▊        | 35/195 [00:00<00:02, 55.60it/s]Testing:  22%|██▏       | 42/195 [00:00<00:02, 56.27it/s]Testing:  25%|██▍       | 48/195 [00:00<00:02, 57.32it/s]Testing:  28%|██▊       | 55/195 [00:01<00:02, 58.97it/s]Testing:  32%|███▏      | 62/195 [00:01<00:02, 59.69it/s]Testing:  35%|███▌      | 69/195 [00:01<00:02, 58.73it/s]Testing:  39%|███▉      | 76/195 [00:01<00:01, 60.10it/s]Testing:  43%|████▎     | 83/195 [00:01<00:01, 59.95it/s]Testing:  46%|████▌     | 90/195 [00:01<00:01, 59.84it/s]Testing:  50%|████▉     | 97/195 [00:01<00:01, 60.34it/s]Testing:  53%|█████▎    | 104/195 [00:01<00:01, 61.16it/s]Testing:  57%|█████▋    | 111/195 [00:02<00:01, 59.95it/s]Testing:  61%|██████    | 118/195 [00:02<00:01, 60.45it/s]Testing:  64%|██████▍   | 125/195 [00:02<00:01, 60.68it/s]Testing:  68%|██████▊   | 132/195 [00:02<00:01, 61.08it/s]Testing:  71%|███████▏  | 139/195 [00:02<00:00, 61.62it/s]Testing:  75%|███████▍  | 146/195 [00:02<00:00, 62.00it/s]Testing:  78%|███████▊  | 153/195 [00:02<00:00, 60.52it/s]Testing:  82%|████████▏ | 160/195 [00:02<00:00, 60.62it/s]Testing:  86%|████████▌ | 168/195 [00:02<00:00, 64.50it/s]Testing:  93%|█████████▎| 181/195 [00:03<00:00, 81.55it/s]Testing:  98%|█████████▊| 192/195 [00:03<00:00, 88.53it/s]Testing: 100%|██████████| 195/195 [00:03<00:00, 60.81it/s]2025-09-16 12:06:36,912 - INFO - Test Accuracy: 82.84%
+2025-09-16 12:06:36,943 - INFO - Classification Report:
+              precision    recall  f1-score   support
+
+        bike       0.85      0.77      0.81      4193
+         bus       0.84      0.88      0.86      5960
+         car       0.66      0.79      0.72      3661
+       train       0.75      0.70      0.72      3863
+        walk       0.95      0.91      0.93      7280
+
+    accuracy                           0.83     24957
+   macro avg       0.81      0.81      0.81     24957
+weighted avg       0.83      0.83      0.83     24957
+
+2025-09-16 12:06:37,039 - INFO - Evaluation completed. Fine-tuning script finished successfully.
+

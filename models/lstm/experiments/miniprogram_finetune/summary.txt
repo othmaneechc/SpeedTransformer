@@ -1,0 +1,20 @@
+LSTM Miniprogram Fine-tuning Results Summary
+=============================================
+
+Hyperparameter Tuning Runs:
+  tune_lr1e-4_h64
+  tune_lr1e-4_h128
+  tune_lr1e-4_h256
+  tune_lr5e-4_h64
+  tune_lr5e-4_h128
+  tune_lr5e-4_h256
+  tune_lr1e-3_h64
+  tune_lr1e-3_h128
+  tune_lr1e-3_h256
+
+Data Subset Experiments:
+  final_15pct_94trips_lr5e-4_h128 (15pct_94trips)
+  final_20pct_125trips_lr5e-4_h128 (20pct_125trips)
+  final_30pct_189trips_lr5e-4_h128 (30pct_189trips)
+  final_40pct_251trips_lr5e-4_h128 (40pct_251trips)
+  final_50pct_313trips_lr5e-4_h128 (50pct_313trips)
