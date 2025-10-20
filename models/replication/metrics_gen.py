@@ -6,11 +6,11 @@ This script consolidates the exploratory work that previously lived in
 artifacts that ship with the project and regenerates the exact plots and CSV
 summary referenced in the replication guide:
 
-1. ``original_datasets_training_comparison.png`` – Transformer vs LSTM val curves
-2. ``geolife_mobis_model_f1.png`` – Transformer vs LSTM class-level comparison for Geolife and MOBIS
+1. ``Fig3_original_datasets_training_comparison.png`` – Transformer vs LSTM val curves
+2. ``Fig4_geolife_mobis_model_f1.png`` – Transformer vs LSTM class-level comparison for Geolife and MOBIS
 3. ``finetune_sweeps_per_class_f1.png`` – Geolife finetuning per-class F1 scores
 4. ``miniprogram_finetune_per_class_f1.png`` – CarbonClever finetuning per-class F1
-5. ``geolife_window_size_accuracy.png`` – Window size sweep accuracy trend
+5. ``FigF1_geolife_window_size_accuracy.png`` – Window size sweep accuracy trend
 6. ``geolife_lowshot_accuracy.png`` – Low-shot (100/200 trajs) Geolife finetuning accuracy
 7. ``experiment_summary.csv`` – Tabular view of the headline results
 
@@ -985,14 +985,14 @@ def main() -> None:
         training_data["mobis"] = {"transformer": best_mobis_transformer, "lstm": matching_mobis_lstm}
 
     if training_data:
-        path = plot_training_comparison(training_data, output_dir / "original_datasets_val_comparison", show=show)
+        path = plot_training_comparison(training_data, output_dir / "fig3_original_datasets_val_comparison", show=show)
         if path:
             outputs.append(path)
 
     model_hist = plot_model_dataset_f1_histograms(
         (best_geolife_transformer, matching_geolife_lstm),
         (best_mobis_transformer, matching_mobis_lstm),
-        output_dir / "geolife_mobis_model_f1",
+        output_dir / "Fig4_geolife_mobis_model_f1",
         show=show,
     )
     if model_hist:
@@ -1017,7 +1017,7 @@ def main() -> None:
     if per_class_metrics:
         outputs.extend(plot_per_class_metrics(per_class_metrics, output_dir, show=show))
 
-    window_plot = plot_window_sweep(geolife_window_results, output_dir / "geolife_window_size_accuracy", show=show)
+    window_plot = plot_window_sweep(geolife_window_results, output_dir / "FigF1_geolife_window_size_accuracy", show=show)
     if window_plot:
         outputs.append(window_plot)
 
