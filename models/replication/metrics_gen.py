@@ -513,12 +513,12 @@ def plot_per_class_metrics(per_class_metrics: Dict[str, Dict[str, Dict[str, Dict
 
         output_path = (output_dir / meta["filename"]).with_suffix(".png")
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        fig.savefig(output_path, dpi=300, bbox_inches="tight", facecolor="white")
+        # fig.savefig(output_path, dpi=300, bbox_inches="tight", facecolor="white")
         if show:
             plt.show()
         plt.close(fig)
 
-        outputs.append(output_path)
+        # outputs.append(output_path)
 
     if len(per_class_metrics) == 2 and handles and labels:
         # Optionally produce the combined side-by-side figure for convenience.
@@ -535,7 +535,7 @@ def plot_per_class_metrics(per_class_metrics: Dict[str, Dict[str, Dict[str, Dict
         plt.tight_layout()
         plt.subplots_adjust(top=0.85, left=0.06, right=0.94, bottom=0.12)
 
-        combined_output = (output_dir / "combined_per_class_f1.png").with_suffix(".png")
+        combined_output = (output_dir / "FigC1_combined_per_class_f1.png").with_suffix(".png")
         combined_output.parent.mkdir(parents=True, exist_ok=True)
         fig.savefig(combined_output, dpi=300, bbox_inches="tight", facecolor="white")
         if show:
@@ -627,82 +627,6 @@ def plot_window_sweep(window_results: Sequence[Dict[str, object]], output_path: 
     best_window = max(window_data, key=lambda item: item[1])
     print(f"Best window size: {best_window[0]} (accuracy: {best_window[1]:.4f} or {best_window[1] * 100:.2f}%)")
 
-    return output_path
-
-
-def plot_lowshot_results(lowshot_results: Sequence[Dict[str, object]], output_path: Path, *, show: bool) -> Optional[Path]:
-    if not lowshot_results:
-        print("No low-shot Geolife finetuning experiments found")
-        return None
-
-    plotted_data: List[Tuple[int, float, str]] = []
-    for result in lowshot_results:
-        train_count = None
-        split_counts = extract_split_counts(Path(result["log_path"]))
-        if split_counts:
-            train_count = split_counts[0]
-        else:
-            match = re.search(r"train(\d+)", result["experiment"], re.IGNORECASE)
-            if match:
-                train_count = int(match.group(1))
-        if train_count is None:
-            continue
-        plotted_data.append((train_count, result["test_accuracy"] * 100, result["experiment"]))
-
-    if not plotted_data:
-        print("Unable to determine training counts for low-shot runs")
-        return None
-
-    plotted_data.sort(key=lambda item: item[0])
-    train_counts = [item[0] for item in plotted_data]
-    accuracies = [item[1] for item in plotted_data]
-    labels = [item[2] for item in plotted_data]
-
-    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-    ax.plot(
-        train_counts,
-        accuracies,
-        marker="o",
-        markersize=8,
-        linestyle="-",
-        linewidth=3,
-        color=PASTEL_COLORS["train_transformer"],
-        alpha=0.9,
-    )
-
-    for count, acc, label in zip(train_counts, accuracies, labels):
-        ax.annotate(
-            f"{acc:.2f}%\n({label})",
-            xy=(count, acc),
-            xytext=(0, 10),
-            textcoords="offset points",
-            ha="center",
-            va="bottom",
-            fontsize=12,
-            fontweight="bold",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.8),
-        )
-
-    ax.set_title("Geolife Low-shot Finetuning Accuracy", fontsize=18, fontweight="bold", pad=15)
-    ax.set_xlabel("Number of training trajectories", fontsize=16)
-    ax.set_ylabel("Test Accuracy (%)", fontsize=16)
-    ax.tick_params(axis="both", which="major", labelsize=14)
-    ax.grid(True, linestyle=":", alpha=0.6)
-
-    y_min = min(accuracies) - 1
-    y_max = max(accuracies) + 1
-    ax.set_ylim(y_min, y_max)
-
-    plt.tight_layout()
-
-    output_path = output_path.with_suffix(".png")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(output_path, dpi=300, bbox_inches="tight", facecolor="white")
-    if show:
-        plt.show()
-    plt.close(fig)
-
-    print(f"Saved low-shot accuracy plot to {output_path}")
     return output_path
 
 
@@ -985,7 +909,7 @@ def main() -> None:
         training_data["mobis"] = {"transformer": best_mobis_transformer, "lstm": matching_mobis_lstm}
 
     if training_data:
-        path = plot_training_comparison(training_data, output_dir / "fig3_original_datasets_val_comparison", show=show)
+        path = plot_training_comparison(training_data, output_dir / "Fig3_original_datasets_val_comparison", show=show)
         if path:
             outputs.append(path)
 
@@ -1020,10 +944,6 @@ def main() -> None:
     window_plot = plot_window_sweep(geolife_window_results, output_dir / "FigF1_geolife_window_size_accuracy", show=show)
     if window_plot:
         outputs.append(window_plot)
-
-    lowshot_plot = plot_lowshot_results(geolife_lowshot_results, output_dir / "geolife_lowshot_accuracy", show=show)
-    if lowshot_plot:
-        outputs.append(lowshot_plot)
 
     # Summary table ---------------------------------------------------------
     summary_df = create_experiment_summary(
