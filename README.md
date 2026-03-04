@@ -1,6 +1,11 @@
 # SpeedTransformer
 
-This repository contains the code used in the paper **"[Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models](#)"**. 
+This repository contains the code for the paper:
+
+**SpeedTransformer: Detecting Transportation Mode Using Dense Smartphone GPS Trajectories**
+
+📄 **Paper (arXiv):** https://arxiv.org/abs/2603.00340  
+🌐 **Project Page:** https://othmaneechc.github.io/pages/speedtransformer.html
 
 ## Preparing the Data
 
