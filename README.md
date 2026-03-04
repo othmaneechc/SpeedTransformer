@@ -1,11 +1,11 @@
 # SpeedTransformer
 
-This repository contains the code for the paper:
+Official implementation of the paper:
 
-**SpeedTransformer: Detecting Transportation Mode Using Dense Smartphone GPS Trajectories**
+**Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models**
 
-📄 **Paper (arXiv):** https://arxiv.org/abs/2603.00340  
-🌐 **Project Page:** https://othmaneechc.github.io/pages/speedtransformer.html
+📄 [Read the paper on arXiv](https://arxiv.org/abs/2603.00340)  
+🌐 [Project Page](https://othmaneechc.github.io/pages/speedtransformer.html)
 
 ## Preparing the Data
 
@@ -77,3 +77,14 @@ For an end-to-end, notebook-based replication you can open `SpeedTransformer.ipy
 
 This project is licensed under the MIT License. Feel free to open issues or pull requests on GitHub.
 For questions or contributions, please reach out to [Othmane Echchabi](mailto:othmane.echchabi@mail.mcgill.ca).
+
+## Citation
+
+If you find this work useful, please cite:
+
+@article{zhang2026speedtransformer,
+title   = {Detecting Transportation Mode Using Dense Smartphone GPS Trajectories and Transformer Models},
+author  = {Zhang, Yuandong and Echchabi, Othmane and Feng, Tianshu and Zhang, Wenyi and Liao, Hsuai-Kai and Chang, Charles},
+journal = {International Journal of Geographical Information Science (IJGIS)},
+year    = {2026}
+}
