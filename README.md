@@ -2,7 +2,7 @@
 
 Official implementation of the paper:
 
-**Predicting Human Mobility Using Dense Smartphone GPS Trajectories and Transformer Models**
+**SpeedTransformer: Detecting Transportation Mode Using Dense Smartphone GPS Trajectories**
 
 📄 [Read the paper on arXiv](https://arxiv.org/abs/2603.00340)  
 🌐 [Project Page](https://othmaneechc.github.io/pages/speedtransformer.html)
